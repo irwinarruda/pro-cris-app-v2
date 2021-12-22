@@ -1,71 +1,38 @@
-import React from "react";
+import React from 'react';
+import { NativeBaseProvider } from 'native-base';
 import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Code,
-} from "native-base";
-import NativeBaseIcon from "./components/NativeBaseIcon";
+    useFonts,
+    Quicksand_300Light,
+    Quicksand_400Regular,
+    Quicksand_500Medium,
+    Quicksand_600SemiBold,
+    Quicksand_700Bold,
+} from '@expo-google-fonts/quicksand';
+import { Yellowtail_400Regular } from '@expo-google-fonts/yellowtail';
+import AppLoading from 'expo-app-loading';
+import { StatusBar } from 'expo-status-bar';
 
-// Define the config
-const config = {
-  useSystemColorMode: false,
-  initialColorMode: "dark",
-};
+import { SignIn } from 'app/screens/SignIn';
 
-// extend the theme
-export const theme = extendTheme({ config });
+import { theme } from 'app/styles/theme';
 
 export default function App() {
-  return (
-    <NativeBaseProvider>
-      <Center
-        _dark={{ bg: "blueGray.900" }}
-        _light={{ bg: "blueGray.50" }}
-        px={4}
-        flex={1}
-      >
-        <VStack space={5} alignItems="center">
-          <NativeBaseIcon />
-          <Heading size="lg">Welcome to NativeBase</Heading>
-          <HStack space={2} alignItems="center">
-            <Text>Edit</Text>
-            <Code>App.tsx</Code>
-            <Text>and save to reload.</Text>
-          </HStack>
-          <Link href="https://docs.nativebase.io" isExternal>
-            <Text color="primary.500" underline fontSize={"xl"}>
-              Learn NativeBase
-            </Text>
-          </Link>
-          <ToggleDarkMode />
-        </VStack>
-      </Center>
-    </NativeBaseProvider>
-  );
-}
+    let [fontsLoaded] = useFonts({
+        Quicksand_300Light,
+        Quicksand_400Regular,
+        Quicksand_500Medium,
+        Quicksand_600SemiBold,
+        Quicksand_700Bold,
+        Yellowtail_400Regular,
+    });
+    if (!fontsLoaded) {
+        return <AppLoading />;
+    }
 
-// Color Switch Component
-function ToggleDarkMode() {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <HStack space={2} alignItems="center">
-      <Text>Dark</Text>
-      <Switch
-        isChecked={colorMode === "light" ? true : false}
-        onToggle={toggleColorMode}
-        aria-label={
-          colorMode === "light" ? "switch to dark mode" : "switch to light mode"
-        }
-      />
-      <Text>Light</Text>
-    </HStack>
-  );
+    return (
+        <NativeBaseProvider theme={theme}>
+            <SignIn />
+            <StatusBar style="light" />
+        </NativeBaseProvider>
+    );
 }
