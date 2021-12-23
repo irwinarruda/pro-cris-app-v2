@@ -5,41 +5,41 @@ import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
 const buttonSizesStyles = {
     sm: {
         rect: {
-            height: '34px',
+            height: '22px',
         },
         text: {
-            fontSize: 'xs',
+            fontSize: 'sm',
             lineHeight: '14px',
         },
     },
     md: {
         rect: {
-            height: '40px',
+            height: '22px',
         },
         text: {
-            fontSize: 'sm',
+            fontSize: 'md',
             lineHeight: '17px',
         },
     },
     lg: {
         rect: {
-            height: '45px',
+            height: '28px',
         },
         text: {
-            fontSize: 'md',
+            fontSize: 'lg',
             lineHeight: '18px',
         },
     },
 };
 
-type ButtonProps = IFlexProps &
+type LinkProps = IFlexProps &
     RectButtonProps & {
         children?: React.ReactNode;
         size?: keyof typeof buttonSizesStyles;
         colorScheme?: string;
         leftIcon?: React.ReactNode;
     };
-const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
+const Link = React.forwardRef<any, LinkProps>(function LinkComponent(
     {
         children,
         size = 'md',
@@ -75,11 +75,7 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
 ) {
     return (
         <Flex
-            bgColor="purple.500"
             borderRadius="5px"
-            borderColor="gold.300"
-            borderWidth="1"
-            borderStyle="solid"
             {...buttonSizesStyles[size as keyof typeof buttonSizesStyles].rect}
             {...props}
         >
@@ -117,18 +113,20 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
                     alignItems="center"
                     justifyContent="center"
                     height="100%"
-                    paddingBottom="4px"
-                    paddingTop="4px"
-                    paddingX="18px"
+                    paddingBottom="2px"
+                    paddingTop="2px"
+                    paddingX="5px"
                 >
                     {leftIcon}
                     <Text
+                        adjustsFontSizeToFit={true}
                         marginLeft={!!leftIcon ? '5px' : '0px'}
                         fontFamily="heading"
                         fontWeight="700"
                         fontStyle="normal"
-                        color="white"
-                        adjustsFontSizeToFit={true}
+                        color="gold.600"
+                        textDecoration="underline"
+                        textDecorationLine="underline"
                         {...buttonSizesStyles[
                             size as keyof typeof buttonSizesStyles
                         ].text}
@@ -140,4 +138,4 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
         </Flex>
     );
 });
-export { Button };
+export { Link };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { LogBox } from 'react-native';
 import { NativeBaseProvider } from 'native-base';
 import {
     useFonts,
@@ -12,9 +13,13 @@ import { Yellowtail_400Regular } from '@expo-google-fonts/yellowtail';
 import AppLoading from 'expo-app-loading';
 import { StatusBar } from 'expo-status-bar';
 
-import { SignIn } from 'app/screens/SignIn';
+import { Router } from 'app/routes/Router';
 
 import { theme } from 'app/styles/theme';
+
+import 'app/services/firebaseClient';
+
+LogBox.ignoreLogs(['Setting a timer']);
 
 export default function App() {
     let [fontsLoaded] = useFonts({
@@ -31,7 +36,7 @@ export default function App() {
 
     return (
         <NativeBaseProvider theme={theme}>
-            <SignIn />
+            <Router />
             <StatusBar style="light" />
         </NativeBaseProvider>
     );

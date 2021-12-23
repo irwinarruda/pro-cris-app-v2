@@ -3,9 +3,7 @@ import { Formik, FormikHelpers } from 'formik';
 import { Flex, HStack, VStack, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 
-import { initialValues, validationSchema, FormValues } from 'app/forms/signIn';
-
-import { AuthService } from 'app/services/AuthService';
+import { initialValues, validationSchema, FormValues } from 'app/forms/signUp';
 
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
 import { Button } from 'app/components/atoms/Button';
@@ -13,25 +11,18 @@ import { Link } from 'app/components/atoms/Link';
 import { ProCrisBanner } from 'app/components/molecules/ProCrisBanner';
 import { FKFormText } from 'app/components/molecules/FKFormText';
 
-type SignInProps = {
+type SignUpProps = {
     children?: React.ReactNode;
 };
 
-const SignIn = ({}: SignInProps) => {
+const SignUp = ({}: SignUpProps) => {
     const navigation = useNavigation();
     const handleFormSubmit = async (
         values: FormValues,
         formikHelpers: FormikHelpers<FormValues>,
     ) => {
-        try {
-            const authService = new AuthService();
-            const user = await authService.signIn(values);
-            console.log(user);
-        } catch (err) {
-            console.log({ ...(err as any) });
-        }
+        console.log(values);
     };
-
     return (
         <Formik
             initialValues={initialValues}
@@ -53,7 +44,7 @@ const SignIn = ({}: SignInProps) => {
                     <ProCrisBanner />
                     <Flex width="100%" paddingX="20px" marginTop="15px">
                         <Text fontSize="22px" fontWeight="700" textAlign="left">
-                            Fazer Login
+                            Criar Conta
                         </Text>
                     </Flex>
                     <VStack
@@ -62,6 +53,12 @@ const SignIn = ({}: SignInProps) => {
                         paddingX="20px"
                         marginTop="18px"
                     >
+                        <FKFormText
+                            name="name"
+                            label="Nome Completo"
+                            size="lg"
+                            autoCapitalize="words"
+                        />
                         <FKFormText name="email" label="Email" size="lg" />
                         <FKFormText
                             name="password"
@@ -69,15 +66,21 @@ const SignIn = ({}: SignInProps) => {
                             size="lg"
                             secureTextEntry
                         />
+                        <FKFormText
+                            name="passwordConfirm"
+                            label="Confirmar Senha"
+                            size="lg"
+                            secureTextEntry
+                        />
                     </VStack>
                     <HStack justifyContent="center" marginTop="20px">
                         <Button size="lg" onPress={handleSubmit as any}>
-                            Fazer Login
+                            Criar Conta
                         </Button>
                     </HStack>
                     <HStack justifyContent="center" marginTop="6px">
-                        <Link onPress={() => navigation.navigate('SignUp')}>
-                            Criar conta
+                        <Link onPress={() => navigation.navigate('SignIn')}>
+                            Fazer login
                         </Link>
                     </HStack>
                 </KeyboardAvoidingScrollView>
@@ -86,4 +89,4 @@ const SignIn = ({}: SignInProps) => {
     );
 };
 
-export { SignIn };
+export { SignUp };

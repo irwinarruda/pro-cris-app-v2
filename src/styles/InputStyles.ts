@@ -27,9 +27,9 @@ const InputStyles = {
     },
     variants: {
         outline: {
-            borderColor: 'gray.100',
+            borderColor: 'gray.400',
             _focus: {
-                borderColor: 'purple.300',
+                borderColor: 'gold.500',
                 borderWidth: 2,
             },
         },

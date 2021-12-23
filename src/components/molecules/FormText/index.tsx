@@ -1,16 +1,14 @@
 import React from 'react';
 import {
-    Box,
+    Flex,
     Input,
     Text,
-    IBoxProps,
+    IFlexProps,
     ITextProps,
     IInputProps,
     FormControl,
     IFormControlProps,
     IFormControlErrorMessageProps,
-    IFormControlLabelProps,
-    KeyboardAvoidingView,
 } from 'native-base';
 
 const labelSizeStyles = {
@@ -35,9 +33,10 @@ type FormTextProps = IInputProps & {
     formLabelProps?: ITextProps;
     formControlProps?: IFormControlProps;
     formErrorMessageProps?: IFormControlErrorMessageProps;
-    formFieldProps?: IBoxProps;
+    formFieldProps?: IFlexProps;
 };
 const FormText = ({
+    autoCapitalize = 'none',
     label,
     size = 'md',
     nativeID,
@@ -63,7 +62,7 @@ const FormText = ({
             {label && (
                 <Text
                     fontFamily="heading"
-                    fontWeight="700"
+                    fontWeight="600"
                     fontStyle="normal"
                     marginBottom="2px"
                     {...labelSizeStyles[size as keyof typeof labelSizeStyles]}
@@ -72,22 +71,25 @@ const FormText = ({
                     {label}
                 </Text>
             )}
-            <Box {...formFieldProps}>
-                <KeyboardAvoidingView behavior="padding">
-                    <Input
-                        size={size}
-                        borderWidth={!!error ? '2px' : '1px'}
-                        {...props}
-                    />
-                </KeyboardAvoidingView>
-                <FormControl.ErrorMessage
+            <Flex {...formFieldProps}>
+                <Input
+                    size={size}
+                    borderWidth={!!error ? '2px' : '1px'}
+                    autoCapitalize={autoCapitalize}
+                    {...props}
+                />
+                <Text
                     marginTop="0px"
-                    {...formErrorMessageProps}
+                    height="20px"
+                    fontSize="xs"
+                    color="red.500"
                 >
                     {error}
-                </FormControl.ErrorMessage>
-            </Box>
+                </Text>
+            </Flex>
         </FormControl>
     );
 };
+
+export type { FormTextProps };
 export { FormText };
