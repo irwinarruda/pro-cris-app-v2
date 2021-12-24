@@ -1,5 +1,6 @@
 import React from 'react';
 import { LogBox } from 'react-native';
+import { Provider } from 'react-redux';
 import { NativeBaseProvider } from 'native-base';
 import {
     useFonts,
@@ -17,9 +18,11 @@ import { Router } from 'app/routes/Router';
 
 import { theme } from 'app/styles/theme';
 
+import { store } from 'app/store/Store';
+
 import 'app/services/firebaseClient';
 
-LogBox.ignoreLogs(['Setting a timer']);
+LogBox.ignoreLogs(['Setting a timer for a long period of time']);
 
 export default function App() {
     let [fontsLoaded] = useFonts({
@@ -36,7 +39,9 @@ export default function App() {
 
     return (
         <NativeBaseProvider theme={theme}>
-            <Router />
+            <Provider store={store}>
+                <Router />
+            </Provider>
             <StatusBar style="light" />
         </NativeBaseProvider>
     );

@@ -21,6 +21,27 @@ class AuthService {
         } as User;
         return user;
     }
+
+    public async signOut() {
+        await auth.signOut();
+    }
+
+    public getCurretUser(): User | null {
+        const currentUser = auth.currentUser;
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            unsubscribe();
+        });
+        if (!currentUser) {
+            return null;
+        }
+        return {
+            id: currentUser.uid,
+            name: currentUser.displayName,
+            email: currentUser.email as string,
+            phone: currentUser.phoneNumber,
+            avatar: currentUser.photoURL,
+        };
+    }
 }
 
 export { AuthService };

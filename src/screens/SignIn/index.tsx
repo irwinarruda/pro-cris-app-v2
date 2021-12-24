@@ -13,20 +13,22 @@ import { Link } from 'app/components/atoms/Link';
 import { ProCrisBanner } from 'app/components/molecules/ProCrisBanner';
 import { FKFormText } from 'app/components/molecules/FKFormText';
 
+import { useUserStore } from 'app/hooks/UserStore';
+
 type SignInProps = {
     children?: React.ReactNode;
 };
 
 const SignIn = ({}: SignInProps) => {
+    const numberOfInterations = React.useRef(0);
+    const { user, signIn } = useUserStore('user');
     const navigation = useNavigation();
     const handleFormSubmit = async (
         values: FormValues,
         formikHelpers: FormikHelpers<FormValues>,
     ) => {
         try {
-            const authService = new AuthService();
-            const user = await authService.signIn(values);
-            console.log(user);
+            await signIn(values);
         } catch (err) {
             console.log({ ...(err as any) });
         }
@@ -53,7 +55,7 @@ const SignIn = ({}: SignInProps) => {
                     <ProCrisBanner />
                     <Flex width="100%" paddingX="20px" marginTop="15px">
                         <Text fontSize="22px" fontWeight="700" textAlign="left">
-                            Fazer Login
+                            Fazer Login {user.email}
                         </Text>
                     </Flex>
                     <VStack
