@@ -22,7 +22,7 @@ type SignInProps = {
 const SignIn = ({}: SignInProps) => {
     const { showError } = useError();
     const { setLoading } = useLoadingStore();
-    const { user, signIn } = useUserStore('user');
+    const { signIn } = useUserStore();
     const navigation = useNavigation();
 
     const handleFormSubmit = async (
@@ -55,12 +55,13 @@ const SignIn = ({}: SignInProps) => {
                     contentContainerStyle={{
                         alignItems: 'center',
                         justifyContent: 'flex-start',
+                        paddingBottom: 20,
                     }}
                 >
                     <ProCrisBanner />
                     <Flex width="100%" paddingX="20px" marginTop="15px">
                         <Text fontSize="22px" fontWeight="700" textAlign="left">
-                            Fazer Login {user.email}
+                            Fazer Login
                         </Text>
                     </Flex>
                     <VStack

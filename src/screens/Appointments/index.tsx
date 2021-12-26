@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, HStack } from 'native-base';
+import { Flex, HStack } from 'native-base';
 
 import { Button } from 'app/components/atoms/Button';
+import { ProCrisHeader } from 'app/components/molecules/ProCrisHeader';
 
 import { useError } from 'app/hooks/Error';
 import { useUserStore } from 'app/store/User/User.hook';
@@ -16,8 +17,6 @@ const Appointments = ({}: AppointmentsProps) => {
     const { signOut } = useUserStore();
 
     const onButtonPress = async () => {
-        setLoading(true);
-        setLoading(false);
         try {
             setLoading(true);
             await signOut();
@@ -29,13 +28,13 @@ const Appointments = ({}: AppointmentsProps) => {
     };
 
     return (
-        <Box>
+        <Flex>
             <HStack justifyContent="center">
                 <Button size="lg" marginTop="20px" onPress={onButtonPress}>
                     Logout
                 </Button>
             </HStack>
-        </Box>
+        </Flex>
     );
 };
 export { Appointments };

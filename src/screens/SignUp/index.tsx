@@ -39,6 +39,7 @@ const SignUp = ({}: SignUpProps) => {
                     contentContainerStyle={{
                         alignItems: 'center',
                         justifyContent: 'flex-start',
+                        paddingBottom: 20,
                     }}
                 >
                     <ProCrisBanner />

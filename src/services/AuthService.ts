@@ -1,13 +1,13 @@
 import { auth } from './firebaseClient';
 import { User } from 'app/entities/User';
 
-export type SignInDto = {
+export type SignInDTO = {
     email: string;
     password: string;
 };
 
 class AuthService {
-    public async signIn({ email, password }: SignInDto) {
+    public async signIn({ email, password }: SignInDTO) {
         const userCredential = await auth.signInWithEmailAndPassword(
             email,
             password,
@@ -28,9 +28,6 @@ class AuthService {
 
     public getCurretUser(): User | null {
         const currentUser = auth.currentUser;
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            unsubscribe();
-        });
         if (!currentUser) {
             return null;
         }

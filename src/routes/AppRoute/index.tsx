@@ -1,6 +1,8 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { ProCrisHeader } from 'app/components/molecules/ProCrisHeader';
+
 import { TabRoute } from './TabRoute';
 
 declare global {
@@ -19,7 +21,7 @@ const { Navigator, Screen } = createNativeStackNavigator();
 
 const AppRoute = ({}: AppRouteProps) => {
     return (
-        <Navigator>
+        <Navigator screenOptions={{ header: ProCrisHeader }}>
             <Screen name="TabRoute" component={TabRoute} />
         </Navigator>
     );

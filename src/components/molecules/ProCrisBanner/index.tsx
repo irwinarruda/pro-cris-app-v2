@@ -1,13 +1,13 @@
 import React from 'react';
-import { Box, IBoxProps } from 'native-base';
+import { Flex, IFlexProps } from 'native-base';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
 import { ProCrisLogo } from 'app/components/atoms/ProCrisLogo';
 
-type ProCrisBannerProps = IBoxProps;
+type ProCrisBannerProps = IFlexProps;
 const ProCrisBanner = ({ ...props }: ProCrisBannerProps) => {
     return (
-        <Box
+        <Flex
             alignItems="center"
             justifyContent="flex-end"
             width="100%"
@@ -17,7 +17,7 @@ const ProCrisBanner = ({ ...props }: ProCrisBannerProps) => {
             {...props}
         >
             <ProCrisLogo width="235px" />
-        </Box>
+        </Flex>
     );
 };
 export { ProCrisBanner };
