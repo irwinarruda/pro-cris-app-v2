@@ -5,32 +5,37 @@ import { useNavigation } from '@react-navigation/native';
 
 import { initialValues, validationSchema, FormValues } from 'app/forms/signIn';
 
-import { AuthService } from 'app/services/AuthService';
-
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
 import { Button } from 'app/components/atoms/Button';
 import { Link } from 'app/components/atoms/Link';
 import { ProCrisBanner } from 'app/components/molecules/ProCrisBanner';
 import { FKFormText } from 'app/components/molecules/FKFormText';
 
-import { useUserStore } from 'app/hooks/UserStore';
+import { useError } from 'app/hooks/Error';
+import { useUserStore } from 'app/store/User/User.hook';
+import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 
 type SignInProps = {
     children?: React.ReactNode;
 };
 
 const SignIn = ({}: SignInProps) => {
-    const numberOfInterations = React.useRef(0);
+    const { showError } = useError();
+    const { setLoading } = useLoadingStore();
     const { user, signIn } = useUserStore('user');
     const navigation = useNavigation();
+
     const handleFormSubmit = async (
         values: FormValues,
         formikHelpers: FormikHelpers<FormValues>,
     ) => {
         try {
+            setLoading(true);
             await signIn(values);
         } catch (err) {
-            console.log({ ...(err as any) });
+            showError(err, { title: 'Erro ao Logar' });
+        } finally {
+            setLoading(false);
         }
     };
 

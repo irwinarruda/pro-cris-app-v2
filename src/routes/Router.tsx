@@ -2,13 +2,12 @@ import React from 'react';
 import AppLoading from 'expo-app-loading';
 import { NavigationContainer } from '@react-navigation/native';
 
-import { User } from 'app/entities/User';
 import { auth } from 'app/services/firebaseClient';
 
-import { useUserStore } from 'app/hooks/UserStore';
-import { Appointments } from 'app/screens/Appointments';
+import { useUserStore } from 'app/store/User/User.hook';
 
 import { AuthRoute } from './AuthRoute';
+import { AppRoute } from './AppRoute';
 
 type RouterProps = {
     children?: React.ReactNode;
@@ -38,7 +37,7 @@ const Router = ({}: RouterProps) => {
 
     return firebaseHasInitiated ? (
         <NavigationContainer>
-            {!user.id ? <AuthRoute /> : <Appointments />}
+            {!user.id ? <AuthRoute /> : <AppRoute />}
         </NavigationContainer>
     ) : (
         <AppLoading />

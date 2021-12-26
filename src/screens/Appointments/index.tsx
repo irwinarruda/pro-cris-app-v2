@@ -2,22 +2,34 @@ import React from 'react';
 import { Box, HStack } from 'native-base';
 
 import { Button } from 'app/components/atoms/Button';
-import { ProCrisBanner } from 'app/components/molecules/ProCrisBanner';
 
-import { useUserStore } from 'app/hooks/UserStore';
+import { useError } from 'app/hooks/Error';
+import { useUserStore } from 'app/store/User/User.hook';
+import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 
 type AppointmentsProps = {
     children?: React.ReactNode;
 };
 const Appointments = ({}: AppointmentsProps) => {
+    const { showError } = useError();
+    const { setLoading } = useLoadingStore();
     const { signOut } = useUserStore();
+
     const onButtonPress = async () => {
-        await signOut();
+        setLoading(true);
+        setLoading(false);
+        try {
+            setLoading(true);
+            await signOut();
+        } catch (err) {
+            showError(err, { title: 'Erro ao fazer Logout' });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <Box>
-            <ProCrisBanner />
             <HStack justifyContent="center">
                 <Button size="lg" marginTop="20px" onPress={onButtonPress}>
                     Logout

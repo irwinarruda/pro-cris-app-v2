@@ -20,6 +20,8 @@ import { theme } from 'app/styles/theme';
 
 import { store } from 'app/store/Store';
 
+import { Loading } from 'app/components/molecules/Loading';
+
 import 'app/services/firebaseClient';
 
 LogBox.ignoreLogs(['Setting a timer for a long period of time']);
@@ -40,6 +42,7 @@ export default function App() {
     return (
         <NativeBaseProvider theme={theme}>
             <Provider store={store}>
+                <Loading />
                 <Router />
             </Provider>
             <StatusBar style="light" />
