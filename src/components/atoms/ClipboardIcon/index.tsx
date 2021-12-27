@@ -22,4 +22,6 @@ const ClipboardIcon = ({ ...props }: ClipboardIconProps) => {
         </Icon>
     );
 };
+
+export type { ClipboardIconProps };
 export { ClipboardIcon };

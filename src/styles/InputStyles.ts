@@ -10,8 +10,10 @@ const InputStyles = {
     },
     sizes: {
         sm: {
-            fontSize: 'xs',
-            height: '34px',
+            fontSize: 'sm',
+            height: '36px',
+            paddingLeft: '14px',
+            paddingRight: '14px',
         },
         md: {
             fontSize: 'sm',

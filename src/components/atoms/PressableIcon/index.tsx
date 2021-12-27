@@ -96,4 +96,6 @@ const PressableIcon = React.forwardRef<any, PressableIconProps>(
         );
     },
 );
+
+export type { PressableIconProps };
 export { PressableIcon };

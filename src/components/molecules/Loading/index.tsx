@@ -6,6 +6,7 @@ import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 type LoadingProps = {
     children?: React.ReactNode;
 };
+
 const Loading = ({}: LoadingProps) => {
     const { loading, setLoading } = useLoadingStore('all');
     return (
@@ -21,4 +22,6 @@ const Loading = ({}: LoadingProps) => {
         </Modal>
     );
 };
+
+export type { LoadingProps };
 export { Loading };

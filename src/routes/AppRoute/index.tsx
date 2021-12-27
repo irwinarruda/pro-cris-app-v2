@@ -3,14 +3,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { ProCrisHeader } from 'app/components/organisms/ProCrisHeader';
 
-import { CreateStudent } from 'app/screens/CreateStudent';
+import { ManageStudent } from 'app/screens/ManageStudent';
 import { TabRoute } from './TabRoute';
 
 declare global {
     namespace ReactNavigation {
         interface RootParamList {
             TabRoute: undefined;
-            CreateStudent: { title: string };
+            ManageStudent: { title: string };
         }
     }
 }
@@ -25,7 +25,7 @@ const AppRoute = ({}: AppRouteProps) => {
     return (
         <Navigator screenOptions={{ header: ProCrisHeader }}>
             <Screen name="TabRoute" component={TabRoute} />
-            <Screen name="CreateStudent" component={CreateStudent} />
+            <Screen name="ManageStudent" component={ManageStudent} />
         </Navigator>
     );
 };

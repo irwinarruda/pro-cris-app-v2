@@ -11,4 +11,6 @@ const DismissKeyboard = ({ children }: DismissKeyboardProps) => {
         </TouchableWithoutFeedback>
     );
 };
+
+export type { DismissKeyboardProps };
 export { DismissKeyboard };

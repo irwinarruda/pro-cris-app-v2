@@ -141,4 +141,6 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
         </Flex>
     );
 });
+
+export type { ButtonProps };
 export { Button };

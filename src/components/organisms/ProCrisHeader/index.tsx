@@ -61,4 +61,6 @@ const ProCrisHeader = (props: ProCrisHeaderProps) => {
         </Flex>
     );
 };
+
+export type { ProCrisHeaderProps };
 export { ProCrisHeader };

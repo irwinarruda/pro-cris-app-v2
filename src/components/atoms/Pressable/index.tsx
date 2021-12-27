@@ -2,7 +2,7 @@ import React from 'react';
 import { Flex, Text, IFlexProps } from 'native-base';
 import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
 
-export type PressableProps = IFlexProps &
+type PressableProps = IFlexProps &
     RectButtonProps & {
         children?: React.ReactNode;
         size?: string;
@@ -75,4 +75,6 @@ const Pressable = React.forwardRef<any, PressableProps>(
         );
     },
 );
+
+export type { PressableProps };
 export { Pressable };

@@ -53,4 +53,6 @@ const FAB = ({ icon, size = 'md', ...props }: FABProps) => {
         </Pressable>
     );
 };
+
+export type { FABProps };
 export { FAB };

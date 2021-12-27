@@ -31,6 +31,14 @@
         },
         "web": {
             "favicon": "./src/assets/app/faicon.png"
-        }
+        },
+        "plugins": [
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "O aplicativa acessa sua câmera para buscar as imagens dos alunos."
+                }
+            ]
+        ]
     }
 }

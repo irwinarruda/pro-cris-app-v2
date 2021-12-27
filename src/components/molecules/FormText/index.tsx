@@ -13,13 +13,31 @@ import {
 
 const labelSizeStyles = {
     sm: {
-        fontSize: '14px',
+        label: {
+            fontSize: 'sm',
+        },
+        error: {
+            fontSize: '2xs',
+            height: '12px',
+        },
     },
     md: {
-        fontSize: '16px',
+        label: {
+            fontSize: 'md',
+        },
+        error: {
+            fontSize: 'xs',
+            height: '20px',
+        },
     },
     lg: {
-        fontSize: '18px',
+        label: {
+            fontSize: 'lg',
+        },
+        error: {
+            fontSize: 'xs',
+            height: '20px',
+        },
     },
 };
 
@@ -65,7 +83,8 @@ const FormText = ({
                     fontWeight="600"
                     fontStyle="normal"
                     marginBottom="2px"
-                    {...labelSizeStyles[size as keyof typeof labelSizeStyles]}
+                    {...labelSizeStyles[size as keyof typeof labelSizeStyles]
+                        .label}
                     {...formLabelProps}
                 >
                     {label}
@@ -80,9 +99,9 @@ const FormText = ({
                 />
                 <Text
                     marginTop="0px"
-                    height="20px"
-                    fontSize="xs"
                     color="red.500"
+                    {...labelSizeStyles[size as keyof typeof labelSizeStyles]
+                        .error}
                 >
                     {error}
                 </Text>

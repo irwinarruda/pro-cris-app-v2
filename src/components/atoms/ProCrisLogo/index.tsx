@@ -3,6 +3,7 @@ import { Flex, IFlexProps } from 'native-base';
 import Svg, { Path } from 'react-native-svg';
 
 type ProCrisLogoProps = IFlexProps & {};
+
 const ProCrisLogo = ({ ...props }: ProCrisLogoProps) => {
     return (
         <Flex {...props}>
@@ -15,4 +16,6 @@ const ProCrisLogo = ({ ...props }: ProCrisLogoProps) => {
         </Flex>
     );
 };
+
+export type { ProCrisLogoProps };
 export { ProCrisLogo };

@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import * as ImagePicker from 'expo-image-picker';
 
 import { Schedule } from 'app/entities/Schedule';
 import { Cost } from 'app/entities/Cost';
@@ -7,11 +8,12 @@ type FormValues = {
     name: string;
     name_caregiver: string;
     phone: string;
-    avatar: string;
+    avatar: ImagePicker.ImagePickerResult;
     date_of_birth: string;
     address: string;
     map_location: string;
     observation: string;
+    color: string;
     schedule: Schedule[];
     cost: Cost[];
 };
@@ -20,11 +22,12 @@ const initialValues = {
     name: '',
     name_caregiver: '',
     phone: '',
-    avatar: '',
+    avatar: {} as ImagePicker.ImagePickerResult,
     date_of_birth: '',
     address: '',
     map_location: '',
     observation: '',
+    color: '',
     schedule: [] as Schedule[],
     cost: [] as Cost[],
 };
@@ -33,7 +36,8 @@ const validationSchema = yup.object().shape({
     name: yup.string().required('Esse campo é obrigatório'),
     name_caregiver: yup.string().required('Esse campo é obrigatório'),
     phone: yup.string().required('Esse campo é obrigatório'),
-    avatar: yup.string(),
+    color: yup.string().required('Esse campo é obrigatório'),
+    avatar: yup.object(),
     date_of_birth: yup.string(),
     address: yup.string(),
     map_location: yup.string(),

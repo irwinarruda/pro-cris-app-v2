@@ -63,4 +63,6 @@ const HeaderMenu = ({}: HeaderMenuProps) => {
         </Menu>
     );
 };
+
+export type { HeaderMenuProps };
 export { HeaderMenu };

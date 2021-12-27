@@ -21,4 +21,6 @@ const KeyboardAvoidingScrollView = ({
         </KeyboardAvoidingView>
     );
 };
+
+export type { KeyboardAvoidingScrollViewProps };
 export { KeyboardAvoidingScrollView };

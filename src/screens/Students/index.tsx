@@ -12,7 +12,7 @@ type StudentsProps = {
 const Students = ({}: StudentsProps) => {
     const navigation = useNavigation();
     const handleCreateStudentPress = () => {
-        navigation.navigate('CreateStudent', { title: 'Criar Aluno' });
+        navigation.navigate('ManageStudent', { title: 'Criar Aluno' });
     };
     return (
         <Flex height="100%">

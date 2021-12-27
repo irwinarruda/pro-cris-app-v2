@@ -139,4 +139,6 @@ const Link = React.forwardRef<any, LinkProps>(function LinkComponent(
         </Flex>
     );
 });
+
+export type { LinkProps };
 export { Link };

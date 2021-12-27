@@ -7,6 +7,7 @@ import { Pressable } from 'app/components/atoms/Pressable';
 type ProCrisStatusProps = {
     children?: React.ReactNode;
 };
+
 const ProCrisStatus = ({}: ProCrisStatusProps) => {
     const [classesVisible, setClassesVisible] = React.useState(false);
     const [priceVisible, setPriceVisible] = React.useState(false);
@@ -31,6 +32,8 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                 flex="1"
                 borderRightWidth="1px"
                 borderRightColor="purple.100"
+                borderLeftWidth="1px"
+                borderLeftColor="purple.100"
                 onPress={handleToggleClasses}
             >
                 <Flex
@@ -44,7 +47,7 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                     {!classesVisible ? (
                         <>
                             <Text fontWeight="400" fontSize="14px">
-                                Aulas a serem pagas:
+                                Quantidade de Aulas:
                             </Text>
                             <Icon
                                 as={AntDesign}
@@ -60,6 +63,8 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
             </Pressable>
             <Pressable
                 flex="1"
+                borderRightWidth="1px"
+                borderRightColor="purple.100"
                 borderLeftWidth="1px"
                 borderLeftColor="purple.100"
                 onPress={handleTogglePrice}
@@ -75,7 +80,7 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                     {!priceVisible ? (
                         <>
                             <Text fontWeight="400" fontSize="14px">
-                                Preço a receber:
+                                Valor a receber:
                             </Text>
                             <Icon
                                 as={AntDesign}
@@ -92,4 +97,6 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
         </Flex>
     );
 };
+
+export type { ProCrisStatusProps };
 export { ProCrisStatus };

@@ -5,6 +5,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { ProCrisLogo } from 'app/components/atoms/ProCrisLogo';
 
 type ProCrisBannerProps = IFlexProps;
+
 const ProCrisBanner = ({ ...props }: ProCrisBannerProps) => {
     return (
         <Flex
@@ -20,4 +21,6 @@ const ProCrisBanner = ({ ...props }: ProCrisBannerProps) => {
         </Flex>
     );
 };
+
+export type { ProCrisBannerProps };
 export { ProCrisBanner };

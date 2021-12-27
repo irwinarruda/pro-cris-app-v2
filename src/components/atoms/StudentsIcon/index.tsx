@@ -18,4 +18,6 @@ const StudentsIcon = ({ ...props }: StudentsIconProps) => {
         </Icon>
     );
 };
+
+export type { StudentsIconProps };
 export { StudentsIcon };

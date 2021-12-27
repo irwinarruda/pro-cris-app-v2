@@ -9,6 +9,7 @@ type FKFormTextProps = FormTextProps & {
 const FKFormText = ({ name, ...props }: FKFormTextProps) => {
     const { handleChange, handleBlur, values, errors } =
         useFormikContext<any>();
+
     return (
         <FormText
             onChangeText={handleChange(name)}
@@ -19,4 +20,6 @@ const FKFormText = ({ name, ...props }: FKFormTextProps) => {
         />
     );
 };
+
+export type { FKFormTextProps };
 export { FKFormText };
