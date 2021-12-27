@@ -11,18 +11,34 @@ import { Link } from 'app/components/atoms/Link';
 import { ProCrisBanner } from 'app/components/molecules/ProCrisBanner';
 import { FKFormText } from 'app/components/molecules/FKFormText';
 
+import { useError } from 'app/hooks/Error';
+import { useUserStore } from 'app/store/User/User.hook';
+import { useLoadingStore } from 'app/store/Loading/Loading.hook';
+
 type SignUpProps = {
     children?: React.ReactNode;
 };
 
 const SignUp = ({}: SignUpProps) => {
+    const { showError } = useError();
+    const { setLoading } = useLoadingStore();
+    const { signUp } = useUserStore();
     const navigation = useNavigation();
+
     const handleFormSubmit = async (
         values: FormValues,
         formikHelpers: FormikHelpers<FormValues>,
     ) => {
-        console.log(values);
+        try {
+            setLoading(true);
+            await signUp(values);
+        } catch (err) {
+            showError(err, { title: 'Erro ao Criar Conta' });
+        } finally {
+            setLoading(false);
+        }
     };
+
     return (
         <Formik
             initialValues={initialValues}

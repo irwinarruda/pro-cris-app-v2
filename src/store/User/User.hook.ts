@@ -12,6 +12,17 @@ import {
     actionUserUpdate,
 } from 'app/store/User/User.actions';
 
+type SignInDTO = {
+    email: string;
+    password: string;
+};
+
+type SignUpDTO = {
+    name: string;
+    email: string;
+    password: string;
+};
+
 const neededStates = {
     none: [],
     user: ['user'],
@@ -21,13 +32,9 @@ const neededStates = {
 
 type NeededStatesKeys = keyof typeof neededStates;
 
-type SignInDTO = {
-    email: string;
-    password: string;
-};
-
 type UseStoreFunctions = {
     signIn(credentials: SignInDTO): Promise<void>;
+    signUp(credentials: SignUpDTO): Promise<void>;
     signOut(): Promise<void>;
     hydrate(data: { user: User }): void;
 };
@@ -48,21 +55,25 @@ export const useUserStore = <T extends NeededStatesKeys>(
 
     const signIn = React.useCallback(async (credentials: SignInDTO) => {
         const authService = new AuthService();
-        dispatch(actionUserLoading(true));
         const user = await authService.signIn(credentials);
-        dispatch(actionUserLoading(false));
         dispatch(actionUserUpdate(user));
     }, []);
 
     const signOut = React.useCallback(async () => {
         const authService = new AuthService();
-        await authService.signOut();
         dispatch(actionUserReset());
+        await authService.signOut();
+    }, []);
+
+    const signUp = React.useCallback(async (credentials: SignUpDTO) => {
+        const authService = new AuthService();
+        const user = await authService.signUp(credentials);
+        dispatch(actionUserUpdate(user));
     }, []);
 
     const hydrate = React.useCallback(({ user }: { user: User }) => {
         dispatch(actionUserUpdate(user));
     }, []);
 
-    return { ...hooks, signIn, signOut, hydrate };
+    return { ...hooks, signIn, signOut, signUp, hydrate };
 };

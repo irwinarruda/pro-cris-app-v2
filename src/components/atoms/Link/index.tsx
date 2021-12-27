@@ -76,6 +76,7 @@ const Link = React.forwardRef<any, LinkProps>(function LinkComponent(
     return (
         <Flex
             borderRadius="5px"
+            overflow="hidden"
             {...buttonSizesStyles[size as keyof typeof buttonSizesStyles].rect}
             {...props}
         >

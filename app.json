@@ -13,6 +13,10 @@
         "updates": {
             "fallbackToCacheTimeout": 0
         },
+        "androidNavigationBar": {
+            "barStyle": "light-content",
+            "backgroundColor": "#8C7ECF"
+        },
         "assetBundlePatterns": [
             "**/*"
         ],

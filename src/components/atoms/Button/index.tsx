@@ -80,6 +80,7 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
             borderColor="gold.300"
             borderWidth="1"
             borderStyle="solid"
+            overflow="hidden"
             {...buttonSizesStyles[size as keyof typeof buttonSizesStyles].rect}
             {...props}
         >

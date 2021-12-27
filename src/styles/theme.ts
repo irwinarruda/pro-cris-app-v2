@@ -58,6 +58,19 @@ const proCrisTheme = {
             },
         },
     },
+    shadows: {
+        fab: {
+            shadowColor: '#000',
+
+            shadowOffset: {
+                width: 0,
+                height: 0,
+            },
+            shadowOpacity: 0.01,
+            shadowRadius: 0,
+            elevation: 3,
+        },
+    },
     fonts: {
         heading: 'Quicksand',
         body: 'Quicksand',

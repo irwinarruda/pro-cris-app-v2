@@ -28,9 +28,15 @@ const TabRoute = ({}: TabRouteProps) => {
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ color }) => {
                     if (route.name === 'Aulas') {
-                        return <ClipboardIcon size="20px" color={color} />;
+                        return (
+                            <ClipboardIcon
+                                marginLeft="2px"
+                                size={6}
+                                color={color}
+                            />
+                        );
                     } else {
-                        return <StudentsIcon size="20px" color={color} />;
+                        return <StudentsIcon size={6} color={color} />;
                     }
                 },
                 tabBarStyle: {
@@ -38,30 +44,34 @@ const TabRoute = ({}: TabRouteProps) => {
                     borderTopColor: '#D6CEFE',
                     backgroundColor: '#B0A4ED',
                 },
-                tabBarIconStyle: {
-                    width: 16,
-                    height: 10,
-                },
                 tabBarContentContainerStyle: {
                     marginBottom: 0,
-                    height: 54,
-                    paddingBottom: 2,
+                    height: 52,
+                    paddingBottom: 0,
                 },
                 tabBarItemStyle: {
+                    flexDirection: 'column',
+                    alignItems: 'center',
                     paddingTop: 15,
                     borderLeftWidth: 1,
                     borderLeftColor: '#D6CEFE',
                     borderRightWidth: 1,
                     borderRightColor: '#D6CEFE',
                 },
-                tabBarIndicatorStyle: {
-                    height: 3,
-                    backgroundColor: '#CFC57F',
+                tabBarIconStyle: {
+                    marginBottom: 0,
+                    paddingBottom: 0,
                 },
                 tabBarLabelStyle: {
+                    lineHeight: 12,
+                    marginTop: 0,
                     color: '#FDFCFF',
                     textTransform: 'none',
                     fontFamily: 'Quicksand_500Medium',
+                },
+                tabBarIndicatorStyle: {
+                    height: 3,
+                    backgroundColor: '#CFC57F',
                 },
                 tabBarPressColor: 'rgba(255, 255, 255, 0.1)',
             })}

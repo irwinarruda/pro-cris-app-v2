@@ -1,14 +1,27 @@
 import React from 'react';
-import { Box, Flex, Text } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
+import { Flex, Icon } from 'native-base';
+
+import { ProCrisStatus } from 'app/components/organisms/ProCrisStatus';
+import { FAB } from 'app/components/atoms/FAB';
 
 type StudentsProps = {
     children?: React.ReactNode;
 };
 const Students = ({}: StudentsProps) => {
+    const navigation = useNavigation();
+    const handleCreateStudentPress = () => {
+        navigation.navigate('CreateStudent', { title: 'Criar Aluno' });
+    };
     return (
-        <Box>
-            <Text>Hello world</Text>
-        </Box>
+        <Flex height="100%">
+            <ProCrisStatus />
+            <FAB
+                icon={<Icon as={AntDesign} name="plus" color="white" />}
+                onPress={handleCreateStudentPress}
+            />
+        </Flex>
     );
 };
 export { Students };

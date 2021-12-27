@@ -1,5 +1,3 @@
-import { User } from 'app/entities/User';
-
 export type Action<T, P> = {
     readonly type: T;
     readonly payload?: P;
