@@ -75,7 +75,7 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
 ) {
     return (
         <Flex
-            bgColor="purple.500"
+            bgColor={colorScheme ? colorScheme : 'purple.500'}
             borderRadius="5px"
             borderColor="gold.300"
             borderWidth="1"

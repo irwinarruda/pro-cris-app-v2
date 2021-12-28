@@ -18,7 +18,7 @@ const labelSizeStyles = {
         },
         error: {
             fontSize: '2xs',
-            height: '12px',
+            height: '14px',
         },
     },
     md: {

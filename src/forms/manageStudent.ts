@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { Schedule } from 'app/entities/Schedule';
 import { Cost } from 'app/entities/Cost';
+import { Colors } from 'app/entities/Colors';
 
 type FormValues = {
     name: string;
@@ -13,7 +14,7 @@ type FormValues = {
     address: string;
     map_location: string;
     observation: string;
-    color: string;
+    color: Colors;
     schedule: Schedule[];
     cost: Cost[];
 };
@@ -27,7 +28,7 @@ const initialValues = {
     address: '',
     map_location: '',
     observation: '',
-    color: '',
+    color: Colors.Black,
     schedule: [] as Schedule[],
     cost: [] as Cost[],
 };

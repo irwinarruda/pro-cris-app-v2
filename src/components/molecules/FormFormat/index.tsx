@@ -4,7 +4,6 @@ import {
     Text,
     IFlexProps,
     ITextProps,
-    IInputProps,
     FormControl,
     IFormControlProps,
     IFormControlErrorMessageProps,
@@ -22,7 +21,7 @@ const labelSizeStyles = {
         },
         error: {
             fontSize: '2xs',
-            height: '12px',
+            height: '14px',
         },
     },
     md: {

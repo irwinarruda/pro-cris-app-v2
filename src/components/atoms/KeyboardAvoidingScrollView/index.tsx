@@ -5,6 +5,7 @@ import {
     IScrollViewProps,
     KeyboardAvoidingView,
 } from 'native-base';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 type KeyboardAvoidingScrollViewProps = IScrollViewProps;
 
@@ -13,12 +14,14 @@ const KeyboardAvoidingScrollView = ({
     ...props
 }: KeyboardAvoidingScrollViewProps) => {
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}
-        >
-            <ScrollView {...props}>{children}</ScrollView>
-        </KeyboardAvoidingView>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+            >
+                <ScrollView {...props}>{children}</ScrollView>
+            </KeyboardAvoidingView>
+        </GestureHandlerRootView>
     );
 };
 
