@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 
 type FormValues = {
+    id?: string;
     week_day: string;
     day_time: string;
     is_default: boolean;
@@ -8,9 +9,10 @@ type FormValues = {
 };
 
 const initialValues = {
+    id: '',
     week_day: '',
     day_time: '',
-    is_default: false,
+    is_default: true,
     is_deleted: false,
 };
 

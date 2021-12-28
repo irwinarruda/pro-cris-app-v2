@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import React from 'react';
 import { LogBox } from 'react-native';
 import { Provider } from 'react-redux';
@@ -24,7 +25,10 @@ import { Loading } from 'app/components/molecules/Loading';
 
 import 'app/services/firebaseClient';
 
-LogBox.ignoreLogs(['Setting a timer for a long period of time']);
+LogBox.ignoreLogs([
+    'Setting a timer for a long period of time',
+    'NativeBase: The contrast',
+]);
 
 export default function App() {
     let [fontsLoaded] = useFonts({

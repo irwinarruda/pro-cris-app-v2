@@ -1,12 +1,13 @@
 import React from 'react';
 import { FormikHelpers, useFormik, useFormikContext } from 'formik';
-import { Divider, Flex, HStack, Text, VStack } from 'native-base';
+import { Divider, HStack, Text, VStack } from 'native-base';
+import { v4 as uuid } from 'uuid';
 
 import {
     initialValues,
     validationSchema,
     FormValues,
-} from 'app/forms/manageStudentCost';
+} from 'app/forms/manageStudentCosts';
 import { FormValues as MainFormValues } from 'app/forms/manageStudent';
 
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
@@ -16,23 +17,48 @@ import { ProCrisModal } from 'app/components/molecules/ProCrisModal';
 import { FKFormFormatM } from 'app/components/molecules/FKFormFormat';
 import { FKCheckboxM } from 'app/components/molecules/FKCheckbox';
 
+import { useAlert } from 'app/hooks/Alert';
+
+import { ManageStudentAlert } from '../ManageStudentAlert';
+
 type ManageCostsProps = {
     isOpen?: boolean;
     setIsOpen?(value: boolean): void;
 };
 
 const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
+    const alertInstance = useAlert();
     const { values, setFieldValue } = useFormikContext<MainFormValues>();
 
     const handleCostsSubmit = (
         data: FormValues,
         formikHelpers: FormikHelpers<FormValues>,
     ) => {
-        setFieldValue('cost', [...values.cost, data]);
+        const body = { ...data, id: uuid() };
+        setFieldValue('costs', [...values.costs, body]);
         formikHelpers.resetForm();
     };
 
-    const instance = useFormik({
+    const handleDeleteCost = async (cost: any) => {
+        const response = await alertInstance.showAlertAsync();
+        if (!response) {
+            return;
+        }
+        setFieldValue(
+            'costs',
+            values.costs.map((formCost) => {
+                if (formCost.id === cost.id) {
+                    return {
+                        ...formCost,
+                        is_deleted: true,
+                    };
+                }
+                return formCost;
+            }),
+        );
+    };
+
+    const instance = useFormik<FormValues>({
         initialValues: initialValues,
         onSubmit: handleCostsSubmit,
         validationSchema: validationSchema,
@@ -47,14 +73,21 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
             onRequestClose={() => setIsOpen?.(false)}
             onClose={() => setIsOpen?.(false)}
         >
+            <ManageStudentAlert
+                size="xl"
+                instance={alertInstance}
+                messages={{
+                    title: 'Deseja remover esse Valor?',
+                    description: 'Essa ação removerá o custo e é irreversível',
+                }}
+            />
             <KeyboardAvoidingScrollView
                 flex="1"
                 bgColor="white"
                 contentContainerStyle={{
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
-                    paddingBottom: 20,
-                    minHeight: '100%',
+                    paddingBottom: 120,
                 }}
             >
                 <Text
@@ -63,7 +96,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                     fontWeight="600"
                     textAlign="left"
                 >
-                    Gerenciar Preços
+                    Gerenciar Valores
                 </Text>
                 <HStack
                     space="16px"
@@ -77,7 +110,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                             format: 'HH:mm',
                         }}
                         label="Hora aula"
-                        placeholder="Responsável"
+                        placeholder="01:00"
                         name="time"
                         autoCapitalize="words"
                         size="sm"
@@ -91,7 +124,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                             delimiter: ',',
                         }}
                         label="Preço"
-                        placeholder="Telefone"
+                        placeholder="R$0.00"
                         name="price"
                         size="sm"
                         formControlProps={{ flex: '1' }}
@@ -125,15 +158,18 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                     paddingX="20px"
                     marginTop="25px"
                 >
-                    {values.cost.map((cost) => (
-                        <BasicViewCard
-                            topText={`Hora Aula: ${cost.time}`}
-                            bottomText={`Preço ${cost.price}`}
-                            checkboxText={'É padrão?'}
-                            isChecked={cost.is_default}
-                            key={cost.price}
-                        />
-                    ))}
+                    {values.costs
+                        .filter((cost) => !cost.is_deleted)
+                        .map((cost) => (
+                            <BasicViewCard
+                                topText={`Hora Aula: ${cost.time}`}
+                                bottomText={`Preço ${cost.price}`}
+                                checkboxText={'É padrão?'}
+                                isChecked={cost.is_default}
+                                onPress={() => handleDeleteCost(cost)}
+                                key={cost.id}
+                            />
+                        ))}
                 </VStack>
             </KeyboardAvoidingScrollView>
         </ProCrisModal>

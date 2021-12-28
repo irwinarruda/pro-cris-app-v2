@@ -15,8 +15,8 @@ type FormValues = {
     map_location: string;
     observation: string;
     color: Colors;
-    schedule: Schedule[];
-    cost: Cost[];
+    schedules: Schedule[];
+    costs: Cost[];
 };
 
 const initialValues = {
@@ -29,8 +29,8 @@ const initialValues = {
     map_location: '',
     observation: '',
     color: Colors.Black,
-    schedule: [] as Schedule[],
-    cost: [] as Cost[],
+    schedules: [] as Schedule[],
+    costs: [] as Cost[],
 };
 
 const validationSchema = yup.object().shape({

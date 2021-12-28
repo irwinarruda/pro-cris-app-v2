@@ -40,18 +40,17 @@ const BasicViewCard = ({
                         {bottomText}
                     </Text>
                 </Flex>
-                <Flex>
-                    <Checkbox
-                        value=""
-                        isChecked={isChecked}
-                        isDisabled
-                        size="sm"
-                    >
-                        <Text marginLeft="5px" fontWeight="600">
-                            {checkboxText}
-                        </Text>
-                    </Checkbox>
-                </Flex>
+                <Checkbox
+                    value=""
+                    colorScheme="purple"
+                    isChecked={isChecked}
+                    isDisabled
+                    size="sm"
+                >
+                    <Text marginLeft="5px" fontWeight="600">
+                        {checkboxText}
+                    </Text>
+                </Checkbox>
             </Flex>
         </Pressable>
     );

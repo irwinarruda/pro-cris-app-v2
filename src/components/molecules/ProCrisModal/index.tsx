@@ -37,9 +37,9 @@ const ProCrisModal = ({
             onDismiss={onDismiss}
             onOrientationChange={onOrientationChange}
             hardwareAccelerated={hardwareAccelerated}
-            style={{ ...style }}
             statusBarTranslucent
             transparent
+            style={{ ...style }}
             {...rest}
         >
             <TouchableWithoutFeedback
@@ -57,7 +57,7 @@ const ProCrisModal = ({
                 height="100%"
                 paddingBottom="20px"
                 marginTop={`${getStatusBarHeight() + 80}px`}
-                borderTopRadius="25px"
+                borderTopRadius="15px"
                 borderWidth="2px"
                 borderColor="gold.500"
                 bgColor="white"
