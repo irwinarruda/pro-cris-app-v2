@@ -14,8 +14,8 @@ const WeekDaysLabels = {
     [`${WeekDays.Wednesday}`]: 'Quarta-Feira',
     [`${WeekDays.Thursday}`]: 'Quinta-Feira',
     [`${WeekDays.Friday}`]: 'Sexta-Feira',
-    [`${WeekDays.Saturday}`]: 'Sábado-Feira',
-    [`${WeekDays.Sunday}`]: 'Domingo-Feira',
+    [`${WeekDays.Saturday}`]: 'Sábado',
+    [`${WeekDays.Sunday}`]: 'Domingo',
 };
 
 export { WeekDays, WeekDaysLabels };

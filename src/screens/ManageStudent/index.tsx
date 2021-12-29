@@ -3,14 +3,12 @@ import { Image as RNImage } from 'react-native';
 import { Flex, HStack, VStack } from 'native-base';
 import { Formik, FormikHelpers, useFormikContext } from 'formik';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 
 import {
     initialValues,
     validationSchema,
     FormValues,
 } from 'app/forms/manageStudent';
-import { StudentService } from 'app/services/StudentService';
 
 import { Button } from 'app/components/atoms/Button';
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
@@ -21,19 +19,64 @@ import { FKFormFormat } from 'app/components/molecules/FKFormFormat';
 
 import { useError } from 'app/hooks/Error';
 import { useSuccess } from 'app/hooks/Success';
+import { useAlert } from 'app/store/Alert/Alert.hook';
 import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useStudentStore } from 'app/store/Student/Student.hook';
 
 import { ManageCosts } from './ManageCosts';
 import { ManageSchedules } from './ManageSchedules';
 
-type ManageStudentProps = NativeStackHeaderProps;
+type ManageStudentProps = {
+    route: { params: { title: string; type: 'create' | 'edit' | 'view' } };
+};
 
 const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
+    const navigation = useNavigation();
+    const { showAlertAsync } = useAlert();
+    const { showError } = useError();
+    const { setLoading } = useLoadingStore();
+    const { selectedStudent, deleteStudent } = useStudentStore('manage');
+
     const [pricesIsOpen, setPricesIsOpen] = React.useState<boolean>(false);
     const [schedulesIsOpen, setSchedulesIsOpen] =
         React.useState<boolean>(false);
-    const { values, handleSubmit } = useFormikContext<FormValues>();
+    const { values, handleSubmit, setValues } = useFormikContext<FormValues>();
+
+    const handleDeleteStudentPress = async (studentId: string) => {
+        try {
+            const { isConfirmed } = await showAlertAsync({
+                title: 'Deseja remover esse Aluno?',
+                description: `Essa ação removerá o aluno: ${selectedStudent?.name} permanentemente`,
+                cancelButtonText: 'Cancelar',
+                confirmButtomText: 'Remover',
+                confirmButtomProps: { colorScheme: 'red.500' },
+            });
+            if (!isConfirmed) {
+                return;
+            }
+            setLoading(true);
+            await deleteStudent(studentId);
+            navigation.navigate('TabRoute');
+        } catch (err) {
+            showError(err, { title: 'Erro ao deletar Aluno' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        if (params.type === 'edit' && selectedStudent) {
+            const body = {
+                ...selectedStudent,
+                avatar: {
+                    type: 'firebase',
+                    uri: selectedStudent.avatar,
+                    cancelled: false,
+                },
+            } as unknown as FormValues;
+            setValues(body, true);
+        }
+    }, [selectedStudent]);
 
     return (
         <>
@@ -128,18 +171,21 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                         label="Endereço"
                         placeholder="Endereço da casa"
                         name="address"
+                        autoCapitalize="sentences"
                         size="sm"
                     />
                     <FKFormText
                         label="Google Maps Link"
                         placeholder="Link da Localização"
                         name="map_location"
+                        autoCapitalize="sentences"
                         size="sm"
                     />
                     <FKFormText
                         label="Observação Adicional"
                         placeholder="Apartamento, Número, etc"
                         name="observation"
+                        autoCapitalize="sentences"
                         size="sm"
                     />
                 </VStack>
@@ -168,9 +214,28 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                         Gerenciar Horários
                     </Button>
                 </HStack>
-                <HStack marginTop="20px" paddingX="20px">
+                <HStack
+                    width="100%"
+                    marginTop="20px"
+                    paddingX="20px"
+                    justifyContent={
+                        (params as any).type === 'edit'
+                            ? 'space-between'
+                            : 'center'
+                    }
+                >
                     {(params as any).type === 'edit' && (
-                        <Button size="lg">Remover Aluno</Button>
+                        <Button
+                            size="lg"
+                            colorScheme="red.500"
+                            onPress={() =>
+                                handleDeleteStudentPress(
+                                    selectedStudent?.id as string,
+                                )
+                            }
+                        >
+                            Remover Aluno
+                        </Button>
                     )}
                     <Button size="lg" onPress={handleSubmit as any}>
                         Salvar Aluno
@@ -200,7 +265,7 @@ const ManageStudent = ({ ...props }: ManageStudentProps) => {
         try {
             setLoading(true);
             let successTitle = '';
-            if ((props.route.params as any)?.type === 'create') {
+            if (props.route.params.type === 'create') {
                 await createStudent(values);
                 successTitle = 'Aluno criado com sucesso';
             } else {

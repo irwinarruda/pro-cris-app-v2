@@ -16,7 +16,7 @@ type LoadingStoreFunctions = {
     setLoading(loading: boolean): void;
 };
 
-export const useLoadingStore = <T extends NeededStatesKeys>(
+export const useLoadingStore = <T extends NeededStatesKeys = 'none'>(
     key = 'none' as T,
 ): Pick<LoadingStore, typeof neededStates[T][number]> &
     LoadingStoreFunctions => {

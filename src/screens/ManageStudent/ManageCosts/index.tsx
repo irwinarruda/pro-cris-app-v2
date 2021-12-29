@@ -25,7 +25,7 @@ type ManageCostsProps = {
 };
 
 const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
-    const alertInstance = useAlert();
+    const { showAlertAsync } = useAlert();
     const { values, setFieldValue } = useFormikContext<MainFormValues>();
 
     const handleCostsSubmit = (
@@ -38,7 +38,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
     };
 
     const handleDeleteCost = async (cost: any) => {
-        const { isConfirmed } = await alertInstance.showAlertAsync({
+        const { isConfirmed } = await showAlertAsync({
             title: 'Deseja remover esse Valor?',
             description: 'Essa ação removerá o custo e é irreversível',
             cancelButtonText: 'Cancelar',

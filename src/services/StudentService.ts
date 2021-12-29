@@ -1,17 +1,32 @@
 import { v4 as uuid } from 'uuid';
-import { auth, firestore, storage } from './firebaseClient';
+import { auth, firestore, firebase, storage } from './firebaseClient';
 
 import { FormValues } from 'app/forms/manageStudent';
 
-import { Student } from 'app/entities/Student';
+import { Student, StudentCover } from 'app/entities/Student';
 import { Cost } from 'app/entities/Cost';
 import { Schedule } from 'app/entities/Schedule';
+import { Appointment } from 'app/entities/Appointment';
 
 type CreateStudentRequestBody = FormValues;
 type UpdateStudentRequestBody = FormValues;
 
 class StudentService {
     public async createStudent(body: CreateStudentRequestBody): Promise<void> {
+        if (!auth.currentUser) {
+            return;
+        }
+
+        const studentId = uuid();
+        const studentCollection = firestore
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('students')
+            .doc(studentId);
+
+        const costsCollection = studentCollection.collection('costs');
+        const schedulesCollection = studentCollection.collection('schedules');
+
         const student = {
             name: body.name,
             name_caregiver: body.name_caregiver,
@@ -23,29 +38,12 @@ class StudentService {
             color: body.color,
             is_deleted: body.is_deleted,
         } as Student;
-
-        if (!auth.currentUser) {
-            return;
-        }
 
         if (!body.avatar.cancelled) {
             student.avatar = await this.uploadImage(body.avatar.uri);
         }
 
-        const studentCollection = firestore
-            .collection('users')
-            .doc(auth.currentUser.uid)
-            .collection('students');
-
-        const studentId = uuid();
-        const costsCollection = studentCollection
-            .doc(studentId)
-            .collection('costs');
-        const schedulesCollection = studentCollection
-            .doc(studentId)
-            .collection('schedules');
-
-        await studentCollection.doc(studentId).set(student);
+        await studentCollection.set(student);
         for (let cost of body.costs) {
             const { id, ...costWithoutId } = cost;
             await costsCollection.doc(id).set(costWithoutId);
@@ -56,7 +54,19 @@ class StudentService {
         }
     }
 
-    public async updateStudent(body: UpdateStudentRequestBody) {
+    public async updateStudent(body: UpdateStudentRequestBody): Promise<void> {
+        if (!auth.currentUser) {
+            return;
+        }
+
+        const studentCollection = firestore
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('students')
+            .doc(body.id);
+        const costsCollection = studentCollection.collection('costs');
+        const schedulesCollection = studentCollection.collection('schedules');
+
         const student = {
             name: body.name,
             name_caregiver: body.name_caregiver,
@@ -69,46 +79,121 @@ class StudentService {
             is_deleted: body.is_deleted,
         } as Student;
 
-        if (!auth.currentUser) {
-            return;
-        }
-
-        if (!body.avatar.cancelled && body.avatar?.type === 'firebase') {
+        if (!body.avatar.cancelled && body.avatar?.type !== 'firebase') {
             student.avatar = await this.uploadImage(body.avatar.uri);
+            const snap = await studentCollection.get();
+            if (snap.data()?.avatar) {
+                await this.deleteImage(snap.data()?.avatar);
+            }
         }
 
-        const studentCollection = firestore
-            .collection('users')
-            .doc(auth.currentUser.uid)
-            .collection('students');
-        const costsCollection = studentCollection
-            .doc(body.id)
-            .collection('costs');
-        const schedulesCollection = studentCollection
-            .doc(body.id)
-            .collection('schedules');
-
-        await studentCollection.doc(body.id).update(student);
+        await studentCollection.update(student);
         for (let cost of body.costs) {
             const { id, ...costWithoutId } = cost;
-            await costsCollection.doc(id).set(costWithoutId);
+            await costsCollection.doc(id).set(costWithoutId, { merge: true });
         }
         for (let schedule of body.schedules) {
             const { id, ...scheduleWithoutId } = schedule;
-            await schedulesCollection.doc(id).set(scheduleWithoutId);
+            await schedulesCollection
+                .doc(id)
+                .set(scheduleWithoutId, { merge: true });
         }
     }
 
-    public async listStudents() {
+    public async deleteStudent(studentId: string): Promise<void> {
         if (!auth.currentUser) {
             return;
         }
-        const studentCollection = firestore
+        const studentDocPath = firestore
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('students')
+            .doc(studentId);
+        await studentDocPath.update({ is_deleted: true });
+    }
+
+    public async listStudent(studentId: string): Promise<Student | undefined> {
+        if (!auth.currentUser) {
+            return;
+        }
+        const studentDocPath = firestore
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('students')
+            .doc(studentId);
+
+        const studentDoc = await studentDocPath.get();
+        if (!studentDoc.exists) {
+            return;
+        }
+        let student = {} as Student;
+
+        const costs = await this.getSubCollection<Cost>(
+            studentDoc.ref.collection('costs'),
+        );
+        const schedules = await this.getSubCollection<Schedule>(
+            studentDoc.ref.collection('schedules'),
+        );
+        const appointments = await this.getSubCollection<Appointment>(
+            studentDoc.ref.collection('appointments'),
+        );
+
+        const obj = {
+            id: studentDoc.id,
+            costs,
+            schedules,
+            appointments,
+            ...studentDoc.data(),
+        } as Student;
+        student = obj;
+
+        return student;
+    }
+
+    public async listStudents(): Promise<StudentCover[] | undefined> {
+        if (!auth.currentUser) {
+            return;
+        }
+        const studentColl = firestore
             .collection('users')
             .doc(auth.currentUser.uid)
             .collection('students');
-        const querySnapshot = await studentCollection.get();
-        querySnapshot.docs;
+
+        const students = [] as StudentCover[];
+        const studentSnp = await studentColl.orderBy('name').get();
+        for (let doc of studentSnp.docs) {
+            const appointments = await this.getSubCollection<Appointment>(
+                doc.ref.collection('appointments'),
+            );
+            const obj = {
+                id: doc.id,
+                appointments,
+                ...doc.data(),
+            } as StudentCover;
+            students.push(obj);
+        }
+
+        return students;
+    }
+
+    public async getSubCollection<T>(
+        ref: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>,
+    ): Promise<T[]> {
+        const snapshot = await ref.get();
+        const data = [] as T[];
+        for (let cDocs of snapshot.docs) {
+            const obj = {
+                id: cDocs.id,
+                ...cDocs.data(),
+            } as unknown as T;
+            data.push(obj);
+        }
+        return data;
+    }
+
+    public async deleteImage(uri: string): Promise<void> {
+        const ref = storage.refFromURL(uri);
+        await ref.delete();
     }
 
     public async uploadImage(uri: string): Promise<string> {

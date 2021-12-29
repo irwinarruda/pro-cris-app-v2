@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Text, IFlexProps } from 'native-base';
+import { Flex, IFlexProps } from 'native-base';
 import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
 
 type PressableProps = IFlexProps &

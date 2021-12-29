@@ -63,5 +63,5 @@ const validationSchema = yup.object().shape({
     observation: yup.string(),
 });
 
-export type { FormValues };
+export type { FormValues, ImagePickerResult };
 export { initialValues, validationSchema };

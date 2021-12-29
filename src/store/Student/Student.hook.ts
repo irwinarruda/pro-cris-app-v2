@@ -3,18 +3,19 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { FormValues } from 'app/forms/manageStudent';
 import { StudentService } from 'app/services/StudentService';
-import { Student } from 'app/entities/Student';
 
 import { ApplicationStores } from 'app/store/Store';
 import { StudentStore } from 'app/store/Student/Student.types';
 import {
-    actionStudentDelete,
-    actionStudentAdd,
     actionStudentUpdate,
+    actionStudentSelect,
+    actionStudentUpdateLoading,
 } from 'app/store/Student/Student.actions';
 
 const neededStates = {
-    all: ['students'],
+    all: ['students', 'loading', 'selectedStudent'],
+    list: ['students', 'loading'],
+    manage: ['selectedStudent'],
     none: [],
 } as const;
 
@@ -23,9 +24,12 @@ type NeededStatesKeys = keyof typeof neededStates;
 type StudentStoreFunctions = {
     createStudent(student: FormValues): Promise<void>;
     editStudent(student: FormValues): Promise<void>;
+    listStudents(): Promise<void>;
+    listStudent(studentId: string): Promise<void>;
+    deleteStudent(studentId: string): Promise<void>;
 };
 
-export const useStudentStore = <T extends NeededStatesKeys>(
+export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
     key?: T,
 ): Pick<StudentStore, typeof neededStates[T][number]> &
     StudentStoreFunctions => {
@@ -40,15 +44,47 @@ export const useStudentStore = <T extends NeededStatesKeys>(
 
     const dispatch = useDispatch();
 
+    const listStudents = React.useCallback(async () => {
+        dispatch(actionStudentUpdateLoading(true));
+        const studentService = new StudentService();
+        const students = await studentService.listStudents();
+        if (students) {
+            dispatch(actionStudentUpdate(students));
+        }
+        dispatch(actionStudentUpdateLoading(false));
+    }, []);
+
+    const listStudent = React.useCallback(async (studentId: string) => {
+        const studentService = new StudentService();
+        const student = await studentService.listStudent(studentId);
+        dispatch(actionStudentSelect(student));
+    }, []);
+
+    const deleteStudent = React.useCallback(async (studentId) => {
+        const studentService = new StudentService();
+        await studentService.deleteStudent(studentId);
+        dispatch(actionStudentSelect());
+        listStudents();
+    }, []);
+
     const createStudent = React.useCallback(async (student: FormValues) => {
         const studentService = new StudentService();
         await studentService.createStudent(student);
+        listStudents();
     }, []);
 
     const editStudent = React.useCallback(async (student: FormValues) => {
         const studentService = new StudentService();
         await studentService.updateStudent(student);
+        listStudents();
     }, []);
 
-    return { ...hooks, createStudent, editStudent };
+    return {
+        ...hooks,
+        createStudent,
+        editStudent,
+        listStudents,
+        listStudent,
+        deleteStudent,
+    };
 };

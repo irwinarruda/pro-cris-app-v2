@@ -27,20 +27,22 @@ type ManageSchedulesProps = {
 };
 
 const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
-    const alertInstance = useAlert();
+    const { showAlertAsync } = useAlert();
     const { values, setFieldValue } = useFormikContext<MainFormValues>();
 
-    const handleCostsSubmit = (
+    const handleScheduleSubmit = (
         data: FormValues,
         formikHelpers: FormikHelpers<FormValues>,
     ) => {
         const body = { ...data, id: uuid() };
         setFieldValue('schedules', [...values.schedules, body]);
-        formikHelpers.resetForm();
+        formikHelpers.resetForm({
+            values: { ...initialValues, day_time: data.day_time },
+        } as any);
     };
 
-    const handleDeleteSchedule = async (cost: any) => {
-        const { isConfirmed } = await alertInstance.showAlertAsync({
+    const handleDeleteSchedule = async (schedule: any) => {
+        const { isConfirmed } = await showAlertAsync({
             title: 'Deseja remover esse Horário?',
             description: 'Essa ação removerá o horário e é irreversível',
             cancelButtonText: 'Cancelar',
@@ -52,21 +54,21 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
         }
         setFieldValue(
             'schedules',
-            values.costs.map((formCost) => {
-                if (formCost.id === cost.id) {
+            values.schedules.map((formSchedule) => {
+                if (formSchedule.id === schedule.id) {
                     return {
-                        ...formCost,
+                        ...formSchedule,
                         is_deleted: true,
                     };
                 }
-                return formCost;
+                return formSchedule;
             }),
         );
     };
 
     const instance = useFormik<FormValues>({
         initialValues: initialValues,
-        onSubmit: handleCostsSubmit,
+        onSubmit: handleScheduleSubmit,
         validationSchema: validationSchema,
         validateOnChange: false,
         validateOnBlur: false,

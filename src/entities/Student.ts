@@ -19,4 +19,6 @@ interface Student {
     appointments: Appointment[];
 }
 
-export type { Student };
+type StudentCover = Omit<Student, 'costs' | 'schedules'>;
+
+export type { Student, StudentCover };

@@ -30,8 +30,8 @@ const HeaderMenu = ({}: HeaderMenuProps) => {
     return (
         <Menu
             width="190"
-            placement="bottom left"
-            marginRight="20px"
+            placement="left"
+            marginTop="20px"
             borderWidth="2px"
             borderColor="gold.500"
             trigger={(triggerProps) => {
