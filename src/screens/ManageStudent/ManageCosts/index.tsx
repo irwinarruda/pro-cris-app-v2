@@ -17,9 +17,7 @@ import { ProCrisModal } from 'app/components/molecules/ProCrisModal';
 import { FKFormFormatM } from 'app/components/molecules/FKFormFormat';
 import { FKCheckboxM } from 'app/components/molecules/FKCheckbox';
 
-import { useAlert } from 'app/hooks/Alert';
-
-import { ManageStudentAlert } from '../ManageStudentAlert';
+import { useAlert } from 'app/store/Alert/Alert.hook';
 
 type ManageCostsProps = {
     isOpen?: boolean;
@@ -40,8 +38,14 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
     };
 
     const handleDeleteCost = async (cost: any) => {
-        const response = await alertInstance.showAlertAsync();
-        if (!response) {
+        const { isConfirmed } = await alertInstance.showAlertAsync({
+            title: 'Deseja remover esse Valor?',
+            description: 'Essa ação removerá o custo e é irreversível',
+            cancelButtonText: 'Cancelar',
+            confirmButtomText: 'Remover',
+            confirmButtomProps: { colorScheme: 'red.500' },
+        });
+        if (!isConfirmed) {
             return;
         }
         setFieldValue(
@@ -73,14 +77,6 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
             onRequestClose={() => setIsOpen?.(false)}
             onClose={() => setIsOpen?.(false)}
         >
-            <ManageStudentAlert
-                size="xl"
-                instance={alertInstance}
-                messages={{
-                    title: 'Deseja remover esse Valor?',
-                    description: 'Essa ação removerá o custo e é irreversível',
-                }}
-            />
             <KeyboardAvoidingScrollView
                 flex="1"
                 bgColor="white"
@@ -151,7 +147,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                         Adicionar
                     </Button>
                 </HStack>
-                <Divider marginTop="20px" bgColor="gold.300" />
+                <Divider height="2px" marginTop="20px" bgColor="gold.300" />
                 <VStack
                     space="15px"
                     width="100%"

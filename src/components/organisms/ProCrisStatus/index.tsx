@@ -32,7 +32,7 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                 flex="1"
                 borderRightWidth="1px"
                 borderRightColor="purple.100"
-                borderLeftWidth="1px"
+                borderLeftWidth="2px"
                 borderLeftColor="purple.100"
                 onPress={handleToggleClasses}
             >
@@ -63,7 +63,7 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
             </Pressable>
             <Pressable
                 flex="1"
-                borderRightWidth="1px"
+                borderRightWidth="2px"
                 borderRightColor="purple.100"
                 borderLeftWidth="1px"
                 borderLeftColor="purple.100"

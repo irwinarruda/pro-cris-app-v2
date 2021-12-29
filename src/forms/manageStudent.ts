@@ -1,34 +1,52 @@
 import * as yup from 'yup';
-import * as ImagePicker from 'expo-image-picker';
 
 import { Schedule } from 'app/entities/Schedule';
 import { Cost } from 'app/entities/Cost';
 import { Colors } from 'app/entities/Colors';
 
+type ImageInfo = {
+    uri: string;
+    width: number;
+    height: number;
+    type?: 'image' | 'video' | 'firebase';
+    exif?: {
+        [key: string]: any;
+    };
+    base64?: string;
+};
+
+type ImagePickerResult =
+    | { cancelled: true }
+    | ({ cancelled: false } & ImageInfo);
+
 type FormValues = {
+    id: string;
     name: string;
     name_caregiver: string;
     phone: string;
-    avatar: ImagePicker.ImagePickerResult;
+    avatar: ImagePickerResult;
     date_of_birth: string;
     address: string;
     map_location: string;
     observation: string;
     color: Colors;
+    is_deleted: boolean;
     schedules: Schedule[];
     costs: Cost[];
 };
 
 const initialValues = {
+    id: '',
     name: '',
     name_caregiver: '',
     phone: '',
-    avatar: {} as ImagePicker.ImagePickerResult,
+    avatar: { cancelled: true } as ImagePickerResult,
     date_of_birth: '',
     address: '',
     map_location: '',
     observation: '',
-    color: Colors.Black,
+    color: Colors.Green,
+    is_deleted: false,
     schedules: [] as Schedule[],
     costs: [] as Cost[],
 };

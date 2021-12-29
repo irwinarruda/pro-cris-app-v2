@@ -3,12 +3,14 @@ import { Image as RNImage } from 'react-native';
 import { Flex, HStack, VStack } from 'native-base';
 import { Formik, FormikHelpers, useFormikContext } from 'formik';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 
 import {
     initialValues,
     validationSchema,
     FormValues,
 } from 'app/forms/manageStudent';
+import { StudentService } from 'app/services/StudentService';
 
 import { Button } from 'app/components/atoms/Button';
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
@@ -18,22 +20,19 @@ import { FKFormText } from 'app/components/molecules/FKFormText';
 import { FKFormFormat } from 'app/components/molecules/FKFormFormat';
 
 import { useError } from 'app/hooks/Error';
-import { useUserStore } from 'app/store/User/User.hook';
+import { useSuccess } from 'app/hooks/Success';
 import { useLoadingStore } from 'app/store/Loading/Loading.hook';
+import { useStudentStore } from 'app/store/Student/Student.hook';
 
 import { ManageCosts } from './ManageCosts';
 import { ManageSchedules } from './ManageSchedules';
 
-type ManageStudentProps = {
-    children?: React.ReactNode;
-};
+type ManageStudentProps = NativeStackHeaderProps;
 
-const ManageStudentComponent = ({}: ManageStudentProps) => {
+const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
     const [pricesIsOpen, setPricesIsOpen] = React.useState<boolean>(false);
     const [schedulesIsOpen, setSchedulesIsOpen] =
         React.useState<boolean>(false);
-
-    const navigation = useNavigation();
     const { values, handleSubmit } = useFormikContext<FormValues>();
 
     return (
@@ -65,7 +64,7 @@ const ManageStudentComponent = ({}: ManageStudentProps) => {
                             justifyContent: 'flex-start',
                         }}
                         fileLabel={
-                            values.avatar.cancelled
+                            !values.avatar.cancelled
                                 ? 'Imagem Adicionada'
                                 : 'Adicionar Imagem'
                         }
@@ -170,6 +169,9 @@ const ManageStudentComponent = ({}: ManageStudentProps) => {
                     </Button>
                 </HStack>
                 <HStack marginTop="20px" paddingX="20px">
+                    {(params as any).type === 'edit' && (
+                        <Button size="lg">Remover Aluno</Button>
+                    )}
                     <Button size="lg" onPress={handleSubmit as any}>
                         Salvar Aluno
                     </Button>
@@ -184,10 +186,12 @@ const ManageStudentComponent = ({}: ManageStudentProps) => {
     );
 };
 
-const ManageStudent = () => {
+const ManageStudent = ({ ...props }: ManageStudentProps) => {
+    const navigation = useNavigation();
     const { showError } = useError();
+    const { showSuccess } = useSuccess();
     const { setLoading } = useLoadingStore();
-    const { signIn } = useUserStore();
+    const { createStudent, editStudent } = useStudentStore();
 
     const handleFormSubmit = async (
         values: FormValues,
@@ -195,9 +199,18 @@ const ManageStudent = () => {
     ) => {
         try {
             setLoading(true);
-            console.log('values', values);
+            let successTitle = '';
+            if ((props.route.params as any)?.type === 'create') {
+                await createStudent(values);
+                successTitle = 'Aluno criado com sucesso';
+            } else {
+                await editStudent(values);
+                successTitle = 'Aluno editado com sucesso';
+            }
+            navigation.navigate('TabRoute');
+            showSuccess({ title: successTitle });
         } catch (err) {
-            showError(err, { title: 'Erro ao Logar' });
+            showError(err, { title: 'Erro ao criar Aluno' });
         } finally {
             setLoading(false);
         }
@@ -212,7 +225,7 @@ const ManageStudent = () => {
             validateOnBlur={false}
             validateOnMount={false}
         >
-            <ManageStudentComponent />
+            <ManageStudentComponent {...props} />
         </Formik>
     );
 };

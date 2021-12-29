@@ -10,7 +10,7 @@ declare global {
     namespace ReactNavigation {
         interface RootParamList {
             TabRoute: undefined;
-            ManageStudent: { title: string };
+            ManageStudent: { title: string; type: 'create' | 'edit' | 'view' };
         }
     }
 }

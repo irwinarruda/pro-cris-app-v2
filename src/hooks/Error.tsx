@@ -11,7 +11,7 @@ const useError = (): UseError => {
     const showError = React.useCallback((err: any, options?: IToastProps) => {
         toast.closeAll();
         let errorMessage = '';
-        if (err.code) {
+        if (err.message) {
             errorMessage = err.message;
         }
         toast.show({

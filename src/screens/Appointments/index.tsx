@@ -6,7 +6,7 @@ type AppointmentsProps = {
 };
 const Appointments = ({}: AppointmentsProps) => {
     return (
-        <Flex>
+        <Flex flex="1" bgColor="#ffffff">
             <HStack justifyContent="center">
                 <Text>Aulas</Text>
             </HStack>

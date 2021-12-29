@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 type FormValues = {
-    id?: string;
+    id: string;
     week_day: string;
     day_time: string;
     is_default: boolean;

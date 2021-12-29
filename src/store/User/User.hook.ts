@@ -6,11 +6,7 @@ import { AuthService } from 'app/services/AuthService';
 
 import { ApplicationStores } from 'app/store/Store';
 import { UserStore } from 'app/store/User/User.types';
-import {
-    actionUserLoading,
-    actionUserReset,
-    actionUserUpdate,
-} from 'app/store/User/User.actions';
+import { actionUserReset, actionUserUpdate } from 'app/store/User/User.actions';
 
 type SignInDTO = {
     email: string;

@@ -7,7 +7,7 @@ export type LoadingStore = {
     loading: boolean;
 };
 
-enum ActionTypes {
+export enum ActionTypes {
     LOADING_UPDATE = 'LOADING_UPDATE',
 }
 
@@ -17,5 +17,3 @@ export type ActionLoading = Action<
 >;
 
 export type Actions = ActionLoading;
-
-export { ActionTypes };

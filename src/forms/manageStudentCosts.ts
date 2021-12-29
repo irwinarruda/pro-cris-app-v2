@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 type FormValues = {
-    id?: string;
+    id: string;
     time: string;
     price: string;
     is_default: boolean;

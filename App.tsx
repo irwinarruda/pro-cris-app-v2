@@ -22,6 +22,7 @@ import { theme } from 'app/styles/theme';
 import { store } from 'app/store/Store';
 
 import { Loading } from 'app/components/molecules/Loading';
+import { ProCrisAlert } from 'app/components/organisms/ProCrisAlert';
 
 import 'app/services/firebaseClient';
 
@@ -47,6 +48,7 @@ export default function App() {
         <NativeBaseProvider theme={theme}>
             <Provider store={store}>
                 <Loading />
+                <ProCrisAlert />
                 <Router />
             </Provider>
             <StatusBar style="light" />

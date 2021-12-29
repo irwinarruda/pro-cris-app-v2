@@ -19,9 +19,7 @@ import { FKFormFormatM } from 'app/components/molecules/FKFormFormat';
 import { FKCheckboxM } from 'app/components/molecules/FKCheckbox';
 import { FKFormSelectM } from 'app/components/molecules/FKFormSelect';
 
-import { useAlert } from 'app/hooks/Alert';
-
-import { ManageStudentAlert } from '../ManageStudentAlert';
+import { useAlert } from 'app/store/Alert/Alert.hook';
 
 type ManageSchedulesProps = {
     isOpen?: boolean;
@@ -42,12 +40,18 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
     };
 
     const handleDeleteSchedule = async (cost: any) => {
-        const response = await alertInstance.showAlertAsync();
-        if (!response) {
+        const { isConfirmed } = await alertInstance.showAlertAsync({
+            title: 'Deseja remover esse Horário?',
+            description: 'Essa ação removerá o horário e é irreversível',
+            cancelButtonText: 'Cancelar',
+            confirmButtomText: 'Remover',
+            confirmButtomProps: { colorScheme: 'red.500' },
+        });
+        if (!isConfirmed) {
             return;
         }
         setFieldValue(
-            'costs',
+            'schedules',
             values.costs.map((formCost) => {
                 if (formCost.id === cost.id) {
                     return {
@@ -75,15 +79,6 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
             onRequestClose={() => setIsOpen?.(false)}
             onClose={() => setIsOpen?.(false)}
         >
-            <ManageStudentAlert
-                size="xl"
-                instance={alertInstance}
-                messages={{
-                    title: 'Deseja remover esse Horário?',
-                    description:
-                        'Essa ação removerá o horário e é irreversível',
-                }}
-            />
             <KeyboardAvoidingScrollView
                 bgColor="white"
                 flex="1"
@@ -153,7 +148,7 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                         Adicionar
                     </Button>
                 </HStack>
-                <Divider marginTop="20px" bgColor="gold.300" />
+                <Divider height="2px" marginTop="20px" bgColor="gold.300" />
                 <VStack
                     space="15px"
                     width="100%"

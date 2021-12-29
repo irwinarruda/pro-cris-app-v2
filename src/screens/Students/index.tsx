@@ -12,10 +12,13 @@ type StudentsProps = {
 const Students = ({}: StudentsProps) => {
     const navigation = useNavigation();
     const handleCreateStudentPress = () => {
-        navigation.navigate('ManageStudent', { title: 'Criar Aluno' });
+        navigation.navigate('ManageStudent', {
+            title: 'Criar Aluno',
+            type: 'create',
+        });
     };
     return (
-        <Flex height="100%">
+        <Flex flex="1" bgColor="#ffffff">
             <ProCrisStatus />
             <FAB
                 icon={<Icon as={AntDesign} name="plus" color="white" />}

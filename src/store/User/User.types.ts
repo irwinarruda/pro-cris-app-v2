@@ -10,7 +10,7 @@ export type UserStore = {
     loading: boolean;
 };
 
-enum ActionTypes {
+export enum ActionTypes {
     USER_UPDATE = 'USER_UPDATE',
     USER_LOADING = 'USER_LOADING',
     USER_RESET = 'USER_RESET',
@@ -24,5 +24,3 @@ export type ActionUserUpdate = Action<ActionTypes.USER_UPDATE, { user: User }>;
 export type ActionUserReset = Action<ActionTypes.USER_RESET, void>;
 
 export type Actions = ActionUserLoading | ActionUserUpdate | ActionUserReset;
-
-export { ActionTypes };

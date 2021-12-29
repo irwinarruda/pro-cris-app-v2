@@ -1,7 +1,6 @@
 import { Cost } from 'app/entities/Cost';
 import { Schedule } from 'app/entities/Schedule';
 import { Appointment } from 'app/entities/Appointment';
-import * as ImagePicker from 'expo-image-picker';
 
 interface Student {
     id: string;
@@ -14,6 +13,7 @@ interface Student {
     map_location: string;
     observation: string;
     color: string;
+    is_deleted: boolean;
     schedules: Schedule[];
     costs: Cost[];
     appointments: Appointment[];
