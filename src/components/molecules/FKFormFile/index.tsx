@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormikContext } from 'formik';
+import { useFormikContext, getIn } from 'formik';
 
 import { FormFile, FormFileProps } from 'app/components/molecules/FormFile';
 
@@ -15,7 +15,7 @@ const FKFormFile = ({ children, name, ...props }: FKFormFileProps) => {
             onPress={(file) =>
                 handleChange(name)({ target: { value: { ...file } } } as any)
             }
-            error={errors[name] as any}
+            error={getIn(errors, name) as any}
             {...props}
         >
             {children}

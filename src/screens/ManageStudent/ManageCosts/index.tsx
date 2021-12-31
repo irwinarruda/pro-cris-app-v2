@@ -13,7 +13,7 @@ import { FormValues as MainFormValues } from 'app/forms/manageStudent';
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
 import { Button } from 'app/components/atoms/Button';
 import { BasicViewCard } from 'app/components/molecules/BasicViewCard';
-import { ProCrisModal } from 'app/components/molecules/ProCrisModal';
+import { ProCrisActionsheet } from 'app/components/molecules/ProCrisActionsheet';
 import { FKFormFormatM } from 'app/components/molecules/FKFormFormat';
 import { FKCheckboxM } from 'app/components/molecules/FKCheckbox';
 
@@ -72,7 +72,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
     });
 
     return (
-        <ProCrisModal
+        <ProCrisActionsheet
             visible={isOpen}
             onRequestClose={() => setIsOpen?.(false)}
             onClose={() => setIsOpen?.(false)}
@@ -168,7 +168,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                         ))}
                 </VStack>
             </KeyboardAvoidingScrollView>
-        </ProCrisModal>
+        </ProCrisActionsheet>
     );
 };
 

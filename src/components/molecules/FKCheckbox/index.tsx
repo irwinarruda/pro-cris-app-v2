@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormikContext } from 'formik';
+import { getIn, useFormikContext } from 'formik';
 import { Checkbox, ICheckboxProps } from 'native-base';
 
 type FKCheckboxProps = Omit<ICheckboxProps, 'value' | 'onChange'> & {
@@ -12,7 +12,7 @@ const FKCheckbox = ({ name, value, ...props }: FKCheckboxProps) => {
     return (
         <Checkbox
             value={value || ''}
-            isChecked={values[name]}
+            isChecked={getIn(values, name)}
             colorScheme="purple"
             borderWidth="1px"
             borderColor="gray.400"
@@ -40,7 +40,7 @@ const FKCheckboxM = ({
     return (
         <Checkbox
             value={value || ''}
-            isChecked={values[name]}
+            isChecked={getIn(values, name)}
             colorScheme="purple"
             borderWidth="1px"
             borderColor="gray.400"

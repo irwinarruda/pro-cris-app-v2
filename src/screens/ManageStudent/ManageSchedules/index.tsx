@@ -14,7 +14,7 @@ import { WeekDays, WeekDaysLabels } from 'app/entities/WeekDays';
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
 import { Button } from 'app/components/atoms/Button';
 import { BasicViewCard } from 'app/components/molecules/BasicViewCard';
-import { ProCrisModal } from 'app/components/molecules/ProCrisModal';
+import { ProCrisActionsheet } from 'app/components/molecules/ProCrisActionsheet';
 import { FKFormFormatM } from 'app/components/molecules/FKFormFormat';
 import { FKCheckboxM } from 'app/components/molecules/FKCheckbox';
 import { FKFormSelectM } from 'app/components/molecules/FKFormSelect';
@@ -76,7 +76,7 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
     });
 
     return (
-        <ProCrisModal
+        <ProCrisActionsheet
             visible={isOpen}
             onRequestClose={() => setIsOpen?.(false)}
             onClose={() => setIsOpen?.(false)}
@@ -173,7 +173,7 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                         ))}
                 </VStack>
             </KeyboardAvoidingScrollView>
-        </ProCrisModal>
+        </ProCrisActionsheet>
     );
 };
 

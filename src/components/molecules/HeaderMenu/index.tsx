@@ -19,9 +19,7 @@ const HeaderMenu = ({}: HeaderMenuProps) => {
     const handleSignOutPress = async () => {
         try {
             await signOut();
-            console.log('Before navigate');
             navigation.navigate('SignIn');
-            console.log('After navigate');
         } catch (err) {
             showError(err, { title: 'Erro ao fazer Logout' });
         }

@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import { AppService } from './AppService';
 import { auth, firestore, firebase, storage } from './firebaseClient';
 
 import { FormValues } from 'app/forms/manageStudent';
@@ -11,10 +12,10 @@ import { Appointment } from 'app/entities/Appointment';
 type CreateStudentRequestBody = FormValues;
 type UpdateStudentRequestBody = FormValues;
 
-class StudentService {
+class StudentService extends AppService {
     public async createStudent(body: CreateStudentRequestBody): Promise<void> {
         if (!auth.currentUser) {
-            return;
+            throw { message: 'Usuário não autenticado' };
         }
 
         const studentId = uuid();
@@ -56,7 +57,7 @@ class StudentService {
 
     public async updateStudent(body: UpdateStudentRequestBody): Promise<void> {
         if (!auth.currentUser) {
-            return;
+            throw { message: 'Usuário não autenticado' };
         }
 
         const studentCollection = firestore
@@ -102,7 +103,7 @@ class StudentService {
 
     public async deleteStudent(studentId: string): Promise<void> {
         if (!auth.currentUser) {
-            return;
+            throw { message: 'Usuário não autenticado' };
         }
         const studentDocPath = firestore
             .collection('users')
@@ -114,7 +115,7 @@ class StudentService {
 
     public async listStudent(studentId: string): Promise<Student | undefined> {
         if (!auth.currentUser) {
-            return;
+            throw { message: 'Usuário não autenticado' };
         }
         const studentDocPath = firestore
             .collection('users')
@@ -128,13 +129,13 @@ class StudentService {
         }
         let student = {} as Student;
 
-        const costs = await this.getSubCollection<Cost>(
+        const costs = await this.getCollectionData<Cost>(
             studentDoc.ref.collection('costs'),
         );
-        const schedules = await this.getSubCollection<Schedule>(
+        const schedules = await this.getCollectionData<Schedule>(
             studentDoc.ref.collection('schedules'),
         );
-        const appointments = await this.getSubCollection<Appointment>(
+        const appointments = await this.getCollectionData<Appointment>(
             studentDoc.ref.collection('appointments'),
         );
 
@@ -150,9 +151,9 @@ class StudentService {
         return student;
     }
 
-    public async listStudents(): Promise<StudentCover[] | undefined> {
+    public async listStudents(): Promise<StudentCover[]> {
         if (!auth.currentUser) {
-            return;
+            throw { message: 'Usuário não autenticado' };
         }
         const studentColl = firestore
             .collection('users')
@@ -162,7 +163,7 @@ class StudentService {
         const students = [] as StudentCover[];
         const studentSnp = await studentColl.orderBy('name').get();
         for (let doc of studentSnp.docs) {
-            const appointments = await this.getSubCollection<Appointment>(
+            const appointments = await this.getCollectionData<Appointment>(
                 doc.ref.collection('appointments'),
             );
             const obj = {
@@ -173,47 +174,22 @@ class StudentService {
             students.push(obj);
         }
 
-        return students;
+        return students.filter((student) => !student.is_deleted);
     }
 
-    public async getSubCollection<T>(
-        ref: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>,
-    ): Promise<T[]> {
-        const snapshot = await ref.get();
-        const data = [] as T[];
-        for (let cDocs of snapshot.docs) {
-            const obj = {
-                id: cDocs.id,
-                ...cDocs.data(),
-            } as unknown as T;
-            data.push(obj);
+    public async listStudentCosts(studentId: string): Promise<Cost[]> {
+        if (!auth.currentUser) {
+            throw { message: 'Usuário não autenticado' };
         }
-        return data;
-    }
+        const studentCostRef = firestore
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('students')
+            .doc(studentId)
+            .collection('costs');
 
-    public async deleteImage(uri: string): Promise<void> {
-        const ref = storage.refFromURL(uri);
-        await ref.delete();
-    }
-
-    public async uploadImage(uri: string): Promise<string> {
-        const blob = await new Promise<XMLDocument>((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                resolve(xhr.response);
-            };
-            xhr.onerror = function (e) {
-                reject(new TypeError('Network request failed'));
-            };
-            xhr.responseType = 'blob';
-            xhr.open('GET', uri, true);
-            xhr.send(null);
-        });
-        const fileRef = storage.ref(uuid());
-        await fileRef.put(blob as any);
-        blob.close();
-
-        return (await fileRef.getDownloadURL()) || '';
+        const costs = await this.getCollectionData<Cost>(studentCostRef);
+        return costs.filter((cost) => !cost.is_deleted);
     }
 }
 

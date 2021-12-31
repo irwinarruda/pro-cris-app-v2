@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormikContext } from 'formik';
+import { useFormikContext, getIn } from 'formik';
 import {
     FormSelect,
     FormSelectProps,
@@ -17,8 +17,8 @@ const FKFormSelect = ({ name, ...props }: FKFormSelectProps) => {
             onValueChange={(selectedValue) =>
                 handleChange(name)({ target: { value: selectedValue } } as any)
             }
-            selectedValue={values[name]}
-            error={errors[name] as any}
+            selectedValue={getIn(values, name)}
+            error={getIn(errors, name) as any}
             {...props}
         />
     );
@@ -40,8 +40,8 @@ const FKFormSelectM = ({
             onValueChange={(selectedValue) =>
                 handleChange(name)({ target: { value: selectedValue } } as any)
             }
-            selectedValue={values[name]}
-            error={errors[name] as any}
+            selectedValue={getIn(values, name)}
+            error={getIn(errors, name) as any}
             {...props}
         />
     );

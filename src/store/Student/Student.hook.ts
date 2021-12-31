@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { FormValues } from 'app/forms/manageStudent';
 import { StudentService } from 'app/services/StudentService';
+import { Cost } from 'app/entities/Cost';
 
 import { ApplicationStores } from 'app/store/Store';
 import { StudentStore } from 'app/store/Student/Student.types';
@@ -26,6 +27,7 @@ type StudentStoreFunctions = {
     editStudent(student: FormValues): Promise<void>;
     listStudents(): Promise<void>;
     listStudent(studentId: string): Promise<void>;
+    listStudentCosts(studentId: string): Promise<Cost[]>;
     deleteStudent(studentId: string): Promise<void>;
 };
 
@@ -60,7 +62,7 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
         dispatch(actionStudentSelect(student));
     }, []);
 
-    const deleteStudent = React.useCallback(async (studentId) => {
+    const deleteStudent = React.useCallback(async (studentId: string) => {
         const studentService = new StudentService();
         await studentService.deleteStudent(studentId);
         dispatch(actionStudentSelect());
@@ -79,6 +81,15 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
         listStudents();
     }, []);
 
+    const listStudentCosts = React.useCallback(
+        async (studentId: string): Promise<Cost[]> => {
+            const studentService = new StudentService();
+            const costs = await studentService.listStudentCosts(studentId);
+            return costs;
+        },
+        [],
+    );
+
     return {
         ...hooks,
         createStudent,
@@ -86,5 +97,6 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
         listStudents,
         listStudent,
         deleteStudent,
+        listStudentCosts,
     };
 };

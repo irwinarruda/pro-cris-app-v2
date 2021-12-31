@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import { RefreshControl } from 'react-native';
-import { FlatList, Flex, VStack, Icon, Spinner } from 'native-base';
+import { FlatList, Flex, Icon } from 'native-base';
 
 import { FAB } from 'app/components/atoms/FAB';
 import { ProCrisStudentCard } from 'app/components/molecules/ProCrisStudentCard';
@@ -34,7 +34,6 @@ const Students = ({}: StudentsProps) => {
         try {
             setLoading(true);
             await listStudent(studentId);
-            setLoading(false);
             navigation.navigate('ManageStudent', {
                 title: 'Editar Aluno',
                 type: 'edit',
@@ -60,8 +59,8 @@ const Students = ({}: StudentsProps) => {
             <FlatList
                 flex="1"
                 marginTop="20px"
-                paddingX="20px"
-                marginBottom="20px"
+                paddingX="10px"
+                marginBottom="10px"
                 data={students.filter((student) => !student.is_deleted)}
                 refreshControl={
                     <RefreshControl
@@ -83,6 +82,10 @@ const Students = ({}: StudentsProps) => {
                         onIconPress={() => handleEditStudentPress(student.id)}
                     />
                 )}
+                contentContainerStyle={{
+                    paddingBottom: 10,
+                    paddingHorizontal: 10,
+                }}
                 keyExtractor={(item) => item.id}
             />
         </Flex>

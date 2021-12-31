@@ -10,12 +10,15 @@ import { alertReducer } from './Alert/Alert.reducer';
 import { AlertStore } from './Alert/Alert.types';
 import { studentReducer } from './Student/Student.reducer';
 import { StudentStore } from './Student/Student.types';
+import { appointmentReducer } from './Appointment/Appointment.reducer';
+import { AppointmentStore } from './Appointment/Appointment.types';
 
 export type ApplicationStores = {
     userStore: UserStore;
     loadingStore: LoadingStore;
     alertStore: AlertStore;
     studentStore: StudentStore;
+    appointmentStore: AppointmentStore;
 };
 
 const rootReducer = combineReducers({
@@ -23,6 +26,7 @@ const rootReducer = combineReducers({
     loadingStore: loadingReducer,
     alertStore: alertReducer,
     studentStore: studentReducer,
+    appointmentStore: appointmentReducer,
 });
 
 const store: Store<ApplicationStores> = createStore(

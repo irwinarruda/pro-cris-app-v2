@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormikContext } from 'formik';
+import { getIn, useFormikContext } from 'formik';
 
 import {
     ColorPicker,
@@ -23,7 +23,7 @@ const FKColorPicker = ({ name, ...props }: FKColorPickerProps) => {
                 handleChange(name)({ target: { value: color } } as any);
                 setIsOpen(false);
             }}
-            value={values[name]}
+            value={getIn(values, name)}
             {...props}
         />
     );

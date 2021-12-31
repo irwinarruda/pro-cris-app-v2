@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormikContext } from 'formik';
+import { useFormikContext, getIn } from 'formik';
 import {
     FormFormat,
     FormFormatProps,
@@ -18,9 +18,9 @@ const FKFormFormat = ({ name, ...props }: FKFormFormatProps) => {
             onChangeText={(value) =>
                 handleChange(name)({ target: { value: value } } as any)
             }
-            value={values[name]}
+            value={getIn(values, name)}
             onBlur={handleBlur(name)}
-            error={errors[name] as any}
+            error={getIn(errors, name) as any}
             {...props}
         />
     );
@@ -43,9 +43,9 @@ const FKFormFormatM = ({
             onChangeText={(value) =>
                 handleChange(name)({ target: { value: value } } as any)
             }
-            value={values[name]}
+            value={getIn(values, name)}
             onBlur={handleBlur(name)}
-            error={errors[name] as any}
+            error={getIn(errors, name) as any}
             {...props}
         />
     );

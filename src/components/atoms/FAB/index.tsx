@@ -12,8 +12,8 @@ const fabSizesStyles = {
     },
     md: {
         container: {
-            width: '64px',
-            height: '64px',
+            width: '60px',
+            height: '60px',
         },
     },
     lg: {

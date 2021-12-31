@@ -1,10 +1,15 @@
 interface Appointment {
     id: string;
-    id_cost: string;
-    date: string;
-    is_extra: string;
-    is_paid: string;
-    is_cancelled: string;
+    id_student: string;
+    cost: {
+        id: string;
+        time: string;
+        price: string;
+    };
+    date: Date;
+    is_extra: boolean;
+    is_paid: boolean;
+    is_cancelled: boolean;
     observation: string;
 }
 

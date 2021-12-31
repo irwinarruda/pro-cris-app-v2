@@ -3,12 +3,12 @@ import { Modal, ModalProps, TouchableWithoutFeedback } from 'react-native';
 import { Flex, IFlexProps, useStyledSystemPropsResolver } from 'native-base';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
-type ProCrisModalProps = ModalProps &
+type ProCrisActionsheetProps = ModalProps &
     IFlexProps & {
         onClose?(): void;
     };
 
-const ProCrisModal = ({
+const ProCrisActionsheet = ({
     children,
     transparent,
     visible,
@@ -22,7 +22,7 @@ const ProCrisModal = ({
     hardwareAccelerated,
     statusBarTranslucent,
     ...props
-}: ProCrisModalProps) => {
+}: ProCrisActionsheetProps) => {
     const [style, rest] = useStyledSystemPropsResolver(props);
 
     return (
@@ -79,5 +79,5 @@ const ProCrisModal = ({
     );
 };
 
-export type { ProCrisModalProps };
-export { ProCrisModal };
+export type { ProCrisActionsheetProps };
+export { ProCrisActionsheet };

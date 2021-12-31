@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormikContext, FormikContextType } from 'formik';
+import { useFormikContext, getIn } from 'formik';
 import { FormText, FormTextProps } from 'app/components/molecules/FormText';
 
 type FKFormTextProps = FormTextProps & {
@@ -14,8 +14,8 @@ const FKFormText = ({ name, ...props }: FKFormTextProps) => {
         <FormText
             onChangeText={handleChange(name)}
             onBlur={handleBlur(name)}
-            value={values[name]}
-            error={errors[name] as any}
+            value={getIn(values, name)}
+            error={getIn(errors, name) as any}
             {...props}
         />
     );
@@ -32,8 +32,8 @@ const FKFormTextM = ({ name, formInstance, ...props }: FKFormTextMProps) => {
         <FormText
             onChangeText={handleChange(name)}
             onBlur={handleBlur(name)}
-            value={values[name]}
-            error={errors[name] as any}
+            value={getIn(values, name)}
+            error={getIn(errors, name) as any}
             {...props}
         />
     );

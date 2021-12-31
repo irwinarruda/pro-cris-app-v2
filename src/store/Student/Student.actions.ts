@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import {
     ActionTypes,
     ActionStudentAdd,
@@ -8,7 +7,6 @@ import {
     ActionStudentSelect,
 } from './Student.types';
 import { Student, StudentCover } from 'app/entities/Student';
-import { StudentService } from 'app/services/StudentService';
 
 export const actionStudentAdd = (student: Student): ActionStudentAdd => {
     return {
