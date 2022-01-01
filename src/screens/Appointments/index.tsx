@@ -110,6 +110,7 @@ const Appointments = ({}: AppointmentsProps) => {
             setLoading(false);
         }
     };
+
     const handleGhostAppointments = async (date?: Date) => {
         if (date && isAfter(date, new Date())) {
             const appointments = await getAppointmentsByRoutineDate(date);
