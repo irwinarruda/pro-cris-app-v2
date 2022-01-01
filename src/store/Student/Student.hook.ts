@@ -22,10 +22,16 @@ const neededStates = {
 
 type NeededStatesKeys = keyof typeof neededStates;
 
+type ListStudentParams = {
+    costs?: boolean;
+    schedules?: boolean;
+    appointments?: boolean;
+};
+
 type StudentStoreFunctions = {
     createStudent(student: FormValues): Promise<void>;
     editStudent(student: FormValues): Promise<void>;
-    listStudents(): Promise<void>;
+    listStudents(params?: ListStudentParams): Promise<void>;
     listStudent(studentId: string): Promise<void>;
     listStudentCosts(studentId: string): Promise<Cost[]>;
     deleteStudent(studentId: string): Promise<void>;
@@ -46,15 +52,18 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
 
     const dispatch = useDispatch();
 
-    const listStudents = React.useCallback(async () => {
-        dispatch(actionStudentUpdateLoading(true));
-        const studentService = new StudentService();
-        const students = await studentService.listStudents();
-        if (students) {
-            dispatch(actionStudentUpdate(students));
-        }
-        dispatch(actionStudentUpdateLoading(false));
-    }, []);
+    const listStudents = React.useCallback(
+        async (params?: ListStudentParams) => {
+            dispatch(actionStudentUpdateLoading(true));
+            const studentService = new StudentService();
+            const students = await studentService.listStudents(params);
+            if (students) {
+                dispatch(actionStudentUpdate(students));
+            }
+            dispatch(actionStudentUpdateLoading(false));
+        },
+        [],
+    );
 
     const listStudent = React.useCallback(async (studentId: string) => {
         const studentService = new StudentService();

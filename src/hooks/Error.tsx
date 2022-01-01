@@ -11,8 +11,10 @@ const useError = (): UseError => {
     const showError = React.useCallback((err: any, options?: IToastProps) => {
         toast.closeAll();
         let errorMessage = '';
-        if (err.message) {
+        if (err.message && !Array.isArray(err.message)) {
             errorMessage = err.message;
+        } else {
+            errorMessage = err.message.join('\n');
         }
         toast.show({
             ...options,

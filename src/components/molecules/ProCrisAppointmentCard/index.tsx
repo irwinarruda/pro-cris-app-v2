@@ -12,7 +12,7 @@ import EmojiPlaceholder from 'app/assets/emoji-placeholder.png';
 const appointmentStatus = {
     ongoing: { name: 'minuscircle', text: 'Andamento' },
     finished: { name: 'checkcircle', text: 'Finalizada' },
-    undone: { name: 'closesquare', text: 'Faltantes' },
+    undone: { name: 'closesquare', text: 'Restantes' },
 };
 
 type ProCrisAppointmentCardProps = IFlexProps & {
@@ -61,15 +61,20 @@ const ProCrisAppointmentCard = ({
             return 'undone';
         }
     };
+
     return (
         <Flex
             flexDirection="row"
             alignItems="center"
             justifyContent="space-between"
-            opacity={disabled ? 0.7 : 1}
             {...props}
         >
-            <Flex width="14%" alignItems="center">
+            <Flex
+                flex="0.20"
+                alignItems="center"
+                justifyContent="flex-start"
+                opacity={disabled ? 0.4 : 1}
+            >
                 <Text textAlign="center" fontSize="md" fontWeight="700">
                     {format(dateBegin, 'HH:mm')}
                 </Text>
@@ -78,7 +83,7 @@ const ProCrisAppointmentCard = ({
                     height="1px"
                     borderRadius="10000px"
                     bgColor="black"
-                ></Flex>
+                />
                 <Text lineHeight="16px" textAlign="center" fontSize="xs">
                     {format(dateEnd, 'HH:mm')}
                 </Text>
@@ -92,12 +97,11 @@ const ProCrisAppointmentCard = ({
                 bgColor={color || 'purple.100'}
                 onPress={onPress}
                 enabled={!disabled}
-                opacity={disabled ? 0.3 : 1}
+                opacity={disabled ? 0.4 : 1}
             >
                 <Flex
-                    width="100%"
                     paddingX="10px"
-                    paddingY="10px"
+                    paddingY="9px"
                     flexDirection="row"
                     alignItems="center"
                     justifyContent="space-between"
@@ -120,7 +124,7 @@ const ProCrisAppointmentCard = ({
                             }
                             alt={`Aluno ${name}`}
                         />
-                        <Flex marginLeft="8px">
+                        <Flex marginLeft="6px">
                             <Text isTruncated>
                                 Aluno: <Text fontWeight="700">{name}</Text>
                             </Text>
@@ -132,11 +136,7 @@ const ProCrisAppointmentCard = ({
                             </Text>
                         </Flex>
                     </Flex>
-                    <Flex
-                        justifyContent="flex-end"
-                        alignItems="center"
-                        flex="0.22"
-                    >
+                    <Flex flex="0.23">
                         <Flex
                             width="100%"
                             justifyContent="flex-end"
@@ -144,7 +144,7 @@ const ProCrisAppointmentCard = ({
                         >
                             <Icon
                                 as={AntDesign}
-                                size="20px"
+                                size="21px"
                                 name={
                                     appointmentStatus[
                                         checkDateStatus(new Date())

@@ -2,12 +2,15 @@ import React from 'react';
 import { RefreshControl } from 'react-native';
 import { Flex, Text, Icon, HStack, FlatList, useDisclose } from 'native-base';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
-import { isToday, isSameDay, format } from 'date-fns';
+import { useNavigation } from '@react-navigation/native';
+import { isToday, isSameDay, format, isAfter } from 'date-fns';
 import {
     AntDesign,
     MaterialCommunityIcons,
     MaterialIcons,
 } from '@expo/vector-icons';
+
+import { Appointment } from 'app/entities/Appointment';
 
 import { PressableIcon } from 'app/components/atoms/PressableIcon';
 import {
@@ -16,23 +19,38 @@ import {
 } from 'app/components/molecules/ProCrisStagger';
 import { ProCrisAppointmentCard } from 'app/components/molecules/ProCrisAppointmentCard';
 
+import { useError } from 'app/hooks/Error';
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
 import { useStudentStore } from 'app/store/Student/Student.hook';
+import { useLoadingStore } from 'app/store/Loading/Loading.hook';
+import { useAlert } from 'app/store/Alert/Alert.hook';
 
 import { ModalCreateAppointment } from './ModalCreateAppointment';
+
+type GhostAppointments = Appointment & { isGhost: true };
 
 type AppointmentsProps = {
     children?: React.ReactNode;
 };
 const Appointments = ({}: AppointmentsProps) => {
-    const { students } = useStudentStore('list');
+    const navigation = useNavigation();
+    const { showError } = useError();
+    const { showAlertAsync } = useAlert();
+    const { setLoading } = useLoadingStore();
+    const { students, listStudents } = useStudentStore('list');
     const {
         appointments,
         selectedDate,
         loading,
         listAppointments,
         updateSelectedDate,
+        createTodaysRoutineAppointments,
+        getAppointmentsByRoutineDate,
     } = useAppointmentStore('all');
+
+    const [ghostAppointments, setGhostAppointments] = React.useState<
+        GhostAppointments[]
+    >([]);
 
     const filteredAppointments = React.useMemo(
         () =>
@@ -40,13 +58,15 @@ const Appointments = ({}: AppointmentsProps) => {
                 .filter((appointment) =>
                     isSameDay(appointment.date, selectedDate),
                 )
+                .concat(ghostAppointments)
+                .sort((a, b) => a.date.getTime() - b.date.getTime())
                 .map((appointment) => ({
                     ...appointment,
                     student: students.find(
                         (student) => student.id === appointment.id_student,
                     ),
                 })),
-        [appointments, selectedDate, students],
+        [appointments, selectedDate, ghostAppointments, students],
     );
 
     const {
@@ -65,14 +85,56 @@ const Appointments = ({}: AppointmentsProps) => {
         onOpen: onOpenDatePicker,
     } = useDisclose();
 
-    const onDatePickerChange = (_: Event, date?: Date | undefined) => {
-        const currentDate = date || selectedDate;
+    const onDatePickerChange = (_: Event, newDate?: Date | undefined) => {
+        const currentDate = newDate || selectedDate;
         onCloseDatePicker();
         updateSelectedDate(currentDate);
     };
 
+    const handleCreateRoutine = async () => {
+        try {
+            setLoading(true);
+            const { isConfirmed } = await showAlertAsync({
+                title: 'Deseja iniciar a rotina?',
+                description: `Essa ação iniciará a rotina do dia atual`,
+                cancelButtonText: 'Cancelar',
+                confirmButtomText: 'Iniciar',
+            });
+            if (!isConfirmed) {
+                return;
+            }
+            await createTodaysRoutineAppointments();
+        } catch (err) {
+            showError(err, { title: 'Atenção!', duration: 100000 });
+        } finally {
+            setLoading(false);
+        }
+    };
+    const handleGhostAppointments = async (date?: Date) => {
+        if (date && isAfter(date, new Date())) {
+            const appointments = await getAppointmentsByRoutineDate(date);
+            setGhostAppointments(
+                appointments.map((appointment) => ({
+                    ...appointment,
+                    isGhost: true,
+                })),
+            );
+        } else {
+            setGhostAppointments([]);
+        }
+    };
+
+    const fetchData = async () => {
+        await listStudents();
+        await listAppointments();
+    };
+
     React.useEffect(() => {
-        listAppointments();
+        handleGhostAppointments(selectedDate);
+    }, [selectedDate]);
+
+    React.useEffect(() => {
+        fetchData();
     }, []);
 
     return (
@@ -83,34 +145,30 @@ const Appointments = ({}: AppointmentsProps) => {
                     space="10px"
                     justifyContent="center"
                     alignItems="center"
-                    marginTop="10px"
+                    marginTop="12px"
                     paddingX="20px"
                 >
-                    <Flex>
-                        <Text fontSize="lg" fontWeight="700" lineHeight="22px">
-                            {isToday(selectedDate) && 'Hoje: '}
-                            {format(selectedDate, 'dd/MM/yyyy')}
-                        </Text>
-                    </Flex>
-                    <Flex flexDirection="row">
-                        <PressableIcon
-                            size="32px"
-                            marginTop="0px"
-                            marginRight="-10px"
-                            bgColor="purple.300"
-                            borderWidth="1px"
-                            borderColor="gold.300"
-                            icon={
-                                <Icon
-                                    as={AntDesign}
-                                    name="filter"
-                                    size="22px"
-                                    color="white"
-                                />
-                            }
-                            onPress={onOpenDatePicker}
-                        />
-                    </Flex>
+                    <Text fontSize="lg" fontWeight="700" lineHeight="22px">
+                        {isToday(selectedDate) && 'Hoje: '}
+                        {format(selectedDate, 'dd/MM/yyyy')}
+                    </Text>
+                    <PressableIcon
+                        size="32px"
+                        marginTop="0px"
+                        marginRight="-10px"
+                        bgColor="purple.300"
+                        borderWidth="1px"
+                        borderColor="gold.300"
+                        icon={
+                            <Icon
+                                as={AntDesign}
+                                name="filter"
+                                size="22px"
+                                color="white"
+                            />
+                        }
+                        onPress={onOpenDatePicker}
+                    />
                 </HStack>
                 <FlatList
                     flex="1"
@@ -131,25 +189,33 @@ const Appointments = ({}: AppointmentsProps) => {
                     renderItem={({ item: appointment, index }) => (
                         <ProCrisAppointmentCard
                             marginTop={index > 0 ? '10px' : '0px'}
-                            name={appointment.student.name}
-                            observation={appointment.student.observation}
-                            avatar={appointment.student.avatar}
-                            color={appointment.student.color}
+                            name={appointment.student?.name}
+                            observation={appointment.student?.observation}
+                            avatar={appointment.student?.avatar}
+                            color={appointment.student?.color}
                             date={appointment.date}
                             cost={appointment.cost}
+                            disabled={appointment.isGhost}
+                            onPress={() =>
+                                navigation.navigate('ManageAppointment', {
+                                    title: 'Editar Aula',
+                                })
+                            }
                         />
                     )}
+                    keyExtractor={(item) => item.id}
                     contentContainerStyle={{
                         paddingBottom: 10,
                         paddingHorizontal: 10,
                     }}
-                    keyExtractor={(item) => item.id}
                 />
             </Flex>
             <ProCrisStagger isOpen={isOpenStagger} onToggle={onToggleStagger}>
                 <ProCrisStaggerIcon
-                    label="Iniciar Dia"
-                    bgColor="indigo.500"
+                    label="Iniciar Rotina"
+                    bgColor="#8C7ECF"
+                    borderWidth="1px"
+                    borderColor="gold.500"
                     icon={
                         <Icon
                             as={MaterialIcons}
@@ -158,10 +224,13 @@ const Appointments = ({}: AppointmentsProps) => {
                             color="warmGray.50"
                         />
                     }
+                    onPress={handleCreateRoutine}
                 />
                 <ProCrisStaggerIcon
                     label="Criar Aula"
-                    bgColor="yellow.400"
+                    bgColor="#996074"
+                    borderWidth="1px"
+                    borderColor="gold.500"
                     icon={
                         <Icon
                             as={MaterialCommunityIcons}

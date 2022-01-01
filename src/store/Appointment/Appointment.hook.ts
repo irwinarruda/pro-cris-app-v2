@@ -11,6 +11,7 @@ import {
     actionAppointmentUpdateDate,
     actionAppointmentUpdateLoading,
 } from 'app/store/Appointment/Appointment.actions';
+import { Appointment } from 'app/entities/Appointment';
 
 const neededStates = {
     all: ['appointments', 'selectedDate', 'loading'],
@@ -21,8 +22,10 @@ type NeededStatesKeys = keyof typeof neededStates;
 
 type AppointmentStoreFunctions = {
     listAppointments(): Promise<void>;
+    createTodaysRoutineAppointments(): Promise<void>;
     createAppointment(appointment: FormValues): Promise<void>;
     updateSelectedDate(date: Date): void;
+    getAppointmentsByRoutineDate(date: Date): Promise<Appointment[]>;
 };
 
 export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
@@ -39,6 +42,10 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
     });
 
     const dispatch = useDispatch();
+
+    const updateSelectedDate = React.useCallback((date: Date) => {
+        dispatch(actionAppointmentUpdateDate(date));
+    }, []);
 
     const listAppointments = React.useCallback(async () => {
         dispatch(actionAppointmentUpdateLoading(true));
@@ -57,14 +64,32 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
         [listAppointments],
     );
 
-    const updateSelectedDate = React.useCallback((date: Date) => {
-        dispatch(actionAppointmentUpdateDate(date));
-    }, []);
+    const createTodaysRoutineAppointments = React.useCallback(async () => {
+        const dateToday = new Date();
+        const appointmentService = new AppointmentService();
+        await appointmentService.createRoutineByDate(dateToday);
+        await listAppointments();
+    }, [listAppointments]);
+
+    const getAppointmentsByRoutineDate = React.useCallback(
+        async (date: Date): Promise<Appointment[]> => {
+            const appointmentService = new AppointmentService();
+            dispatch(actionAppointmentUpdateLoading(true));
+            const appointments = await appointmentService.listRoutineByDate(
+                date,
+            );
+            dispatch(actionAppointmentUpdateLoading(false));
+            return appointments;
+        },
+        [],
+    );
 
     return {
         ...hooks,
         listAppointments,
         createAppointment,
         updateSelectedDate,
+        createTodaysRoutineAppointments,
+        getAppointmentsByRoutineDate,
     };
 };

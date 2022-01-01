@@ -11,6 +11,14 @@ import { Appointment } from 'app/entities/Appointment';
 
 type CreateStudentRequestBody = FormValues;
 type UpdateStudentRequestBody = FormValues;
+type ListStudentQueryParams = {
+    costs?: boolean;
+    schedules?: boolean;
+    appointments?: boolean;
+};
+type ListStudentByRoutineDateResponse = (Omit<Student, 'costs'> & {
+    cost: Cost;
+})[];
 
 class StudentService extends AppService {
     public async createStudent(body: CreateStudentRequestBody): Promise<void> {
@@ -151,7 +159,9 @@ class StudentService extends AppService {
         return student;
     }
 
-    public async listStudents(): Promise<StudentCover[]> {
+    public async listStudents(
+        params?: ListStudentQueryParams,
+    ): Promise<StudentCover[]> {
         if (!auth.currentUser) {
             throw { message: 'Usuário não autenticado' };
         }
@@ -163,14 +173,28 @@ class StudentService extends AppService {
         const students = [] as StudentCover[];
         const studentSnp = await studentColl.orderBy('name').get();
         for (let doc of studentSnp.docs) {
-            const appointments = await this.getCollectionData<Appointment>(
-                doc.ref.collection('appointments'),
-            );
             const obj = {
                 id: doc.id,
-                appointments,
                 ...doc.data(),
             } as StudentCover;
+            if (params?.appointments) {
+                const appointments = await this.getCollectionData<Appointment>(
+                    doc.ref.collection('appointments'),
+                );
+                obj.appointments = appointments;
+            }
+            if (params?.costs) {
+                const costs = await this.getCollectionData<Cost>(
+                    doc.ref.collection('costs'),
+                );
+                obj.costs = costs;
+            }
+            if (params?.schedules) {
+                const schedules = await this.getCollectionData<Schedule>(
+                    doc.ref.collection('schedules'),
+                );
+                obj.schedules = schedules;
+            }
             students.push(obj);
         }
 
@@ -190,6 +214,36 @@ class StudentService extends AppService {
 
         const costs = await this.getCollectionData<Cost>(studentCostRef);
         return costs.filter((cost) => !cost.is_deleted);
+    }
+
+    public async listStudentsByRoutineDate(
+        date: Date,
+    ): Promise<ListStudentByRoutineDateResponse> {
+        const students = await this.listStudents({
+            schedules: true,
+            costs: true,
+        });
+
+        const treatedStudents = students
+            .map((student) => {
+                const { costs, schedules, ...rest } = student;
+                const cost = costs?.find((co) => co.is_default);
+                const acceptedSchedules =
+                    schedules?.filter(
+                        (sc) =>
+                            sc.is_default &&
+                            Number(sc.week_day) === date.getDay(),
+                    ) || [];
+                return {
+                    ...rest,
+                    cost: cost as Cost,
+                    schedules: acceptedSchedules,
+                };
+            })
+            .filter(
+                (student) => student.schedules?.length > 0 && !!student.cost,
+            );
+        return treatedStudents;
     }
 }
 

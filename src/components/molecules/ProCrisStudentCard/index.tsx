@@ -56,10 +56,10 @@ const ProCrisStudentCard = ({
                         alt={`Aluno ${name}`}
                     />
                     <Flex marginLeft="8px">
-                        <Text>
+                        <Text isTruncated>
                             Aluno: <Text fontWeight="700">{name}</Text>
                         </Text>
-                        <Text fontSize="xs" lineHeight="14px">
+                        <Text fontSize="xs" lineHeight="14px" isTruncated>
                             Responsável:{' '}
                             <Text fontWeight="700" fontSize="xs">
                                 {name_caregiver}

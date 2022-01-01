@@ -14,6 +14,15 @@ class DateHelpers {
         return new Date(year, month - 1, day, hours, seconds);
     }
 
+    public static getDateByHHssString(date: Date, timeOfTheDay: string) {
+        const copiedDate = new Date(date);
+        const [hour, minute] = timeOfTheDay
+            .split(':')
+            .map((value) => Number(value));
+        copiedDate.setHours(hour, minute);
+        return copiedDate;
+    }
+
     public static isBetweenTwoDates(
         date: Date,
         { start, end }: { start: Date; end: Date },

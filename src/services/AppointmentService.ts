@@ -1,10 +1,12 @@
 import { v4 as uuid } from 'uuid';
-import { addHours, addMinutes } from 'date-fns';
-import { AppService } from './AppService';
+import { format } from 'date-fns';
 import { firestore, auth } from './firebaseClient';
 import { DateHelpers } from 'app/utils/DateHelpers';
 import { FormValues } from 'app/forms/createAppointment';
 import { Appointment } from 'app/entities/Appointment';
+
+import { AppService } from './AppService';
+import { StudentService } from './StudentService';
 
 type CreateAppointmentRequestBody = FormValues;
 
@@ -62,12 +64,88 @@ class AppointmentService extends AppService {
 
         const appointments = (
             await this.getCollectionData<any>(appointmentColl as any)
-        ).map((item) => ({
-            ...item,
-            date: item.date.toDate(),
-        })) as Appointment[];
+        )
+            .map((item) => ({
+                ...item,
+                date: item.date.toDate(),
+            }))
+            .filter(
+                (item) => !item.is_paid && !item.is_cancelled,
+            ) as Appointment[];
 
         return appointments;
+    }
+
+    public async listRoutineByDate(date: Date): Promise<Appointment[]> {
+        const studentsService = new StudentService();
+        const students = await studentsService.listStudentsByRoutineDate(date);
+        const appointments = [] as Appointment[];
+        students.forEach((student) =>
+            student.schedules.forEach((schedule) => {
+                appointments.push({
+                    id: uuid(),
+                    id_student: student.id,
+                    is_extra: false,
+                    date: DateHelpers.getDateByHHssString(
+                        date,
+                        schedule.day_time,
+                    ),
+                    cost: student.cost,
+                    is_cancelled: false,
+                    is_paid: false,
+                    observation: '',
+                });
+            }),
+        );
+
+        return appointments;
+    }
+
+    public async createRoutineByDate(date: Date): Promise<void> {
+        const studentsService = new StudentService();
+        const treatedStudents = await studentsService.listStudentsByRoutineDate(
+            date,
+        );
+
+        let errors = [] as string[];
+
+        for (let student of treatedStudents) {
+            for (let schedule of student.schedules) {
+                try {
+                    await this.createAppointment({
+                        id: '',
+                        id_student: student.id,
+                        cost: {
+                            id: student.cost!.id,
+                            price: student.cost!.price,
+                            time: student.cost!.time,
+                        },
+                        date: format(
+                            DateHelpers.getDateByHHssString(
+                                date,
+                                schedule.day_time,
+                            ),
+                            'dd/MM/yyyy HH:mm',
+                        ),
+                        is_extra: false,
+                    });
+                } catch (err) {
+                    errors.push(
+                        `- Aula de ${format(
+                            DateHelpers.getDateByHHssString(
+                                date,
+                                schedule.day_time,
+                            ),
+                            'HH:mm',
+                        )} para ${student.name} não foi cadastrada;`,
+                    );
+                }
+            }
+        }
+
+        if (errors.length > 0) {
+            throw { message: errors };
+        }
     }
 
     public isValidAppointment(

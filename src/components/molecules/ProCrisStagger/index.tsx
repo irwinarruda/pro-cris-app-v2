@@ -37,6 +37,7 @@ const ProCrisStaggerIcon = ({
         <Pressable
             borderRadius="10000px"
             onPress={handleButtonPress}
+            shadow="1"
             {...props}
         >
             <Flex

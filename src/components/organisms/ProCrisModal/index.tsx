@@ -1,12 +1,9 @@
 import React from 'react';
-import { Modal, IBoxProps, HStack, Icon, Text, StatusBar } from 'native-base';
+import { Modal, IBoxProps, Icon, Text, StatusBar } from 'native-base';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AntDesign } from '@expo/vector-icons';
 
-import { Button } from 'app/components/atoms/Button';
 import { PressableIcon } from 'app/components/atoms/PressableIcon';
-
-import { useAlert } from 'app/store/Alert/Alert.hook';
 
 interface IModalProps extends IBoxProps {
     title?: React.ReactNode;

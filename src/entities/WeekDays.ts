@@ -1,19 +1,19 @@
 enum WeekDays {
-    Monday = 'Monday',
-    Tuesday = 'Tuesday',
-    Wednesday = 'Wednesday',
-    Thursday = 'Thursday',
-    Friday = 'Friday',
-    Saturday = 'Saturday',
-    Sunday = 'Sunday',
+    Monday = '1',
+    Tuesday = '2',
+    Wednesday = '3',
+    Thursday = '4',
+    Friday = '5',
+    Saturday = '6',
+    Sunday = '0',
 }
 
 const WeekDaysLabels = {
-    [`${WeekDays.Monday}`]: 'Segunda-Feira',
-    [`${WeekDays.Tuesday}`]: 'Terça-Feira',
-    [`${WeekDays.Wednesday}`]: 'Quarta-Feira',
-    [`${WeekDays.Thursday}`]: 'Quinta-Feira',
-    [`${WeekDays.Friday}`]: 'Sexta-Feira',
+    [`${WeekDays.Monday}`]: 'Segunda',
+    [`${WeekDays.Tuesday}`]: 'Terça',
+    [`${WeekDays.Wednesday}`]: 'Quarta',
+    [`${WeekDays.Thursday}`]: 'Quinta',
+    [`${WeekDays.Friday}`]: 'Sexta',
     [`${WeekDays.Saturday}`]: 'Sábado',
     [`${WeekDays.Sunday}`]: 'Domingo',
 };

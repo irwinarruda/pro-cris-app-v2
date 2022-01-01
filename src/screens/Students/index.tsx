@@ -45,8 +45,12 @@ const Students = ({}: StudentsProps) => {
         }
     };
 
+    const fetchData = async () => {
+        await listStudents();
+    };
+
     React.useEffect(() => {
-        listStudents();
+        fetchData();
     }, []);
 
     return (

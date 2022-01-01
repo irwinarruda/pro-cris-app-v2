@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProCrisHeader } from 'app/components/organisms/ProCrisHeader';
 
 import { ManageStudent } from 'app/screens/ManageStudent';
+import { ManageAppointment } from 'app/screens/ManageAppointment';
 import { TabRoute } from './TabRoute';
 
 declare global {
@@ -11,6 +12,7 @@ declare global {
         interface RootParamList {
             TabRoute: undefined;
             ManageStudent: { title: string; type: 'create' | 'edit' | 'view' };
+            ManageAppointment: { title: string };
         }
     }
 }
@@ -26,6 +28,7 @@ const AppRoute = ({}: AppRouteProps) => {
         <Navigator screenOptions={{ header: ProCrisHeader }}>
             <Screen name="TabRoute" component={TabRoute} />
             <Screen name="ManageStudent" component={ManageStudent} />
+            <Screen name="ManageAppointment" component={ManageAppointment} />
         </Navigator>
     );
 };

@@ -5,6 +5,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Button } from 'app/components/atoms/Button';
 
 import { useAlert } from 'app/store/Alert/Alert.hook';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    actionAlertUpdateIsOpen,
+    actionAlertUpdateTaskStatus,
+} from 'app/store/Alert/Alert.actions';
 
 interface IModalProps extends IBoxProps {
     defaultIsOpen?: boolean;
@@ -34,6 +39,7 @@ const ProCrisAlert = ({ ...props }: ProCrisAlertProps) => {
         },
         closeModal,
     } = useAlert('all');
+
     return (
         <Modal
             isOpen={isOpen}

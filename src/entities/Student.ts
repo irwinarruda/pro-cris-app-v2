@@ -19,6 +19,10 @@ interface Student {
     appointments: Appointment[];
 }
 
-type StudentCover = Omit<Student, 'costs' | 'schedules'>;
+type StudentCover = Omit<Student, 'costs' | 'schedules'> & {
+    schedules?: Schedule[];
+    costs?: Cost[];
+    appointments?: Appointment[];
+};
 
 export type { Student, StudentCover };
