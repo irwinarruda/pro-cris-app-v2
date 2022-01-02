@@ -28,8 +28,7 @@ type AppointmentStoreFunctions = {
     updateAppointmentOptions(appointment: UpdateFormValues): Promise<void>;
     updateSelectedDate(date: Date): void;
     getAppointmentsByRoutineDate(date: Date): Promise<Appointment[]>;
-    payAppointment(appointment: Appointment): Promise<void>;
-    payAllAppointments(appointments: Appointment[]): Promise<void>;
+    simpleUpdateAppointment(appointment: UpdateFormValues): Promise<void>;
 };
 
 export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
@@ -77,34 +76,10 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
         [listAppointments],
     );
 
-    const payAppointment = React.useCallback(
-        async (appointment: Appointment) => {
-            const body = {
-                id: appointment.id,
-                is_cancelled: appointment.is_cancelled,
-                is_extra: appointment.is_extra,
-                is_paid: true,
-                observation: appointment.observation,
-            };
+    const simpleUpdateAppointment = React.useCallback(
+        async (appointment: UpdateFormValues) => {
             const appointmentService = new AppointmentService();
-            await appointmentService.updateAppointment(body);
-        },
-        [],
-    );
-
-    const payAllAppointments = React.useCallback(
-        async (appointments: Appointment[]) => {
-            const appointmentService = new AppointmentService();
-            for (let appointment of appointments) {
-                const body = {
-                    id: appointment.id,
-                    is_cancelled: appointment.is_cancelled,
-                    is_extra: appointment.is_extra,
-                    is_paid: true,
-                    observation: appointment.observation,
-                };
-                await appointmentService.updateAppointment(body);
-            }
+            await appointmentService.updateAppointment(appointment);
         },
         [],
     );
@@ -131,8 +106,7 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
 
     return {
         ...hooks,
-        payAppointment,
-        payAllAppointments,
+        simpleUpdateAppointment,
         updateAppointmentOptions,
         listAppointments,
         createAppointment,

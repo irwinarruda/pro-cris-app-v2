@@ -19,6 +19,9 @@ type SummaryContextProps = {
 
     summaryType: SummaryType;
     setSummaryType: React.Dispatch<React.SetStateAction<SummaryType>>;
+
+    handleHydrateModalState: () => void;
+    handleEditAppointmentPress: (studentId: string) => void;
 };
 type SummaryProviderProps = {
     children: React.ReactNode;
@@ -41,6 +44,23 @@ const SummaryProvider = ({ children }: SummaryProviderProps) => {
     const [summaryType, setSummaryType] =
         React.useState<SummaryType>('notpaid');
 
+    const handleHydrateModalState = React.useCallback(() => {
+        if (summaryStudentId) {
+            onOpenModalOptionsSummary();
+            onOpenModalSummary();
+            setSummaryStudentId('');
+        }
+    }, [summaryStudentId]);
+
+    const handleEditAppointmentPress = React.useCallback(
+        (studentId: string) => {
+            onCloseModalOptionsSummary();
+            onCloseModalSummary();
+            setSummaryStudentId(studentId);
+        },
+        [],
+    );
+
     return (
         <SummaryContext.Provider
             value={{
@@ -54,6 +74,8 @@ const SummaryProvider = ({ children }: SummaryProviderProps) => {
                 setSummaryStudentId,
                 summaryType,
                 setSummaryType,
+                handleHydrateModalState,
+                handleEditAppointmentPress,
             }}
         >
             {children}

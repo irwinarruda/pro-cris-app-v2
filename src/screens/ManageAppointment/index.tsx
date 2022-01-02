@@ -177,6 +177,8 @@ const ManageAppointment = ({ ...props }: ManageAppointmentProps) => {
     const { showError } = useError();
     const { showSuccess } = useSuccess();
     const { summaryStudentId, setSummaryStudentId } = useSummary();
+    const { selectedStudent, updateSelectedUserAppointmentOptions } =
+        useStudentStore('manage');
     const { setLoading } = useLoadingStore();
     const { updateAppointmentOptions } = useAppointmentStore();
 
@@ -189,8 +191,8 @@ const ManageAppointment = ({ ...props }: ManageAppointmentProps) => {
             let successTitle = '';
             await updateAppointmentOptions(values);
             successTitle = 'Aula editada com sucesso!';
-            if (summaryStudentId) {
-                setSummaryStudentId('update');
+            if (summaryStudentId && !!selectedStudent) {
+                updateSelectedUserAppointmentOptions(selectedStudent, values);
             }
             navigation.goBack();
             showSuccess({ title: successTitle });

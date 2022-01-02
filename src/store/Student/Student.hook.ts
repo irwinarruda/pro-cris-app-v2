@@ -5,6 +5,8 @@ import { FormValues } from 'app/forms/manageStudent';
 import { StudentService } from 'app/services/StudentService';
 import { Cost } from 'app/entities/Cost';
 import { Student } from 'app/entities/Student';
+import { Appointment } from 'app/entities/Appointment';
+import { FormValues as AppointmentOptionsFormValues } from 'app/forms/manageAppointment';
 
 import { ApplicationStores } from 'app/store/Store';
 import { StudentStore } from 'app/store/Student/Student.types';
@@ -39,6 +41,14 @@ type StudentStoreFunctions = {
     listStudentCosts(studentId: string): Promise<Cost[]>;
     deleteStudent(studentId: string): Promise<void>;
     setStudentLoading(loading: boolean): void;
+    updateSelectedUserAppointmentOptions(
+        selectedStudent: Student,
+        appointment: AppointmentOptionsFormValues,
+    ): void;
+    updateAllSelectedUserAppointmentOptions(
+        selectedStudent: Student,
+        appointments: AppointmentOptionsFormValues[],
+    ): void;
 };
 
 export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
@@ -123,6 +133,61 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
         [listStudents],
     );
 
+    const updateSelectedUserAppointmentOptions = React.useCallback(
+        (
+            selectedStudent: Student,
+            appointment: AppointmentOptionsFormValues,
+        ): void => {
+            const student = {
+                ...selectedStudent,
+                appointments: selectedStudent.appointments.map((app) => {
+                    if (app.id === appointment.id) {
+                        return { ...app, ...appointment };
+                    } else {
+                        return app;
+                    }
+                }),
+            };
+            dispatch(actionStudentSelect(student));
+        },
+        [],
+    );
+
+    const updateAllSelectedUserAppointmentOptions = React.useCallback(
+        (
+            selectedStudent: Student,
+            appointments: AppointmentOptionsFormValues[],
+        ): void => {
+            let newAppointments = [
+                ...appointments,
+            ] as AppointmentOptionsFormValues[];
+            let newFilteredAppointments = selectedStudent.appointments.map(
+                (app) => {
+                    let hasFiltered = undefined as
+                        | AppointmentOptionsFormValues
+                        | undefined;
+                    newAppointments = newAppointments.filter((newApp) => {
+                        if (newApp.id === app.id) {
+                            hasFiltered = { ...newApp };
+                        }
+                        return newApp.id !== app.id;
+                    });
+                    if (hasFiltered) {
+                        return { ...app, ...hasFiltered };
+                    } else {
+                        return app;
+                    }
+                },
+            );
+            const student = {
+                ...selectedStudent,
+                appointments: newFilteredAppointments,
+            };
+            dispatch(actionStudentSelect(student));
+        },
+        [],
+    );
+
     const setSelectedStudent = React.useCallback((student: Student) => {
         dispatch(actionStudentSelect(student));
     }, []);
@@ -151,5 +216,7 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
         deleteStudent,
         listStudentCosts,
         listStudentWithAppointments,
+        updateSelectedUserAppointmentOptions,
+        updateAllSelectedUserAppointmentOptions,
     };
 };

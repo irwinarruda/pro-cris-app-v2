@@ -10,6 +10,7 @@ type FormValues = {
     };
     date: string;
     is_extra: boolean;
+    is_paid: boolean;
 };
 
 const initialValues = {
@@ -22,6 +23,7 @@ const initialValues = {
     },
     date: '',
     is_extra: true,
+    is_paid: false,
 };
 
 const validationSchema = yup.object().shape({
@@ -33,6 +35,7 @@ const validationSchema = yup.object().shape({
     }),
     date: yup.string().required('Esse campo é obrigatório'),
     is_extra: yup.boolean(),
+    is_paid: yup.boolean(),
 });
 
 export type { FormValues };

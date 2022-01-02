@@ -1,13 +1,17 @@
 import React from 'react';
+import { RefreshControl } from 'react-native';
+import { FlatList, Flex, Icon, Hidden } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { AntDesign } from '@expo/vector-icons';
-import { RefreshControl } from 'react-native';
-import { FlatList, Flex, Icon } from 'native-base';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 
+import { Button } from 'app/components/atoms/Button';
 import { FAB } from 'app/components/atoms/FAB';
 import { ProCrisStudentCard } from 'app/components/molecules/ProCrisStudentCard';
 import { ProCrisStatus } from 'app/components/organisms/ProCrisStatus';
+import { ProCrisBillintTemplate } from 'app/templates/ProCrisBillintTemplate';
 
 import { useSummary } from 'app/hooks/Summary';
 import { useError } from 'app/hooks/Error';
@@ -26,9 +30,7 @@ const Students = (props: StudentsProps) => {
         isOpenModalOptionsSummary,
         onCloseModalOptionsSummary,
         onOpenModalOptionsSummary,
-        onOpenModalSummary,
-        summaryStudentId,
-        setSummaryStudentId,
+        handleHydrateModalState,
     } = useSummary();
     const {
         loading,
@@ -36,7 +38,6 @@ const Students = (props: StudentsProps) => {
         listStudents,
         listStudent,
         listStudentWithAppointments,
-        setStudentLoading,
     } = useStudentStore('list');
     const [screenFocus, setScreenFocus] = React.useState<boolean>(false);
 
@@ -74,30 +75,12 @@ const Students = (props: StudentsProps) => {
         }
     };
 
-    const handleOpenSummaryBack = async (studentId: string) => {
-        try {
-            setStudentLoading(true);
-            await listStudentWithAppointments(studentId);
-            setSummaryStudentId('');
-        } catch (err) {
-            showError(err, { title: 'Erro ao buscar relatórios' });
-        } finally {
-            setStudentLoading(false);
-        }
-    };
-
     const fetchData = async () => {
         await listStudents();
     };
 
     React.useEffect(() => {
-        if (summaryStudentId) {
-            onOpenModalOptionsSummary();
-            onOpenModalSummary();
-            if (summaryStudentId === 'update') {
-                handleOpenSummaryBack(summaryStudentId);
-            }
-        }
+        handleHydrateModalState();
     }, [screenFocus]);
 
     React.useEffect(() => {
@@ -108,6 +91,17 @@ const Students = (props: StudentsProps) => {
         return unsubscribe;
     }, []);
 
+    const pictureRef = React.useRef<any>(null);
+
+    const onButtonPress = async () => {
+        const result = await captureRef(pictureRef, {
+            result: 'tmpfile',
+            quality: 1,
+            format: 'png',
+        });
+        await Sharing.shareAsync(result);
+        console.log(result);
+    };
     return (
         <>
             <Flex flex="1" bgColor="#ffffff">
@@ -152,6 +146,10 @@ const Students = (props: StudentsProps) => {
                     keyExtractor={(item) => item.id}
                 />
             </Flex>
+            <ProCrisBillintTemplate ref={pictureRef} />
+            <Button marginY="20px" onPress={onButtonPress}>
+                Printar
+            </Button>
             <ModalAppointmentSummary
                 isOpen={isOpenModalOptionsSummary}
                 onClose={onCloseModalOptionsSummary}

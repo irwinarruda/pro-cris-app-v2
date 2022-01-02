@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { Appointment } from 'app/entities/Appointment';
 import { Student } from 'app/entities/Student';
+import { FormValues } from 'app/forms/manageAppointment';
 import { DateHelpers } from 'app/utils/DateHelpers';
 
 import { Button } from 'app/components/atoms/Button';
@@ -39,21 +40,18 @@ type ModalSummaryProps = {
 
 const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
     const navigation = useNavigation();
-    const { selectedStudent, loading, setSelectedStudent } =
-        useStudentStore('manage');
-    const { updateAppointmentOptions, payAllAppointments, payAppointment } =
-        useAppointmentStore();
+    const {
+        selectedStudent,
+        loading,
+        updateSelectedUserAppointmentOptions,
+        updateAllSelectedUserAppointmentOptions,
+    } = useStudentStore('manage');
+    const { simpleUpdateAppointment } = useAppointmentStore();
     const { showAlertAsync } = useAlert();
     const { showError } = useError();
     const { showSuccess } = useSuccess();
     const { setLoading } = useLoadingStore();
-
-    const {
-        summaryType,
-        onCloseModalOptionsSummary,
-        onCloseModalSummary,
-        setSummaryStudentId,
-    } = useSummary();
+    const { summaryType, handleEditAppointmentPress } = useSummary();
 
     const filteredAppointments = React.useMemo(() => {
         if (summaryType === 'notpaid') {
@@ -79,9 +77,7 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
             ),
             'HH:mm',
         )}`;
-        onCloseModalOptionsSummary();
-        onCloseModalSummary();
-        setSummaryStudentId(appointment.student.id);
+        handleEditAppointmentPress(appointment.student.id);
         navigation.navigate('ManageAppointment', {
             title: dateString,
             persistModal: true,
@@ -109,18 +105,16 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
                 return;
             }
 
+            const body = {
+                id: appointment.id,
+                is_cancelled: appointment.is_cancelled,
+                is_extra: appointment.is_extra,
+                is_paid: true,
+                observation: appointment.observation,
+            };
             setLoading(true);
-            await payAppointment(appointment);
-
-            const newAppointments = selectedStudent.appointments.filter(
-                (student) => student.id !== appointment.id,
-            );
-            newAppointments.push({ ...appointment, is_paid: true });
-
-            setSelectedStudent({
-                ...selectedStudent,
-                appointments: newAppointments,
-            });
+            await simpleUpdateAppointment(body);
+            updateSelectedUserAppointmentOptions(selectedStudent, body);
 
             showSuccess({
                 title: 'Sucesso!',
@@ -148,28 +142,25 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
                 return;
             }
             setLoading(true);
-            await payAllAppointments(filteredAppointments);
-
-            let newAppointments = [...filteredAppointments] as Appointment[];
-            let newFilteredAppointments = selectedStudent.appointments.map(
-                (app) => {
-                    let hasFiltered = false;
-                    newAppointments = newAppointments.filter((newApp) => {
-                        if (newApp.id === app.id) {
-                            hasFiltered = true;
-                        }
-                        return newApp.id !== app.id;
-                    });
-                    return {
-                        ...app,
-                        is_paid: hasFiltered || app.is_paid,
-                    };
-                },
+            let newAppointments = [] as FormValues[];
+            for (let appointment of filteredAppointments) {
+                const body = {
+                    id: appointment.id,
+                    is_cancelled: appointment.is_cancelled,
+                    is_extra: appointment.is_extra,
+                    is_paid: true,
+                    observation: appointment.observation,
+                };
+                await simpleUpdateAppointment(body);
+                newAppointments.push(body);
+            }
+            updateAllSelectedUserAppointmentOptions(
+                selectedStudent,
+                newAppointments,
             );
-
-            setSelectedStudent({
-                ...selectedStudent,
-                appointments: [...newFilteredAppointments],
+            showSuccess({
+                title: 'Sucesso!',
+                description: 'Todas as Aulas foram pagas com sucesso!',
             });
         } catch (err) {
             showError(err, { title: 'Erro ao pagar todas Aulas' });

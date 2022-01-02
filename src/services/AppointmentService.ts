@@ -36,8 +36,8 @@ class AppointmentService extends AppService {
             is_extra: appointment.is_extra,
             date: DateHelpers.getDateByDDMMYYYYHHSSString(appointment.date),
             cost: appointment.cost,
+            is_paid: appointment.is_paid,
             is_cancelled: false,
-            is_paid: false,
             observation: '',
         } as Appointment;
 
@@ -92,9 +92,7 @@ class AppointmentService extends AppService {
                 ...item,
                 date: item.date.toDate(),
             }))
-            .filter(
-                (item) => !item.is_paid && !item.is_cancelled,
-            ) as Appointment[];
+            .filter((item) => !item.is_cancelled) as Appointment[];
 
         return appointments;
     }
@@ -175,6 +173,7 @@ class AppointmentService extends AppService {
                             'dd/MM/yyyy HH:mm',
                         ),
                         is_extra: false,
+                        is_paid: false,
                     });
                 } catch (err) {
                     errors.push(
@@ -208,7 +207,7 @@ class AppointmentService extends AppService {
         };
 
         const validDbAppointments = dbAppointments.filter((app) => {
-            return !app.is_cancelled && !app.is_paid;
+            return !app.is_cancelled;
         });
 
         const isValidDate = validDbAppointments.every((app) => {

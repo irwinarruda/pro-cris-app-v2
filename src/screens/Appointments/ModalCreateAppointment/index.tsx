@@ -37,7 +37,6 @@ const ModalCreateAppointmentComponent = ({
     const [costs, setCosts] = React.useState<Cost[]>([]);
 
     const handleModalClose = () => {
-        resetForm();
         onClose();
     };
 
@@ -101,6 +100,9 @@ const ModalCreateAppointmentComponent = ({
                         label="Escolha uma data"
                     />
                     <FKCheckbox name="is_extra">É aula extra?</FKCheckbox>
+                    <FKCheckbox name="is_paid" marginTop="10px">
+                        Aula paga antecipadamente?
+                    </FKCheckbox>
                 </Flex>
             </Modal.Body>
             <Modal.Footer paddingTop="8px" paddingBottom="8px">
@@ -139,7 +141,6 @@ const ModalCreateAppointment = ({ ...props }: ModalCreateAppointmentProps) => {
             setLoading(true);
             await createAppointment(values);
             showSuccess({ title: 'Aula criada com sucesso' });
-            formHelpers.resetForm();
         } catch (err) {
             showError(err, { title: 'Erro ao criar Aula' });
         } finally {
