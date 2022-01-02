@@ -1,6 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { AppService } from './AppService';
-import { auth, firestore, firebase, storage } from './firebaseClient';
+import { auth, firestore } from './firebaseClient';
 
 import { FormValues } from 'app/forms/manageStudent';
 
@@ -9,14 +8,25 @@ import { Cost } from 'app/entities/Cost';
 import { Schedule } from 'app/entities/Schedule';
 import { Appointment } from 'app/entities/Appointment';
 
+import { AppService } from './AppService';
+import { AppointmentService } from './AppointmentService';
+
 type CreateStudentRequestBody = FormValues;
 type UpdateStudentRequestBody = FormValues;
+type ListStudentsQueryParams = {
+    costs?: boolean;
+    schedules?: boolean;
+    appointments?: boolean;
+};
 type ListStudentQueryParams = {
     costs?: boolean;
     schedules?: boolean;
     appointments?: boolean;
 };
-type ListStudentByRoutineDateResponse = (Omit<Student, 'costs'> & {
+type ListStudentByRoutineDateResponse = (Omit<
+    Student,
+    'costs' | 'appointments'
+> & {
     cost: Cost;
 })[];
 
@@ -121,7 +131,16 @@ class StudentService extends AppService {
         await studentDocPath.update({ is_deleted: true });
     }
 
-    public async listStudent(studentId: string): Promise<Student | undefined> {
+    public async listStudent(
+        studentId: string,
+        params?: ListStudentQueryParams,
+    ): Promise<Student | undefined> {
+        const {
+            appointments = false,
+            costs = true,
+            schedules = true,
+        } = params || {};
+
         if (!auth.currentUser) {
             throw { message: 'Usuário não autenticado' };
         }
@@ -133,35 +152,45 @@ class StudentService extends AppService {
 
         const studentDoc = await studentDocPath.get();
         if (!studentDoc.exists) {
-            return;
+            throw { message: 'Aluno não encontrado!' };
         }
-        let student = {} as Student;
-
-        const costs = await this.getCollectionData<Cost>(
-            studentDoc.ref.collection('costs'),
-        );
-        const schedules = await this.getCollectionData<Schedule>(
-            studentDoc.ref.collection('schedules'),
-        );
-        const appointments = await this.getCollectionData<Appointment>(
-            studentDoc.ref.collection('appointments'),
-        );
 
         const obj = {
             id: studentDoc.id,
-            costs,
-            schedules,
-            appointments,
             ...studentDoc.data(),
         } as Student;
-        student = obj;
 
-        return student;
+        if (appointments) {
+            const appointmentService = new AppointmentService();
+            const appointmentsArr =
+                await appointmentService.listAppointmentsByStudent(studentId);
+            obj.appointments = appointmentsArr;
+        }
+        if (costs) {
+            const costsArr = await this.getCollectionData<Cost>(
+                studentDoc.ref.collection('costs'),
+            );
+            obj.costs = costsArr;
+        }
+        if (schedules) {
+            const schedulesArr = await this.getCollectionData<Schedule>(
+                studentDoc.ref.collection('schedules'),
+            );
+            obj.schedules = schedulesArr;
+        }
+
+        return obj;
     }
 
     public async listStudents(
-        params?: ListStudentQueryParams,
+        params?: ListStudentsQueryParams,
     ): Promise<StudentCover[]> {
+        const {
+            appointments = false,
+            costs = true,
+            schedules = true,
+        } = params || {};
+
         if (!auth.currentUser) {
             throw { message: 'Usuário não autenticado' };
         }
@@ -177,27 +206,28 @@ class StudentService extends AppService {
                 id: doc.id,
                 ...doc.data(),
             } as StudentCover;
-            if (params?.appointments) {
-                const appointments = await this.getCollectionData<Appointment>(
-                    doc.ref.collection('appointments'),
-                );
-                obj.appointments = appointments;
+            if (appointments) {
+                const appointmentsArr =
+                    await this.getCollectionData<Appointment>(
+                        doc.ref.collection('appointments'),
+                    );
+
+                obj.appointments = appointmentsArr;
             }
-            if (params?.costs) {
-                const costs = await this.getCollectionData<Cost>(
+            if (costs) {
+                const costsArr = await this.getCollectionData<Cost>(
                     doc.ref.collection('costs'),
                 );
-                obj.costs = costs;
+                obj.costs = costsArr;
             }
-            if (params?.schedules) {
-                const schedules = await this.getCollectionData<Schedule>(
+            if (schedules) {
+                const schedulesArr = await this.getCollectionData<Schedule>(
                     doc.ref.collection('schedules'),
                 );
-                obj.schedules = schedules;
+                obj.schedules = schedulesArr;
             }
             students.push(obj);
         }
-
         return students.filter((student) => !student.is_deleted);
     }
 

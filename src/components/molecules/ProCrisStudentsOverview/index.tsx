@@ -12,14 +12,23 @@ import { Pressable } from 'app/components/atoms/Pressable';
 import EmojiPlaceholder from 'app/assets/emoji-placeholder.png';
 
 type ProCrisStudentsOverviewProps = {
-    children?: React.ReactNode;
+    name?: string;
+    date_of_birth?: string;
+    name_caregiver?: string;
+    avatar?: string;
     isExpanded: boolean;
     setIsExpanded(isExpanded: boolean): void;
+    onPress?(pointerInside: boolean): void;
 };
 
 const ProCrisStudentsOverview = ({
     isExpanded,
+    name,
+    date_of_birth,
+    name_caregiver,
+    avatar,
     setIsExpanded,
+    onPress,
 }: ProCrisStudentsOverviewProps) => {
     const navigation = useNavigation();
 
@@ -36,28 +45,31 @@ const ProCrisStudentsOverview = ({
                     <Flex flex="1" flexDirection="row">
                         <Image
                             source={
-                                false
-                                    ? { uri: 'avatar' }
+                                avatar
+                                    ? { uri: avatar }
                                     : (EmojiPlaceholder as any)
                             }
-                            style={{ width: 60, height: 60 }}
+                            style={{
+                                width: 60,
+                                height: 60,
+                                borderRadius: 10000,
+                            }}
                             accessibilityLabel="Aluno"
                         />
                         <Flex marginLeft="15px">
                             <Text lineHeight="21px" fontSize="md" isTruncated>
                                 Aluno:{' '}
-                                <Text fontWeight="600">Irwin Arruda</Text>
+                                <Text fontWeight="600" fontSize="md">
+                                    {name}
+                                </Text>
                             </Text>
                             <Text lineHeight="16px" isTruncated>
                                 Nascimento:{' '}
-                                <Text fontWeight="600">07/01/2000</Text>
+                                <Text fontWeight="600">{date_of_birth}</Text>
                             </Text>
                             <Text lineHeight="13px" isTruncated>
                                 Responsável:{' '}
-                                <Text fontWeight="600">
-                                    Cristiani Arruda Cristiani Arruda Cristiani
-                                    Arruda Cristiani Arruda Cristiani Arruda
-                                </Text>
+                                <Text fontWeight="600">{name_caregiver}</Text>
                             </Text>
                         </Flex>
                     </Flex>
@@ -70,12 +82,7 @@ const ProCrisStudentsOverview = ({
                             size="50px"
                             icon={<AdjustmentsIcon size="22px" />}
                             marginRight="-13px"
-                            onPress={() =>
-                                navigation.navigate('ManageStudent', {
-                                    title: 'Editar Aluno',
-                                    type: 'edit',
-                                })
-                            }
+                            onPress={onPress}
                         />
                     </Flex>
                 </Flex>

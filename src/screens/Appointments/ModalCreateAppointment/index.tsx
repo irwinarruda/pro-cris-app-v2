@@ -96,6 +96,7 @@ const ModalCreateAppointmentComponent = ({
                         options={{
                             format: 'DD/MM/YYYY HH:mm:ss',
                         }}
+                        size="sm"
                         name="date"
                         label="Escolha uma data"
                     />

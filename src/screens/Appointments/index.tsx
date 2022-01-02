@@ -11,6 +11,7 @@ import {
 } from '@expo/vector-icons';
 
 import { Appointment } from 'app/entities/Appointment';
+import { DateHelpers } from 'app/utils/DateHelpers';
 
 import { PressableIcon } from 'app/components/atoms/PressableIcon';
 import {
@@ -48,6 +49,22 @@ const Appointments = ({}: AppointmentsProps) => {
         getAppointmentsByRoutineDate,
     } = useAppointmentStore('all');
 
+    const {
+        isOpen: isOpenModalAppointment,
+        onClose: onCloseModalAppointment,
+        onOpen: onOpenModalAppointment,
+    } = useDisclose();
+    const {
+        isOpen: isOpenStagger,
+        onToggle: onToggleStagger,
+        onClose: onCloseStagger,
+    } = useDisclose();
+    const {
+        isOpen: isOpenDatePicker,
+        onClose: onCloseDatePicker,
+        onOpen: onOpenDatePicker,
+    } = useDisclose();
+
     const [ghostAppointments, setGhostAppointments] = React.useState<
         GhostAppointments[]
     >([]);
@@ -68,22 +85,6 @@ const Appointments = ({}: AppointmentsProps) => {
                 })),
         [appointments, selectedDate, ghostAppointments, students],
     );
-
-    const {
-        isOpen: isOpenModalAppointment,
-        onClose: onCloseModalAppointment,
-        onOpen: onOpenModalAppointment,
-    } = useDisclose();
-    const {
-        isOpen: isOpenStagger,
-        onToggle: onToggleStagger,
-        onClose: onCloseStagger,
-    } = useDisclose();
-    const {
-        isOpen: isOpenDatePicker,
-        onClose: onCloseDatePicker,
-        onOpen: onOpenDatePicker,
-    } = useDisclose();
 
     const onDatePickerChange = (_: Event, newDate?: Date | undefined) => {
         const currentDate = newDate || selectedDate;
@@ -197,11 +198,25 @@ const Appointments = ({}: AppointmentsProps) => {
                             date={appointment.date}
                             cost={appointment.cost}
                             disabled={appointment.isGhost}
-                            onPress={() =>
+                            onPress={() => {
+                                const dateString = `${format(
+                                    appointment.date,
+                                    'dd/MM/yyyy HH:mm',
+                                )} - ${format(
+                                    DateHelpers.getEndDateByTime(
+                                        appointment.date,
+                                        appointment.cost.time,
+                                    ),
+                                    'HH:mm',
+                                )}`;
                                 navigation.navigate('ManageAppointment', {
-                                    title: 'Editar Aula',
-                                })
-                            }
+                                    title: dateString,
+                                    appointment: {
+                                        ...appointment,
+                                        date: dateString,
+                                    },
+                                });
+                            }}
                         />
                     )}
                     keyExtractor={(item) => item.id}
@@ -214,7 +229,7 @@ const Appointments = ({}: AppointmentsProps) => {
             <ProCrisStagger isOpen={isOpenStagger} onToggle={onToggleStagger}>
                 <ProCrisStaggerIcon
                     label="Iniciar Rotina"
-                    bgColor="#8C7ECF"
+                    bgColor="#60A672"
                     borderWidth="1px"
                     borderColor="gold.500"
                     icon={

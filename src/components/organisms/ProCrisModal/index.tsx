@@ -49,6 +49,7 @@ const ProCrisModal = ({ title, children, ...props }: ProCrisModalProps) => {
                         bgColor="purple.500"
                         paddingTop="10px"
                         paddingBottom="10px"
+                        paddingRight="30px"
                     >
                         <Text fontSize="lg" fontWeight="700" color="white">
                             {title || ''}

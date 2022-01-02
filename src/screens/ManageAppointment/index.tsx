@@ -1,7 +1,5 @@
 import React from 'react';
-import { Animated, LayoutChangeEvent, View } from 'react-native';
-import { Flex, HStack, VStack, Icon } from 'native-base';
-import Collapsible from 'react-native-collapsible';
+import { HStack, VStack, Icon } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { Formik, FormikHelpers, useFormikContext } from 'formik';
@@ -11,27 +9,77 @@ import {
     validationSchema,
     FormValues,
 } from 'app/forms/manageAppointment';
+import { Appointment } from 'app/entities/Appointment';
+import { StudentCover } from 'app/entities/Student';
 
 import { Button } from 'app/components/atoms/Button';
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
 import { ProCrisStudentsOverview } from 'app/components/molecules/ProCrisStudentsOverview';
 import { FKFormText } from 'app/components/molecules/FKFormText';
-import { FKFormFormat } from 'app/components/molecules/FKFormFormat';
 import { FKCheckbox } from 'app/components/molecules/FKCheckbox';
 
 import { useError } from 'app/hooks/Error';
 import { useSuccess } from 'app/hooks/Success';
-import { useAlert } from 'app/store/Alert/Alert.hook';
+import { useSummary } from 'app/hooks/Summary';
 import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
+import { useStudentStore } from 'app/store/Student/Student.hook';
 
 type ManageAppointmentProps = {
-    route: { params: { title: string } };
+    route: {
+        params: {
+            title: string;
+            appointment?: Appointment & { student: StudentCover };
+            persistModal?: boolean;
+        };
+    };
 };
 
-const ManageAppointmentComponent = ({}: ManageAppointmentProps) => {
-    const { handleSubmit } = useFormikContext();
+const ManageAppointmentComponent = ({
+    route: {
+        params: { appointment },
+    },
+}: ManageAppointmentProps) => {
+    const navigation = useNavigation();
+    const { showError } = useError();
+    const { setLoading } = useLoadingStore();
+    const { listStudent } = useStudentStore();
+    const { handleSubmit, setValues } = useFormikContext();
     const [expanded, setExpanded] = React.useState<boolean>(false);
+
+    const handleEditStudentPress = async (studentId: string) => {
+        try {
+            setLoading(true);
+            await listStudent(studentId);
+            navigation.navigate('ManageStudent', {
+                title: 'Editar Aluno',
+                type: 'edit',
+            });
+        } catch (err) {
+            showError(err, { title: 'Erro ao deletar Aluno' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        if (!appointment) {
+            showError(
+                { message: 'Você foi redirecionado para a tela anterior' },
+                { title: 'Nenhuma Aula foi encontrada' },
+            );
+            navigation.goBack();
+        } else {
+            const body = {
+                id: appointment.id,
+                is_paid: appointment.is_paid,
+                is_cancelled: appointment.is_cancelled,
+                is_extra: appointment.is_extra,
+                observation: appointment.observation,
+            };
+            setValues(body);
+        }
+    }, []);
 
     return (
         <KeyboardAvoidingScrollView
@@ -39,17 +87,24 @@ const ManageAppointmentComponent = ({}: ManageAppointmentProps) => {
             bgColor="#ffffff"
             contentContainerStyle={{
                 justifyContent: 'flex-start',
-                paddingBottom: 20,
+                paddingBottom: 100,
                 minHeight: '100%',
             }}
         >
             <ProCrisStudentsOverview
                 isExpanded={expanded}
                 setIsExpanded={setExpanded}
+                avatar={appointment?.student.avatar}
+                date_of_birth={appointment?.student.date_of_birth}
+                name={appointment?.student.name}
+                name_caregiver={appointment?.student.name_caregiver}
+                onPress={() =>
+                    handleEditStudentPress(appointment?.id_student || '')
+                }
             />
             <HStack
                 justifyContent="space-between"
-                marginTop="18px"
+                marginTop="22px"
                 paddingX="20px"
             >
                 <Button
@@ -82,16 +137,26 @@ const ManageAppointmentComponent = ({}: ManageAppointmentProps) => {
                 </Button>
             </HStack>
             <VStack space="7px" marginTop="20px" paddingX="20px">
-                <FKCheckbox name="is_paid" size="md" fontWeight="600">
+                <FKCheckbox name="is_paid" size="sm" fontWeight="600">
                     Aula Paga
                 </FKCheckbox>
-                <FKCheckbox name="is_cancelled" size="md" fontWeight="600">
+                <FKCheckbox name="is_cancelled" size="sm" fontWeight="600">
                     Aula Cancelada
                 </FKCheckbox>
-                <FKCheckbox name="is_extra" size="md" fontWeight="600">
+                <FKCheckbox name="is_extra" size="sm" fontWeight="600">
                     Aula Extra
                 </FKCheckbox>
-                <FKFormText name="observation" label="Observação" multiline />
+                <FKFormText
+                    name="observation"
+                    label="Observação"
+                    height="80px"
+                    paddingTop="10px"
+                    fontSize="md"
+                    textAlignVertical="top"
+                    autoCapitalize="sentences"
+                    numberOfLines={4}
+                    multiline
+                />
             </VStack>
             <HStack
                 width="100%"
@@ -111,7 +176,9 @@ const ManageAppointment = ({ ...props }: ManageAppointmentProps) => {
     const navigation = useNavigation();
     const { showError } = useError();
     const { showSuccess } = useSuccess();
+    const { summaryStudentId, setSummaryStudentId } = useSummary();
     const { setLoading } = useLoadingStore();
+    const { updateAppointmentOptions } = useAppointmentStore();
 
     const handleFormSubmit = async (
         values: FormValues,
@@ -120,10 +187,15 @@ const ManageAppointment = ({ ...props }: ManageAppointmentProps) => {
         try {
             setLoading(true);
             let successTitle = '';
-            // navigation.navigate('TabRoute');
+            await updateAppointmentOptions(values);
+            successTitle = 'Aula editada com sucesso!';
+            if (summaryStudentId) {
+                setSummaryStudentId('update');
+            }
+            navigation.goBack();
             showSuccess({ title: successTitle });
         } catch (err) {
-            showError(err, { title: 'Erro ao criar Aluno' });
+            showError(err, { title: 'Erro ao editar Aula' });
         } finally {
             setLoading(false);
         }

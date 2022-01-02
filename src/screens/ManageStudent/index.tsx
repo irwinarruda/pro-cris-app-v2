@@ -256,7 +256,7 @@ const ManageStudent = ({ ...props }: ManageStudentProps) => {
     const { showError } = useError();
     const { showSuccess } = useSuccess();
     const { setLoading } = useLoadingStore();
-    const { createStudent, editStudent } = useStudentStore();
+    const { createStudent, editStudent, listStudent } = useStudentStore();
 
     const handleFormSubmit = async (
         values: FormValues,
@@ -272,7 +272,7 @@ const ManageStudent = ({ ...props }: ManageStudentProps) => {
                 await editStudent(values);
                 successTitle = 'Aluno editado com sucesso';
             }
-            navigation.navigate('TabRoute');
+            navigation.goBack();
             showSuccess({ title: successTitle });
         } catch (err) {
             showError(err, { title: 'Erro ao criar Aluno' });

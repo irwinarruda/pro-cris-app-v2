@@ -30,7 +30,7 @@ const labelSizeStyles = {
             fontSize: 'md',
         },
         select: {
-            fontSize: 'sm',
+            fontSize: 'md',
             height: '40px',
         },
         error: {

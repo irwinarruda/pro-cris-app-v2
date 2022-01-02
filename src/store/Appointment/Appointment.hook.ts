@@ -2,7 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { AppointmentService } from 'app/services/AppointmentService';
-import { FormValues } from 'app/forms/createAppointment';
+import { FormValues as CreateFormValues } from 'app/forms/createAppointment';
+import { FormValues as UpdateFormValues } from 'app/forms/manageAppointment';
 
 import { ApplicationStores } from 'app/store/Store';
 import { AppointmentStore } from 'app/store/Appointment/Appointment.types';
@@ -23,9 +24,12 @@ type NeededStatesKeys = keyof typeof neededStates;
 type AppointmentStoreFunctions = {
     listAppointments(): Promise<void>;
     createTodaysRoutineAppointments(): Promise<void>;
-    createAppointment(appointment: FormValues): Promise<void>;
+    createAppointment(appointment: CreateFormValues): Promise<void>;
+    updateAppointmentOptions(appointment: UpdateFormValues): Promise<void>;
     updateSelectedDate(date: Date): void;
     getAppointmentsByRoutineDate(date: Date): Promise<Appointment[]>;
+    payAppointment(appointment: Appointment): Promise<void>;
+    payAllAppointments(appointments: Appointment[]): Promise<void>;
 };
 
 export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
@@ -56,12 +60,53 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
     }, []);
 
     const createAppointment = React.useCallback(
-        async (appointment: FormValues) => {
+        async (appointment: CreateFormValues) => {
             const appointmentService = new AppointmentService();
             await appointmentService.createAppointment(appointment);
             await listAppointments();
         },
         [listAppointments],
+    );
+
+    const updateAppointmentOptions = React.useCallback(
+        async (appointment: UpdateFormValues) => {
+            const appointmentService = new AppointmentService();
+            await appointmentService.updateAppointment(appointment);
+            await listAppointments();
+        },
+        [listAppointments],
+    );
+
+    const payAppointment = React.useCallback(
+        async (appointment: Appointment) => {
+            const body = {
+                id: appointment.id,
+                is_cancelled: appointment.is_cancelled,
+                is_extra: appointment.is_extra,
+                is_paid: true,
+                observation: appointment.observation,
+            };
+            const appointmentService = new AppointmentService();
+            await appointmentService.updateAppointment(body);
+        },
+        [],
+    );
+
+    const payAllAppointments = React.useCallback(
+        async (appointments: Appointment[]) => {
+            const appointmentService = new AppointmentService();
+            for (let appointment of appointments) {
+                const body = {
+                    id: appointment.id,
+                    is_cancelled: appointment.is_cancelled,
+                    is_extra: appointment.is_extra,
+                    is_paid: true,
+                    observation: appointment.observation,
+                };
+                await appointmentService.updateAppointment(body);
+            }
+        },
+        [],
     );
 
     const createTodaysRoutineAppointments = React.useCallback(async () => {
@@ -86,6 +131,9 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
 
     return {
         ...hooks,
+        payAppointment,
+        payAllAppointments,
+        updateAppointmentOptions,
         listAppointments,
         createAppointment,
         updateSelectedDate,

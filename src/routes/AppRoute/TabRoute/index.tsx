@@ -27,7 +27,7 @@ const TabRoute = ({}: TabRouteProps) => {
         <Navigator
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ color }) => {
-                    if (route.name === 'Aulas') {
+                    if (route.name === 'Rotina') {
                         return (
                             <ClipboardIcon
                                 marginLeft="2px"
@@ -76,7 +76,7 @@ const TabRoute = ({}: TabRouteProps) => {
                 tabBarPressColor: 'rgba(255, 255, 255, 0.1)',
             })}
         >
-            <Screen name="Aulas" component={Appointments} />
+            <Screen name="Rotina" component={Appointments} />
             <Screen name="Alunos" component={Students} />
         </Navigator>
     );

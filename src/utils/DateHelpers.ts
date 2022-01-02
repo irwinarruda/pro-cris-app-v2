@@ -1,4 +1,4 @@
-import { addHours, addMinutes } from 'date-fns';
+import { addHours, addMinutes, format } from 'date-fns';
 
 class DateHelpers {
     public static getEndDateByTime(dateStart: Date, time: string): Date {

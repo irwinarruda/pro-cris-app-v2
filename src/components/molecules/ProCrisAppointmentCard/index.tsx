@@ -101,7 +101,7 @@ const ProCrisAppointmentCard = ({
             >
                 <Flex
                     paddingX="10px"
-                    paddingY="9px"
+                    paddingY="8px"
                     flexDirection="row"
                     alignItems="center"
                     justifyContent="space-between"
@@ -125,18 +125,25 @@ const ProCrisAppointmentCard = ({
                             alt={`Aluno ${name}`}
                         />
                         <Flex marginLeft="6px">
-                            <Text isTruncated>
-                                Aluno: <Text fontWeight="700">{name}</Text>
+                            <Text
+                                lineHeight="20px"
+                                fontWeight="700"
+                                fontSize="15px"
+                                isTruncated
+                            >
+                                {name}
                             </Text>
-                            <Text fontSize="xs" lineHeight="14px" isTruncated>
-                                Obs:{' '}
-                                <Text fontWeight="700" fontSize="xs">
-                                    {observation}
-                                </Text>
+                            <Text
+                                lineHeight="17px"
+                                fontWeight="400"
+                                fontSize="sm"
+                                isTruncated
+                            >
+                                {observation || 'Sem observação'}
                             </Text>
                         </Flex>
                     </Flex>
-                    <Flex flex="0.23">
+                    <Flex flex="0.21">
                         <Flex
                             width="100%"
                             justifyContent="flex-end"
@@ -144,14 +151,14 @@ const ProCrisAppointmentCard = ({
                         >
                             <Icon
                                 as={AntDesign}
-                                size="21px"
+                                size="19px"
                                 name={
                                     appointmentStatus[
                                         checkDateStatus(new Date())
                                     ].name
                                 }
                             />
-                            <Text fontSize="2xs">
+                            <Text fontSize="9px">
                                 {
                                     appointmentStatus[
                                         checkDateStatus(new Date())

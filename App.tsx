@@ -23,12 +23,14 @@ import { store } from 'app/store/Store';
 
 import { Loading } from 'app/components/molecules/Loading';
 import { ProCrisAlert } from 'app/components/organisms/ProCrisAlert';
+import { SummaryProvider } from 'app/hooks/Summary';
 
 import 'app/services/firebaseClient';
 
 LogBox.ignoreLogs([
     'Setting a timer for a long period of time',
     'NativeBase: The contrast',
+    'Require cycle:',
 ]);
 
 export default function App() {
@@ -47,9 +49,11 @@ export default function App() {
     return (
         <NativeBaseProvider theme={theme}>
             <Provider store={store}>
-                <Loading />
-                <ProCrisAlert />
-                <Router />
+                <SummaryProvider>
+                    <Router />
+                    <Loading />
+                    <ProCrisAlert />
+                </SummaryProvider>
             </Provider>
             <StatusBar style="light" />
         </NativeBaseProvider>

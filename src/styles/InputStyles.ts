@@ -16,7 +16,7 @@ const InputStyles = {
             paddingRight: '14px',
         },
         md: {
-            fontSize: 'sm',
+            fontSize: 'md',
             height: '40px',
         },
         lg: {

@@ -2,13 +2,15 @@ import { v4 as uuid } from 'uuid';
 import { format } from 'date-fns';
 import { firestore, auth } from './firebaseClient';
 import { DateHelpers } from 'app/utils/DateHelpers';
-import { FormValues } from 'app/forms/createAppointment';
+import { FormValues as CreateFormValues } from 'app/forms/createAppointment';
+import { FormValues as UpdateFormValues } from 'app/forms/manageAppointment';
 import { Appointment } from 'app/entities/Appointment';
 
 import { AppService } from './AppService';
 import { StudentService } from './StudentService';
 
-type CreateAppointmentRequestBody = FormValues;
+type CreateAppointmentRequestBody = CreateFormValues;
+type UpdateAppointmentOptions = UpdateFormValues;
 
 class AppointmentService extends AppService {
     public async createAppointment(appointment: CreateAppointmentRequestBody) {
@@ -51,6 +53,27 @@ class AppointmentService extends AppService {
         await appointmentColl.doc(appointmentId).set(body);
     }
 
+    public async updateAppointment(
+        appointment: UpdateAppointmentOptions,
+    ): Promise<void> {
+        if (!auth.currentUser) {
+            throw { message: 'Usuário não autenticado' };
+        }
+        const appointmentDoc = firestore
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('appointments')
+            .doc(appointment.id);
+
+        const updatedAppointment = {
+            is_paid: appointment.is_paid,
+            is_cancelled: appointment.is_cancelled,
+            is_extra: appointment.is_extra,
+            observation: appointment.observation,
+        };
+        await appointmentDoc.update(updatedAppointment);
+    }
+
     public async listAppointments(): Promise<Appointment[]> {
         if (!auth.currentUser) {
             throw { message: 'Usuário não autenticado' };
@@ -72,6 +95,30 @@ class AppointmentService extends AppService {
             .filter(
                 (item) => !item.is_paid && !item.is_cancelled,
             ) as Appointment[];
+
+        return appointments;
+    }
+
+    public async listAppointmentsByStudent(
+        sudentId: string,
+    ): Promise<Appointment[]> {
+        if (!auth.currentUser) {
+            throw { message: 'Usuário não autenticado' };
+        }
+
+        const appointmentColl = firestore
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('appointments')
+            .orderBy('date')
+            .where('id_student', '==', sudentId);
+
+        const appointments = (
+            await this.getCollectionData<any>(appointmentColl as any)
+        ).map((item) => ({
+            ...item,
+            date: item.date.toDate(),
+        })) as Appointment[];
 
         return appointments;
     }
