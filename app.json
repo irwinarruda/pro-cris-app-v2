@@ -21,13 +21,25 @@
             "**/*"
         ],
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "infoPlist": {
+                "NSPhotoLibraryUsageDescription": "O aplicativO acessa sua câmera para buscar as imagens dos alunos.",
+                "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
+                "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+            }
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./src/assets/app/adaptive-icon.png",
                 "backgroundColor": "#8C7ECF"
-            }
+            },
+            "permissions": [
+                "android.permission.CAMERA",
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.RECORD_AUDIO"
+            ],
+            "package": "host.exp.exponent.procris"
         },
         "web": {
             "favicon": "./src/assets/app/faicon.png"
