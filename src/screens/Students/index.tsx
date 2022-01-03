@@ -4,14 +4,11 @@ import { FlatList, Flex, Icon, Hidden } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { AntDesign } from '@expo/vector-icons';
-import { captureRef } from 'react-native-view-shot';
-import * as Sharing from 'expo-sharing';
 
 import { Button } from 'app/components/atoms/Button';
 import { FAB } from 'app/components/atoms/FAB';
 import { ProCrisStudentCard } from 'app/components/molecules/ProCrisStudentCard';
 import { ProCrisStatus } from 'app/components/organisms/ProCrisStatus';
-import { ProCrisBillintTemplate } from 'app/templates/ProCrisBillintTemplate';
 
 import { useSummary } from 'app/hooks/Summary';
 import { useError } from 'app/hooks/Error';
@@ -39,6 +36,7 @@ const Students = (props: StudentsProps) => {
         listStudent,
         listStudentWithAppointments,
     } = useStudentStore('list');
+
     const [screenFocus, setScreenFocus] = React.useState<boolean>(false);
 
     const handleCreateStudentPress = () => {
@@ -91,17 +89,6 @@ const Students = (props: StudentsProps) => {
         return unsubscribe;
     }, []);
 
-    const pictureRef = React.useRef<any>(null);
-
-    const onButtonPress = async () => {
-        const result = await captureRef(pictureRef, {
-            result: 'tmpfile',
-            quality: 1,
-            format: 'png',
-        });
-        await Sharing.shareAsync(result);
-        console.log(result);
-    };
     return (
         <>
             <Flex flex="1" bgColor="#ffffff">
@@ -146,10 +133,6 @@ const Students = (props: StudentsProps) => {
                     keyExtractor={(item) => item.id}
                 />
             </Flex>
-            <ProCrisBillintTemplate ref={pictureRef} />
-            <Button marginY="20px" onPress={onButtonPress}>
-                Printar
-            </Button>
             <ModalAppointmentSummary
                 isOpen={isOpenModalOptionsSummary}
                 onClose={onCloseModalOptionsSummary}

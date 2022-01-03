@@ -60,7 +60,7 @@ const SignUp = ({}: SignUpProps) => {
                 >
                     <ProCrisBanner />
                     <Flex width="100%" paddingX="20px" marginTop="15px">
-                        <Text fontSize="22px" fontWeight="700" textAlign="left">
+                        <Text fontSize="2xl" fontWeight="700" textAlign="left">
                             Criar Conta
                         </Text>
                     </Flex>

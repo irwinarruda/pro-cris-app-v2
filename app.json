@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "pro-cris-v2",
+        "name": "PrôCris V2",
         "slug": "pro-cris-v2",
         "version": "1.0.0",
         "orientation": "portrait",
@@ -8,7 +8,7 @@
         "splash": {
             "image": "./src/assets/app/splash.png",
             "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
+            "backgroundColor": "#8C7ECF"
         },
         "updates": {
             "fallbackToCacheTimeout": 0
@@ -26,7 +26,7 @@
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./src/assets/app/adaptive-icon.png",
-                "backgroundColor": "#FFFFFF"
+                "backgroundColor": "#8C7ECF"
             }
         },
         "web": {
@@ -36,7 +36,7 @@
             [
                 "expo-image-picker",
                 {
-                    "photosPermission": "O aplicativa acessa sua câmera para buscar as imagens dos alunos."
+                    "photosPermission": "O aplicativO acessa sua câmera para buscar as imagens dos alunos."
                 }
             ]
         ]

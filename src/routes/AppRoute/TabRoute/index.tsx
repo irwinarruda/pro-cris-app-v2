@@ -1,4 +1,5 @@
 import React from 'react';
+import { PixelRatio } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import { ClipboardIcon } from 'app/components/atoms/ClipboardIcon';
@@ -63,7 +64,8 @@ const TabRoute = ({}: TabRouteProps) => {
                     paddingBottom: 0,
                 },
                 tabBarLabelStyle: {
-                    lineHeight: 12,
+                    lineHeight: 13 / PixelRatio.getFontScale(),
+                    fontSize: 13 / PixelRatio.getFontScale(),
                     marginTop: 0,
                     color: '#FDFCFF',
                     textTransform: 'none',

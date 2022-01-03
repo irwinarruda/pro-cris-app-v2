@@ -32,7 +32,7 @@ const DateFilter = ({ date, setDate }: DateFilterProps) => {
                 borderRadius="5px"
             >
                 <Flex paddingX="6px" paddingY="4px">
-                    <Text lineHeight="15px" fontWeight="500">
+                    <Text lineHeight="xs" fontWeight="500">
                         {format(date, 'dd/MM/yy')}
                     </Text>
                 </Flex>

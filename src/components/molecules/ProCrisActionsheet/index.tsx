@@ -6,6 +6,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 type ProCrisActionsheetProps = ModalProps &
     IFlexProps & {
         onClose?(): void;
+        distanceFromTop?: number;
     };
 
 const ProCrisActionsheet = ({
@@ -21,6 +22,7 @@ const ProCrisActionsheet = ({
     onOrientationChange,
     hardwareAccelerated,
     statusBarTranslucent,
+    distanceFromTop = 0,
     ...props
 }: ProCrisActionsheetProps) => {
     const [style, rest] = useStyledSystemPropsResolver(props);
@@ -56,7 +58,7 @@ const ProCrisActionsheet = ({
                 width="100%"
                 height="100%"
                 paddingBottom="20px"
-                marginTop={`${getStatusBarHeight() + 80}px`}
+                marginTop={`${getStatusBarHeight() + 80 + distanceFromTop}px`}
                 borderTopRadius="15px"
                 borderWidth="2px"
                 borderColor="gold.500"

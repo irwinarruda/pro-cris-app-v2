@@ -1,14 +1,20 @@
 import React from 'react';
+import { isPast } from 'date-fns';
 import { Flex, Text, Icon } from 'native-base';
 import { AntDesign } from '@expo/vector-icons';
+import { FormatHelpers } from 'app/utils/FormatHelpers';
 
 import { Pressable } from 'app/components/atoms/Pressable';
+
+import { useStudentStore } from 'app/store/Student/Student.hook';
+import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
 
 type ProCrisStatusProps = {
     children?: React.ReactNode;
 };
 
 const ProCrisStatus = ({}: ProCrisStatusProps) => {
+    const { appointments } = useAppointmentStore('status');
     const [classesVisible, setClassesVisible] = React.useState(false);
     const [priceVisible, setPriceVisible] = React.useState(false);
 
@@ -46,7 +52,7 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                 >
                     {!classesVisible ? (
                         <>
-                            <Text fontWeight="400" fontSize="14px">
+                            <Text fontWeight="400" fontSize="sm">
                                 Quantidade de Aulas:
                             </Text>
                             <Icon
@@ -57,7 +63,14 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                             />
                         </>
                     ) : (
-                        <Text>300 aulas</Text>
+                        <Text>
+                            {
+                                FormatHelpers.getValidNotPaiedAppointments(
+                                    appointments,
+                                ).length
+                            }{' '}
+                            aulas
+                        </Text>
                     )}
                 </Flex>
             </Pressable>
@@ -79,7 +92,7 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                 >
                     {!priceVisible ? (
                         <>
-                            <Text fontWeight="400" fontSize="14px">
+                            <Text fontWeight="400" fontSize="sm">
                                 Valor a receber:
                             </Text>
                             <Icon
@@ -90,7 +103,19 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
                             />
                         </>
                     ) : (
-                        <Text>2000 reais</Text>
+                        <Text>
+                            R{'$ '}
+                            {FormatHelpers.getValidNotPaiedAppointments(
+                                appointments,
+                            ).reduce((previous, current) => {
+                                return (
+                                    previous +
+                                    FormatHelpers.formatRSStringToNumber(
+                                        current.cost.price,
+                                    )
+                                );
+                            }, 0)}
+                        </Text>
                     )}
                 </Flex>
             </Pressable>

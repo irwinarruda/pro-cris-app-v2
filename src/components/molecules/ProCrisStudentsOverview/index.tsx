@@ -57,17 +57,17 @@ const ProCrisStudentsOverview = ({
                             accessibilityLabel="Aluno"
                         />
                         <Flex marginLeft="15px">
-                            <Text lineHeight="21px" fontSize="md" isTruncated>
+                            <Text lineHeight="md" fontSize="md" isTruncated>
                                 Aluno:{' '}
                                 <Text fontWeight="600" fontSize="md">
                                     {name}
                                 </Text>
                             </Text>
-                            <Text lineHeight="16px" isTruncated>
+                            <Text lineHeight="xs" isTruncated>
                                 Nascimento:{' '}
                                 <Text fontWeight="600">{date_of_birth}</Text>
                             </Text>
-                            <Text lineHeight="13px" isTruncated>
+                            <Text lineHeight="2xs" isTruncated>
                                 Responsável:{' '}
                                 <Text fontWeight="600">{name_caregiver}</Text>
                             </Text>

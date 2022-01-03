@@ -150,7 +150,7 @@ const Appointments = ({}: AppointmentsProps) => {
                     marginTop="12px"
                     paddingX="20px"
                 >
-                    <Text fontSize="lg" fontWeight="700" lineHeight="22px">
+                    <Text fontSize="lg" fontWeight="700" lineHeight="md">
                         {isToday(selectedDate) && 'Hoje: '}
                         {format(selectedDate, 'dd/MM/yyyy')}
                     </Text>
@@ -232,14 +232,6 @@ const Appointments = ({}: AppointmentsProps) => {
                     bgColor="#60A672"
                     borderWidth="1px"
                     borderColor="gold.500"
-                    icon={
-                        <Icon
-                            as={MaterialIcons}
-                            size="6"
-                            name="location-pin"
-                            color="warmGray.50"
-                        />
-                    }
                     onPress={handleCreateRoutine}
                 />
                 <ProCrisStaggerIcon
@@ -247,14 +239,6 @@ const Appointments = ({}: AppointmentsProps) => {
                     bgColor="#996074"
                     borderWidth="1px"
                     borderColor="gold.500"
-                    icon={
-                        <Icon
-                            as={MaterialCommunityIcons}
-                            size="6"
-                            name="microphone"
-                            color="warmGray.50"
-                        />
-                    }
                     toggleOnPressEnd
                     onPress={onOpenModalAppointment}
                 />

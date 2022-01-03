@@ -62,7 +62,7 @@ const ProCrisStudentCard = ({
                                 {name}
                             </Text>
                         </Text>
-                        <Text fontSize="sm" lineHeight="14px" isTruncated>
+                        <Text fontSize="sm" lineHeight="xs" isTruncated>
                             Responsável:{' '}
                             <Text fontWeight="700" fontSize="sm">
                                 {name_caregiver}

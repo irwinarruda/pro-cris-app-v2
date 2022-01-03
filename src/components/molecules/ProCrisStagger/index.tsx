@@ -6,7 +6,7 @@ import { FAB, FABProps } from 'app/components/atoms/FAB';
 import { Pressable, PressableProps } from 'app/components/atoms/Pressable';
 
 type ProCrisStaggerIconProps = Omit<PressableProps, 'size'> & {
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
     label?: string;
     containerProps?: IFlexProps;
     labelProps?: ITextProps;
@@ -52,7 +52,7 @@ const ProCrisStaggerIcon = ({
                     <Flex marginRight="5px">
                         <Text
                             color="white"
-                            lineHeight="20px"
+                            lineHeight="sm"
                             fontSize="md"
                             fontWeight="700"
                             {...labelProps}
@@ -61,7 +61,7 @@ const ProCrisStaggerIcon = ({
                         </Text>
                     </Flex>
                 )}
-                <Flex>{icon}</Flex>
+                {icon && <Flex>{icon}</Flex>}
             </Flex>
         </Pressable>
     );

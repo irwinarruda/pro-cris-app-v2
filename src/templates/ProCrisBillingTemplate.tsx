@@ -1,16 +1,22 @@
 import React from 'react';
+import { format } from 'date-fns';
 import { Flex, VStack, Text } from 'native-base';
 
-import { ProCrisLogo } from 'app/components/atoms/ProCrisLogo';
+import { Student } from 'app/entities/Student';
+import { FormatHelpers } from 'app/utils/FormatHelpers';
 
-type ProCrisBillintTemplateProps = {
-    children?: React.ReactNode;
+import { ProCrisLogo } from 'app/components/atoms/ProCrisLogo';
+import { Appointment } from 'app/entities/Appointment';
+
+type ProCrisBillingTemplateProps = {
+    student: Student;
+    appointments: Appointment[];
 };
 
-const ProCrisBillintTemplate = React.forwardRef<
+const ProCrisBillingTemplate = React.forwardRef<
     any,
-    ProCrisBillintTemplateProps
->(function ProCrisBillintTemplateComponent({}, ref) {
+    ProCrisBillingTemplateProps
+>(function ProCrisBillingTemplateComponent({ student, appointments }, ref) {
     return (
         <Flex
             flexDirection="column"
@@ -19,7 +25,7 @@ const ProCrisBillintTemplate = React.forwardRef<
             padding="0px"
             borderWidth="2px"
             borderColor="gold.500"
-            borderRadius="5px"
+            borderRadius="0px"
             overflow="hidden"
             ref={ref}
         >
@@ -28,16 +34,16 @@ const ProCrisBillintTemplate = React.forwardRef<
                 alignItems="center"
                 justifyContent="space-between"
                 width="100%"
-                paddingY="12px"
+                paddingY="8px"
                 paddingX="16px"
                 bgColor="purple.500"
             >
                 <ProCrisLogo width="110px" height="30px" />
                 <Flex>
-                    <Text fontSize="13px" fontWeight="600" color="white">
-                        Aluno: Irwin Arruda
+                    <Text fontSize="xs" fontWeight="600" color="white">
+                        Aluno(a): {student.name}
                     </Text>
-                    <Text fontSize="13px" fontWeight="600" color="white">
+                    <Text fontSize="xs" fontWeight="600" color="white">
                         Obrigada pela confiança!
                     </Text>
                 </Flex>
@@ -50,7 +56,7 @@ const ProCrisBillintTemplate = React.forwardRef<
                     flexWrap="wrap"
                     margin="-4px"
                 >
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                    {appointments.map((appointment) => (
                         <Flex
                             flexDirection="row"
                             alignItems="center"
@@ -58,19 +64,23 @@ const ProCrisBillintTemplate = React.forwardRef<
                             width="54px"
                             height="22px"
                             margin="4px"
-                            bgColor="purple.500"
+                            bgColor={
+                                !appointment.is_extra
+                                    ? 'purple.500'
+                                    : 'gray.500'
+                            }
                             borderColor="gold.500"
                             borderWidth="1px"
                             borderRadius="3px"
-                            key={item}
+                            key={appointment.id}
                         >
                             <Text
-                                lineHeight="17px"
+                                lineHeight="sm"
                                 color="white"
                                 fontWeight="500"
-                                fontSize="14px"
+                                fontSize="sm"
                             >
-                                12/12
+                                {format(appointment.date, 'dd/MM')}
                             </Text>
                         </Flex>
                     ))}
@@ -79,7 +89,7 @@ const ProCrisBillintTemplate = React.forwardRef<
                     flexDirection="row"
                     alignItems="center"
                     justifyContent="space-between"
-                    marginTop="10px"
+                    marginTop="25px"
                 >
                     <VStack space="4px">
                         <Flex
@@ -97,8 +107,8 @@ const ProCrisBillintTemplate = React.forwardRef<
                                 borderRadius="10000px"
                             ></Flex>
                             <Text
-                                lineHeight="12px"
-                                fontSize="11px"
+                                lineHeight="2xs"
+                                fontSize="2xs"
                                 fontWeight="500"
                                 color="black"
                             >
@@ -120,8 +130,8 @@ const ProCrisBillintTemplate = React.forwardRef<
                                 borderRadius="10000px"
                             ></Flex>
                             <Text
-                                lineHeight="12px"
-                                fontSize="11px"
+                                lineHeight="2xs"
+                                fontSize="2xs"
                                 fontWeight="500"
                                 color="black"
                             >
@@ -131,20 +141,28 @@ const ProCrisBillintTemplate = React.forwardRef<
                     </VStack>
                     <Flex>
                         <Text
-                            lineHeight="17px"
-                            fontSize="16px"
+                            lineHeight="md"
+                            fontSize="md"
                             fontWeight="600"
                             color="black"
                         >
-                            Quantidade de Aulas: 10
+                            Quantidade de Aulas: {appointments.length}
                         </Text>
                         <Text
-                            lineHeight="21px"
-                            fontSize="16px"
+                            lineHeight="md"
+                            fontSize="md"
                             fontWeight="600"
                             color="black"
                         >
-                            Total a Pagar: R$ 230.00
+                            Total a Pagar: R${' '}
+                            {appointments.reduce((previous, current) => {
+                                return (
+                                    previous +
+                                    FormatHelpers.formatRSStringToNumber(
+                                        current.cost.price,
+                                    )
+                                );
+                            }, 0)}
                         </Text>
                     </Flex>
                 </Flex>
@@ -153,5 +171,5 @@ const ProCrisBillintTemplate = React.forwardRef<
     );
 });
 
-export type { ProCrisBillintTemplateProps };
-export { ProCrisBillintTemplate };
+export type { ProCrisBillingTemplateProps };
+export { ProCrisBillingTemplate };

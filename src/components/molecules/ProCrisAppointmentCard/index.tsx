@@ -84,7 +84,7 @@ const ProCrisAppointmentCard = ({
                     borderRadius="10000px"
                     bgColor="black"
                 />
-                <Text lineHeight="16px" textAlign="center" fontSize="xs">
+                <Text lineHeight="sm" textAlign="center" fontSize="xs">
                     {format(dateEnd, 'HH:mm')}
                 </Text>
             </Flex>
@@ -126,15 +126,15 @@ const ProCrisAppointmentCard = ({
                         />
                         <Flex marginLeft="6px">
                             <Text
-                                lineHeight="20px"
+                                lineHeight="md"
                                 fontWeight="700"
-                                fontSize="15px"
+                                fontSize="sm"
                                 isTruncated
                             >
                                 {name}
                             </Text>
                             <Text
-                                lineHeight="17px"
+                                lineHeight="sm"
                                 fontWeight="400"
                                 fontSize="sm"
                                 isTruncated
@@ -158,7 +158,7 @@ const ProCrisAppointmentCard = ({
                                     ].name
                                 }
                             />
-                            <Text fontSize="9px">
+                            <Text fontSize="2xs">
                                 {
                                     appointmentStatus[
                                         checkDateStatus(new Date())

@@ -34,7 +34,7 @@ const ColorPicker = ({
             trigger={(triggerProps) => (
                 <VStack>
                     <HStack alignItems="center">
-                        <Text fontSize="md" fontWeight="600" lineHeight="18px">
+                        <Text fontSize="md" fontWeight="600" lineHeight="sm">
                             Escolher Cor
                         </Text>
                         <Pressable

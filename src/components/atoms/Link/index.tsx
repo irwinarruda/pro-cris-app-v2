@@ -9,7 +9,7 @@ const buttonSizesStyles = {
         },
         text: {
             fontSize: 'sm',
-            lineHeight: '14px',
+            lineHeight: 'xs',
         },
     },
     md: {
@@ -18,7 +18,7 @@ const buttonSizesStyles = {
         },
         text: {
             fontSize: 'md',
-            lineHeight: '17px',
+            lineHeight: 'sm',
         },
     },
     lg: {
@@ -27,7 +27,7 @@ const buttonSizesStyles = {
         },
         text: {
             fontSize: 'lg',
-            lineHeight: '18px',
+            lineHeight: 'sm',
         },
     },
 };
@@ -120,7 +120,6 @@ const Link = React.forwardRef<any, LinkProps>(function LinkComponent(
                 >
                     {leftIcon}
                     <Text
-                        adjustsFontSizeToFit={true}
                         marginLeft={!!leftIcon ? '5px' : '0px'}
                         fontFamily="heading"
                         fontWeight="700"

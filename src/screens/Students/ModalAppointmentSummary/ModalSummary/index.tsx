@@ -8,14 +8,16 @@ import {
     VStack,
     Spinner,
 } from 'native-base';
-import { format } from 'date-fns';
+import { format, isPast } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 
 import { Appointment } from 'app/entities/Appointment';
 import { Student } from 'app/entities/Student';
 import { FormValues } from 'app/forms/manageAppointment';
 import { DateHelpers } from 'app/utils/DateHelpers';
+import { FormatHelpers } from 'app/utils/FormatHelpers';
 
+import { Link } from 'app/components/atoms/Link';
 import { Button } from 'app/components/atoms/Button';
 import { ProCrisModal } from 'app/components/organisms/ProCrisModal';
 import { ProCrisAppointmentTableItem } from 'app/components/molecules/ProCrisAppointmentTableItem';
@@ -27,6 +29,8 @@ import { useAlert } from 'app/store/Alert/Alert.hook';
 import { useStudentStore } from 'app/store/Student/Student.hook';
 import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
+
+import { ModalBilling } from './ModalBilling';
 
 type AppointmentWithStudent = Appointment & {
     student: Omit<Student, 'appointments' | 'costs' | 'schedules'>;
@@ -53,13 +57,12 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
     const { setLoading } = useLoadingStore();
     const { summaryType, handleEditAppointmentPress } = useSummary();
 
+    const [billingModal, setBillingModal] = React.useState<boolean>(false);
+
     const filteredAppointments = React.useMemo(() => {
         if (summaryType === 'notpaid') {
-            return (
-                selectedStudent?.appointments?.filter(
-                    (appointment) =>
-                        !appointment.is_cancelled && !appointment.is_paid,
-                ) || []
+            return FormatHelpers.getValidNotPaiedAppointments(
+                selectedStudent?.appointments || [],
             );
         } else {
             return selectedStudent?.appointments || [];
@@ -170,74 +173,101 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
     };
 
     return (
-        <ProCrisModal
-            size="xl"
-            title={`${
-                summaryType === 'notpaid' ? 'Aulas não pagas' : 'Todas as Aulas'
-            }:\n${selectedStudent?.name}`}
-            isOpen={isOpen}
-            onClose={onClose}
-        >
-            <Modal.Body bgColor="white">
-                <Flex flex="1">
-                    <HStack justifyContent="space-between" marginBottom="8px">
-                        <Text width="34%" textAlign="center">
-                            Data
-                        </Text>
-                        <Text width="21%" textAlign="center">
-                            Valor
-                        </Text>
-                        <Text width="12%" textAlign="center">
-                            Extra
-                        </Text>
-                        {summaryType === 'notpaid' && (
-                            <Text width="16%" textAlign="center">
-                                Ações
+        <>
+            <ProCrisModal
+                size="xl"
+                title={`${
+                    summaryType === 'notpaid'
+                        ? 'Aulas não pagas'
+                        : 'Todas as Aulas'
+                }:\n${selectedStudent?.name}`}
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <Modal.Body bgColor="white">
+                    <Flex flex="1">
+                        <HStack
+                            justifyContent="space-between"
+                            marginBottom="8px"
+                        >
+                            <Text width="34%" textAlign="center">
+                                Data
                             </Text>
+                            <Text width="21%" textAlign="center">
+                                Valor
+                            </Text>
+                            <Text width="12%" textAlign="center">
+                                Extra
+                            </Text>
+                            {summaryType === 'notpaid' && (
+                                <Text width="16%" textAlign="center">
+                                    Ações
+                                </Text>
+                            )}
+                        </HStack>
+                        <ScrollView flex="1" maxHeight="250px">
+                            <VStack space="6px">
+                                {selectedStudent && !loading ? (
+                                    filteredAppointments.map((appointment) => (
+                                        <ProCrisAppointmentTableItem
+                                            appointment={{
+                                                ...appointment,
+                                                student: {
+                                                    ...selectedStudent,
+                                                    appointments: [] as any[],
+                                                },
+                                            }}
+                                            summaryType={summaryType}
+                                            onPress={handleItemPress}
+                                            onPayPress={handlePaidPress}
+                                            key={appointment.id}
+                                        />
+                                    ))
+                                ) : (
+                                    <Spinner color="gold.500" size="lg" />
+                                )}
+                            </VStack>
+                        </ScrollView>
+                    </Flex>
+                </Modal.Body>
+                <Modal.Footer paddingTop="8px" paddingBottom="8px">
+                    <HStack space={2} alignItems="center">
+                        {summaryType === 'notpaid' && (
+                            <Link
+                                size="sm"
+                                onPress={() => setBillingModal(true)}
+                            >
+                                Ver recibo
+                            </Link>
+                        )}
+                        <Button
+                            colorScheme="gray.500"
+                            size="sm"
+                            onPress={onClose}
+                        >
+                            Fechar
+                        </Button>
+                        {summaryType === 'notpaid' && (
+                            <Button
+                                colorScheme="#60A672"
+                                size="sm"
+                                onPress={handlePayAllPress}
+                            >
+                                Pagar Todas
+                            </Button>
                         )}
                     </HStack>
-                    <ScrollView flex="1" maxHeight="250px">
-                        <VStack space="6px">
-                            {selectedStudent && !loading ? (
-                                filteredAppointments.map((appointment) => (
-                                    <ProCrisAppointmentTableItem
-                                        appointment={{
-                                            ...appointment,
-                                            student: {
-                                                ...selectedStudent,
-                                                appointments: [] as any[],
-                                            },
-                                        }}
-                                        summaryType={summaryType}
-                                        onPress={handleItemPress}
-                                        onPayPress={handlePaidPress}
-                                        key={appointment.id}
-                                    />
-                                ))
-                            ) : (
-                                <Spinner color="gold.500" size="lg" />
-                            )}
-                        </VStack>
-                    </ScrollView>
-                </Flex>
-            </Modal.Body>
-            <Modal.Footer paddingTop="8px" paddingBottom="8px">
-                <HStack space={2}>
-                    <Button colorScheme="gray.500" size="sm" onPress={onClose}>
-                        Fechar
-                    </Button>
-                    {summaryType === 'notpaid' && (
-                        <Button
-                            colorScheme="#60A672"
-                            size="sm"
-                            onPress={handlePayAllPress}
-                        >
-                            Pagar Todas
-                        </Button>
-                    )}
-                </HStack>
-            </Modal.Footer>
-        </ProCrisModal>
+                </Modal.Footer>
+            </ProCrisModal>
+            {selectedStudent && (
+                <ModalBilling
+                    isOpen={billingModal}
+                    student={selectedStudent}
+                    appointments={filteredAppointments}
+                    setIsOpen={setBillingModal}
+                />
+            )}
+        </>
     );
 };
 

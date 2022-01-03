@@ -30,7 +30,7 @@ import 'app/services/firebaseClient';
 LogBox.ignoreLogs([
     'Setting a timer for a long period of time',
     'NativeBase: The contrast',
-    'Require cycle:',
+    'Require cycle',
 ]);
 
 export default function App() {
@@ -42,6 +42,7 @@ export default function App() {
         Quicksand_700Bold,
         Yellowtail_400Regular,
     });
+
     if (!fontsLoaded) {
         return <AppLoading />;
     }

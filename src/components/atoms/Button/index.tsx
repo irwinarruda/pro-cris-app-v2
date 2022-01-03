@@ -9,7 +9,7 @@ const buttonSizesStyles = {
         },
         text: {
             fontSize: 'xs',
-            lineHeight: '14px',
+            lineHeight: 'xs',
         },
     },
     md: {
@@ -18,7 +18,7 @@ const buttonSizesStyles = {
         },
         text: {
             fontSize: 'sm',
-            lineHeight: '17px',
+            lineHeight: 'xs',
         },
     },
     lg: {
@@ -27,7 +27,7 @@ const buttonSizesStyles = {
         },
         text: {
             fontSize: 'md',
-            lineHeight: '18px',
+            lineHeight: 'sm',
         },
     },
 };
