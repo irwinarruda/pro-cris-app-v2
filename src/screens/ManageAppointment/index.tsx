@@ -1,4 +1,5 @@
 import React from 'react';
+import { Linking } from 'react-native';
 import { HStack, VStack, Icon } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
@@ -62,6 +63,18 @@ const ManageAppointmentComponent = ({
         }
     };
 
+    const handleOpenMapsPress = () => {
+        if (appointment?.student.map_location) {
+            Linking.openURL(appointment?.student.map_location);
+        }
+    };
+
+    const handleSendMessagePress = () => {
+        Linking.openURL(
+            `http://api.whatsapp.com/send?phone=+55${appointment?.student.phone}`,
+        );
+    };
+
     React.useEffect(() => {
         if (!appointment) {
             showError(
@@ -118,6 +131,7 @@ const ManageAppointmentComponent = ({
                             color="white"
                         />
                     }
+                    onPress={handleOpenMapsPress}
                 >
                     Ver Caminho
                 </Button>
@@ -132,6 +146,7 @@ const ManageAppointmentComponent = ({
                             color="white"
                         />
                     }
+                    onPress={handleSendMessagePress}
                 >
                     Mensagem
                 </Button>
@@ -176,7 +191,7 @@ const ManageAppointment = ({ ...props }: ManageAppointmentProps) => {
     const navigation = useNavigation();
     const { showError } = useError();
     const { showSuccess } = useSuccess();
-    const { summaryStudentId, setSummaryStudentId } = useSummary();
+    const { summaryStudentId } = useSummary();
     const { selectedStudent, updateSelectedUserAppointmentOptions } =
         useStudentStore('manage');
     const { setLoading } = useLoadingStore();

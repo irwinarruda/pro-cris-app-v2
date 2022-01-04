@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Modal, HStack, useDisclose, VStack } from 'native-base';
+import { Text, Modal, HStack, VStack } from 'native-base';
 
 import { Button } from 'app/components/atoms/Button';
 import { Pressable } from 'app/components/atoms/Pressable';

@@ -3,6 +3,8 @@ import { extendTheme, Theme } from 'native-base';
 import { InputStyles } from './InputStyles';
 import { ButtonStyles } from './ButtonStyles';
 
+const phoneFontScale = PixelRatio.getFontScale();
+
 const proCrisTheme = {
     colors: {
         white: '#FDFCFF',
@@ -60,20 +62,21 @@ const proCrisTheme = {
         },
     },
     fontSizes: {
-        '2xs': 10 / PixelRatio.getFontScale(),
-        xs: 12 / PixelRatio.getFontScale(),
-        sm: 14 / PixelRatio.getFontScale(),
-        md: 16 / PixelRatio.getFontScale(),
-        lg: 18 / PixelRatio.getFontScale(),
-        xl: 20 / PixelRatio.getFontScale(),
-        '2xl': 24 / PixelRatio.getFontScale(),
-        '3xl': 30 / PixelRatio.getFontScale(),
-        '4xl': 36 / PixelRatio.getFontScale(),
-        '5xl': 48 / PixelRatio.getFontScale(),
-        '6xl': 60 / PixelRatio.getFontScale(),
-        '7xl': 72 / PixelRatio.getFontScale(),
-        '8xl': 96 / PixelRatio.getFontScale(),
-        '9xl': 128 / PixelRatio.getFontScale(),
+        '3xs': 9 / phoneFontScale,
+        '2xs': 10 / phoneFontScale,
+        xs: 12 / phoneFontScale,
+        sm: 14 / phoneFontScale,
+        md: 16 / phoneFontScale,
+        lg: 18 / phoneFontScale,
+        xl: 20 / phoneFontScale,
+        '2xl': 24 / phoneFontScale,
+        '3xl': 30 / phoneFontScale,
+        '4xl': 36 / phoneFontScale,
+        '5xl': 48 / phoneFontScale,
+        '6xl': 60 / phoneFontScale,
+        '7xl': 72 / phoneFontScale,
+        '8xl': 96 / phoneFontScale,
+        '9xl': 128 / phoneFontScale,
     },
     shadows: {
         fab: {

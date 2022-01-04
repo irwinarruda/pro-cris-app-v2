@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshControl } from 'react-native';
-import { FlatList, Flex, Icon, Hidden } from 'native-base';
+import { FlatList, Flex, Icon } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { AntDesign } from '@expo/vector-icons';
@@ -101,7 +101,7 @@ const Students = (props: StudentsProps) => {
                     flex="1"
                     marginTop="20px"
                     paddingX="10px"
-                    marginBottom="10px"
+                    marginBottom="0px"
                     data={students.filter((student) => !student.is_deleted)}
                     refreshControl={
                         <RefreshControl
@@ -127,7 +127,7 @@ const Students = (props: StudentsProps) => {
                         />
                     )}
                     contentContainerStyle={{
-                        paddingBottom: 10,
+                        paddingBottom: 110,
                         paddingHorizontal: 10,
                     }}
                     keyExtractor={(item) => item.id}

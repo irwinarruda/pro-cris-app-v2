@@ -36,6 +36,7 @@ const FAB = ({ icon, size = 'md', ...props }: FABProps) => {
             position="absolute"
             right="20px"
             bottom="30px"
+            zIndex="10000"
             borderRadius="1000px"
             bgColor="gold.300"
             shadow="fab"

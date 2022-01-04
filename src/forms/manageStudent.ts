@@ -45,7 +45,7 @@ const initialValues = {
     address: '',
     map_location: '',
     observation: '',
-    color: Colors.Green,
+    color: Colors.DarkBlue,
     is_deleted: false,
     schedules: [] as Schedule[],
     costs: [] as Cost[],

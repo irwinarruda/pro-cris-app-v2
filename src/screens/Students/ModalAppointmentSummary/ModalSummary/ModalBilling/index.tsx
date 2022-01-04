@@ -1,5 +1,4 @@
 import React from 'react';
-import { isPast } from 'date-fns';
 import * as Sharing from 'expo-sharing';
 import { Flex, HStack, Text } from 'native-base';
 import { captureRef } from 'react-native-view-shot';
@@ -11,8 +10,6 @@ import { Appointment } from 'app/entities/Appointment';
 import { Button } from 'app/components/atoms/Button';
 import { ProCrisActionsheet } from 'app/components/molecules/ProCrisActionsheet';
 import { ProCrisBillingTemplate } from 'app/templates/ProCrisBillingTemplate';
-
-import { useStudentStore } from 'app/store/Student/Student.hook';
 
 type ModalBillingProps = {
     isOpen?: boolean;
@@ -30,7 +27,6 @@ const ModalBilling = ({
     const pictureRef = React.useRef<any>(null);
 
     const onSharePress = async () => {
-        console.log('result');
         const result = await captureRef(pictureRef, {
             result: 'tmpfile',
             quality: 1,
@@ -69,7 +65,7 @@ const ModalBilling = ({
                         Confira os dados e clique em {'"Compartilhar"'}.
                     </Text>
                     <HStack marginTop="10px">
-                        <Button onPress={onSharePress}>Compartilhar!</Button>
+                        <Button onPress={onSharePress}>Compartilhar</Button>
                     </HStack>
                 </Flex>
             </GestureHandlerRootView>

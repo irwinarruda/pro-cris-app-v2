@@ -4,11 +4,7 @@ import { Flex, Text, Icon, HStack, FlatList, useDisclose } from 'native-base';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import { isToday, isSameDay, format, isAfter } from 'date-fns';
-import {
-    AntDesign,
-    MaterialCommunityIcons,
-    MaterialIcons,
-} from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 import { Appointment } from 'app/entities/Appointment';
 import { DateHelpers } from 'app/utils/DateHelpers';
@@ -176,7 +172,7 @@ const Appointments = ({}: AppointmentsProps) => {
                     flex="1"
                     marginTop="12px"
                     paddingX="10px"
-                    marginBottom="10px"
+                    marginBottom="0px"
                     data={filteredAppointments}
                     refreshControl={
                         <RefreshControl
@@ -221,8 +217,8 @@ const Appointments = ({}: AppointmentsProps) => {
                     )}
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={{
-                        paddingBottom: 10,
                         paddingHorizontal: 10,
+                        paddingBottom: 110,
                     }}
                 />
             </Flex>

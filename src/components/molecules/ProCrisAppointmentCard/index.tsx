@@ -158,7 +158,7 @@ const ProCrisAppointmentCard = ({
                                     ].name
                                 }
                             />
-                            <Text fontSize="2xs">
+                            <Text fontSize="3xs">
                                 {
                                     appointmentStatus[
                                         checkDateStatus(new Date())
