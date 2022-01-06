@@ -242,11 +242,18 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     </Button>
                 </HStack>
             </KeyboardAvoidingScrollView>
-            <ManageCosts isOpen={pricesIsOpen} setIsOpen={setPricesIsOpen} />
-            <ManageSchedules
-                isOpen={schedulesIsOpen}
-                setIsOpen={setSchedulesIsOpen}
-            />
+            {pricesIsOpen && (
+                <ManageCosts
+                    isOpen={pricesIsOpen}
+                    setIsOpen={setPricesIsOpen}
+                />
+            )}
+            {schedulesIsOpen && (
+                <ManageSchedules
+                    isOpen={schedulesIsOpen}
+                    setIsOpen={setSchedulesIsOpen}
+                />
+            )}
         </>
     );
 };

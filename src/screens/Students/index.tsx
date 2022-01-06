@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { AntDesign } from '@expo/vector-icons';
 
-import { Button } from 'app/components/atoms/Button';
 import { FAB } from 'app/components/atoms/FAB';
 import { ProCrisStudentCard } from 'app/components/molecules/ProCrisStudentCard';
 import { ProCrisStatus } from 'app/components/organisms/ProCrisStatus';
@@ -133,10 +132,12 @@ const Students = (props: StudentsProps) => {
                     keyExtractor={(item) => item.id}
                 />
             </Flex>
-            <ModalAppointmentSummary
-                isOpen={isOpenModalOptionsSummary}
-                onClose={onCloseModalOptionsSummary}
-            />
+            {isOpenModalOptionsSummary && (
+                <ModalAppointmentSummary
+                    isOpen={isOpenModalOptionsSummary}
+                    onClose={onCloseModalOptionsSummary}
+                />
+            )}
         </>
     );
 };

@@ -88,10 +88,12 @@ const ModalAppointmentSummary = ({
                     </HStack>
                 </Modal.Footer>
             </ProCrisModal>
-            <ModalSummary
-                isOpen={isOpenModalSummary}
-                onClose={onCloseModalSummary}
-            />
+            {isOpenModalSummary && (
+                <ModalSummary
+                    isOpen={isOpenModalSummary}
+                    onClose={onCloseModalSummary}
+                />
+            )}
         </>
     );
 };

@@ -39,6 +39,7 @@
         "native-base": "3.2.1",
         "react": "16.13.1",
         "react-dom": "16.13.1",
+        "react-hook-form": "^7.22.5",
         "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
         "react-native-collapsible": "^1.6.0",
         "react-native-gesture-handler": "~1.10.2",
