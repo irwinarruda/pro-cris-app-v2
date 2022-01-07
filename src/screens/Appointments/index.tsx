@@ -1,20 +1,17 @@
 import React from 'react';
-import { RefreshControl } from 'react-native';
-import { Flex, Text, Icon, HStack, FlatList, useDisclose } from 'native-base';
+import { Flex, Text, Icon, HStack, useDisclose } from 'native-base';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import { isToday, isSameDay, format, isAfter } from 'date-fns';
 import { AntDesign } from '@expo/vector-icons';
 
 import { Appointment } from 'app/entities/Appointment';
-import { DateHelpers } from 'app/utils/DateHelpers';
 
 import { PressableIcon } from 'app/components/atoms/PressableIcon';
 import {
     ProCrisStagger,
     ProCrisStaggerIcon,
 } from 'app/components/molecules/ProCrisStagger';
-import { ProCrisAppointmentCard } from 'app/components/molecules/ProCrisAppointmentCard';
 
 import { useError } from 'app/hooks/Error';
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
@@ -23,6 +20,7 @@ import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useAlert } from 'app/store/Alert/Alert.hook';
 
 import { ModalCreateAppointment } from './ModalCreateAppointment';
+import { ListAppointments } from './ListAppointments';
 
 type GhostAppointments = Appointment & { isGhost: true };
 
@@ -168,59 +166,7 @@ const Appointments = ({}: AppointmentsProps) => {
                         onPress={onOpenDatePicker}
                     />
                 </HStack>
-                <FlatList
-                    flex="1"
-                    marginTop="12px"
-                    paddingX="10px"
-                    marginBottom="0px"
-                    data={filteredAppointments}
-                    refreshControl={
-                        <RefreshControl
-                            tintColor="#B0A766"
-                            colors={['#B0A766']}
-                            refreshing={loading}
-                            onRefresh={() => {
-                                listAppointments();
-                            }}
-                        />
-                    }
-                    renderItem={({ item: appointment, index }) => (
-                        <ProCrisAppointmentCard
-                            marginTop={index > 0 ? '10px' : '0px'}
-                            name={appointment.student?.name}
-                            observation={appointment.student?.observation}
-                            avatar={appointment.student?.avatar}
-                            color={appointment.student?.color}
-                            date={appointment.date}
-                            cost={appointment.cost}
-                            disabled={appointment.isGhost}
-                            onPress={() => {
-                                const dateString = `${format(
-                                    appointment.date,
-                                    'dd/MM/yyyy HH:mm',
-                                )} - ${format(
-                                    DateHelpers.getEndDateByTime(
-                                        appointment.date,
-                                        appointment.cost.time,
-                                    ),
-                                    'HH:mm',
-                                )}`;
-                                navigation.navigate('ManageAppointment', {
-                                    title: dateString,
-                                    appointment: {
-                                        ...appointment,
-                                        date: dateString,
-                                    },
-                                });
-                            }}
-                        />
-                    )}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{
-                        paddingHorizontal: 10,
-                        paddingBottom: 110,
-                    }}
-                />
+                <ListAppointments filteredAppointments={filteredAppointments} />
             </Flex>
             <ProCrisStagger isOpen={isOpenStagger} onToggle={onToggleStagger}>
                 <ProCrisStaggerIcon
