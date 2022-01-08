@@ -99,9 +99,19 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     cancelled: false,
                 },
             } as unknown as FormValues;
-            Object.entries(body).forEach(([key, value]: [any, any]) =>
-                setValue(key, value),
-            );
+            setValue('id', body.id);
+            setValue('name', body.name);
+            setValue('name_caregiver', body.name_caregiver);
+            setValue('phone', body.phone);
+            setValue('avatar', body.avatar);
+            setValue('date_of_birth', body.date_of_birth);
+            setValue('address', body.address);
+            setValue('map_location', body.map_location);
+            setValue('observation', body.observation);
+            setValue('color', body.color);
+            setValue('is_deleted', body.is_deleted);
+            setValue('schedules', [...body.schedules]);
+            setValue('costs', [...body.costs]);
         }
     }, [selectedStudent]);
 
@@ -238,6 +248,8 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     </Button>
                 </HStack>
             </KeyboardAvoidingScrollView>
+            <ManageCosts />
+            <ManageSchedules />
         </>
     );
 };
@@ -252,8 +264,6 @@ const ManageStudent = ({ ...props }: ManageStudentProps) => {
         <ManageStudentProvider>
             <FormProvider {...methods}>
                 <ManageStudentComponent {...props} />
-                <ManageCosts />
-                <ManageSchedules />
             </FormProvider>
         </ManageStudentProvider>
     );

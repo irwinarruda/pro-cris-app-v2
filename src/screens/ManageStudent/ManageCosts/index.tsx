@@ -23,7 +23,7 @@ import { useAlert } from 'app/store/Alert/Alert.hook';
 
 type ManageCostsProps = {};
 
-const ManageCosts = ({}: ManageCostsProps) => {
+const ManageCosts = React.memo(({}: ManageCostsProps) => {
     const { showAlertAsync } = useAlert();
     const { isManageCostsOpen, onManageCostsClose } = useManageStudent('costs');
 
@@ -165,7 +165,7 @@ const ManageCosts = ({}: ManageCostsProps) => {
             </KeyboardAvoidingScrollView>
         </ProCrisActionsheet>
     );
-};
+});
 
 export type { ManageCostsProps };
 export { ManageCosts };

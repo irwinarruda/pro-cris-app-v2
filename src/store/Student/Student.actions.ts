@@ -5,15 +5,14 @@ import {
     ActionStudentUpdate,
     ActionStudentUpdateLoading,
     ActionStudentSelect,
+    ActionStudentUpdateOne,
 } from './Student.types';
 import { Student, StudentCover } from 'app/entities/Student';
 
 export const actionStudentAdd = (student: Student): ActionStudentAdd => {
     return {
         type: ActionTypes.STUDENT_ADD,
-        payload: {
-            student,
-        },
+        payload: { student },
     };
 };
 
@@ -30,6 +29,15 @@ export const actionStudentUpdate = (
     return {
         type: ActionTypes.STUDENT_UPDATE_ALL,
         payload: { students },
+    };
+};
+
+export const actionSudentUpdateOne = (
+    student: Student,
+): ActionStudentUpdateOne => {
+    return {
+        type: ActionTypes.STUDENT_UPDATE_ONE,
+        payload: { student },
     };
 };
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -5,7 +6,6 @@ import { FormValues } from 'app/forms/manageStudent';
 import { StudentService } from 'app/services/StudentService';
 import { Cost } from 'app/entities/Cost';
 import { Student } from 'app/entities/Student';
-import { Appointment } from 'app/entities/Appointment';
 import { FormValues as AppointmentOptionsFormValues } from 'app/forms/manageAppointment';
 
 import { ApplicationStores } from 'app/store/Store';
@@ -14,6 +14,8 @@ import {
     actionStudentUpdate,
     actionStudentSelect,
     actionStudentUpdateLoading,
+    actionStudentAdd,
+    actionSudentUpdateOne,
 } from 'app/store/Student/Student.actions';
 
 const neededStates = {
@@ -56,12 +58,10 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
 ): Pick<StudentStore, typeof neededStates[T][number]> &
     StudentStoreFunctions => {
     let hooks = {} as Pick<StudentStore, typeof neededStates[T][number]>;
-    hooks = useSelector((state: ApplicationStores) => {
-        const obj = {} as any;
-        neededStates[key || ('none' as T)].forEach((stateString) => {
-            obj[stateString] = state.studentStore[stateString];
-        });
-        return obj;
+    neededStates[key || 'none'].forEach((keyValue) => {
+        (hooks as any)[keyValue] = useSelector(
+            (state: ApplicationStores) => state.studentStore[keyValue],
+        );
     });
 
     const dispatch = useDispatch();
@@ -118,19 +118,19 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
     const createStudent = React.useCallback(
         async (student: FormValues): Promise<void> => {
             const studentService = new StudentService();
-            await studentService.createStudent(student);
-            await listStudents();
+            const studentResponse = await studentService.createStudent(student);
+            dispatch(actionStudentAdd(studentResponse));
         },
-        [listStudents],
+        [],
     );
 
     const editStudent = React.useCallback(
         async (student: FormValues): Promise<void> => {
             const studentService = new StudentService();
-            await studentService.updateStudent(student);
-            await listStudents();
+            const studentResponse = await studentService.updateStudent(student);
+            dispatch(actionSudentUpdateOne(studentResponse));
         },
-        [listStudents],
+        [],
     );
 
     const updateSelectedUserAppointmentOptions = React.useCallback(

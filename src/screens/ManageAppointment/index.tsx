@@ -191,7 +191,7 @@ const ManageAppointment = ({ ...props }: ManageAppointmentProps) => {
     const navigation = useNavigation();
     const { showError } = useError();
     const { showSuccess } = useSuccess();
-    const { summaryStudentId } = useSummary();
+    const { summaryStudentId } = useSummary('mAppointments');
     const { selectedStudent, updateSelectedUserAppointmentOptions } =
         useStudentStore('manage');
     const { setLoading } = useLoadingStore();

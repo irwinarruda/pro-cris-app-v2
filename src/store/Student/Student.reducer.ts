@@ -18,6 +18,22 @@ export const studentReducer = (state = INITIAL_STATE, action: Actions) => {
                 ...state,
                 students: [...state.students, action.payload?.student],
             };
+        case ActionTypes.STUDENT_UPDATE_ONE:
+            console.log('Começou');
+            const newStudents = [
+                ...state.students.map((student) => {
+                    if (student.id === action.payload?.student.id) {
+                        console.log('DEUUUUUUDEUUUUUUDEUUUUUUDEUUUUUUDEUUUUUU');
+                        return action.payload?.student;
+                    }
+                    console.log('Não deu');
+                    return student;
+                }),
+            ];
+            return {
+                ...state,
+                students: [...newStudents],
+            };
         case ActionTypes.STUDENT_DELETE:
             return {
                 ...state,

@@ -8,7 +8,7 @@ import {
     VStack,
     Spinner,
 } from 'native-base';
-import { format, isPast } from 'date-fns';
+import { format } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 
 import { Appointment } from 'app/entities/Appointment';
@@ -38,11 +38,9 @@ type AppointmentWithStudent = Appointment & {
 
 type ModalSummaryProps = {
     children?: React.ReactNode;
-    isOpen: boolean;
-    onClose: () => void;
 };
 
-const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
+const ModalSummary = React.memo(({}: ModalSummaryProps) => {
     const navigation = useNavigation();
     const {
         selectedStudent,
@@ -55,7 +53,12 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
     const { showError } = useError();
     const { showSuccess } = useSuccess();
     const { setLoading } = useLoadingStore();
-    const { summaryType, handleEditAppointmentPress } = useSummary();
+    const {
+        summaryType,
+        isOpenModalSummary,
+        onCloseModalSummary,
+        handleEditAppointmentPress,
+    } = useSummary('modSum');
 
     const [billingModal, setBillingModal] = React.useState<boolean>(false);
 
@@ -181,8 +184,8 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
                         ? 'Aulas não pagas'
                         : 'Todas as Aulas'
                 }:\n${selectedStudent?.name}`}
-                isOpen={isOpen}
-                onClose={onClose}
+                isOpen={isOpenModalSummary}
+                onClose={onCloseModalSummary}
             >
                 <Modal.Body bgColor="white">
                     <Flex flex="1">
@@ -243,7 +246,7 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
                         <Button
                             colorScheme="gray.500"
                             size="sm"
-                            onPress={onClose}
+                            onPress={onCloseModalSummary}
                         >
                             Fechar
                         </Button>
@@ -269,7 +272,7 @@ const ModalSummary = ({ isOpen, onClose }: ModalSummaryProps) => {
             )}
         </>
     );
-};
+});
 
 export type { ModalSummaryProps };
 export { ModalSummary };

@@ -1,24 +1,71 @@
 import React from 'react';
-import { Flex, FlatList } from 'native-base';
+import { FlatList } from 'native-base';
 import { RefreshControl } from 'react-native';
-import { format } from 'date-fns';
+import { format, isAfter, isSameDay } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 
 import { DateHelpers } from 'app/utils/DateHelpers';
+import { Appointment } from 'app/entities/Appointment';
 
 import { ProCrisAppointmentCard } from 'app/components/molecules/ProCrisAppointmentCard';
 
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
+import { useStudentStore } from 'app/store/Student/Student.hook';
 
-type ListAppointmentsProps = {
-    filteredAppointments: any;
-};
+type GhostAppointments = Appointment & { isGhost: true };
 
-const ListAppointments = React.memo(function ListAppointmentsMemo({
-    filteredAppointments,
-}: ListAppointmentsProps) {
+type ListAppointmentsProps = {};
+
+const ListAppointments = ({}: ListAppointmentsProps) => {
     const navigation = useNavigation();
-    const { loading, listAppointments } = useAppointmentStore('loading');
+    const { students } = useStudentStore('list');
+    const {
+        appointments,
+        selectedDate,
+        loading,
+        listAppointments,
+        getAppointmentsByRoutineDate,
+    } = useAppointmentStore('all');
+
+    const [ghostAppointments, setGhostAppointments] = React.useState<
+        GhostAppointments[]
+    >([]);
+
+    const filteredAppointments = React.useMemo(
+        () =>
+            appointments
+                .filter((appointment) =>
+                    isSameDay(appointment.date, selectedDate),
+                )
+                .concat(ghostAppointments)
+                .sort((a, b) => a.date.getTime() - b.date.getTime())
+                .map((appointment) => ({
+                    ...appointment,
+                    student: students.find(
+                        (student) => student.id === appointment.id_student,
+                    ),
+                })),
+        [appointments, selectedDate, ghostAppointments, students],
+    );
+
+    const handleGhostAppointments = async (date?: Date) => {
+        if (date && isAfter(date, new Date())) {
+            const appointments = await getAppointmentsByRoutineDate(date);
+            setGhostAppointments(
+                appointments.map((appointment) => ({
+                    ...appointment,
+                    isGhost: true,
+                })),
+            );
+        } else {
+            setGhostAppointments([]);
+        }
+    };
+
+    React.useEffect(() => {
+        handleGhostAppointments(selectedDate);
+    }, [selectedDate]);
+
     return (
         <FlatList
             flex="1"
@@ -74,7 +121,7 @@ const ListAppointments = React.memo(function ListAppointmentsMemo({
             }}
         />
     );
-});
+};
 
 export type { ListAppointmentsProps };
 export { ListAppointments };

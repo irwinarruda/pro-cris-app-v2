@@ -17,27 +17,25 @@ import { FKCheckbox } from 'app/components/molecules/FKCheckbox';
 
 import { useError } from 'app/hooks/Error';
 import { useSuccess } from 'app/hooks/Success';
+import { useAppointments } from 'app/hooks/Appointments';
 import { useStudentStore } from 'app/store/Student/Student.hook';
 import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
 
 type ModalCreateAppointmentProps = {
     children?: React.ReactNode;
-    isOpen: boolean;
-    onClose: () => void;
 };
 
-const ModalCreateAppointmentComponent = ({
-    isOpen,
-    onClose,
-}: ModalCreateAppointmentProps) => {
+const ModalCreateAppointmentComponent = ({}: ModalCreateAppointmentProps) => {
+    const { isModalAppointmentOpen, onModalAppointmentClose } =
+        useAppointments('modal');
     const { students, listStudentCosts } = useStudentStore('list');
     const { values, handleSubmit, setFieldValue, resetForm } =
         useFormikContext<FormValues>();
     const [costs, setCosts] = React.useState<Cost[]>([]);
 
     const handleModalClose = () => {
-        onClose();
+        onModalAppointmentClose();
     };
 
     const fetchCostData = async (studentId: string) => {
@@ -67,8 +65,8 @@ const ModalCreateAppointmentComponent = ({
     return (
         <ProCrisModal
             title="Criar Aula"
-            isOpen={isOpen}
-            onClose={handleModalClose}
+            isOpen={isModalAppointmentOpen}
+            onClose={onModalAppointmentClose}
         >
             <Modal.Body bgColor="white">
                 <Flex flex="1">
@@ -132,6 +130,7 @@ const ModalCreateAppointment = ({ ...props }: ModalCreateAppointmentProps) => {
     const { showSuccess } = useSuccess();
     const { setLoading } = useLoadingStore();
     const { createAppointment } = useAppointmentStore();
+    const { onModalAppointmentClose } = useAppointments();
 
     const handleSubmit = async (
         values: FormValues,
@@ -144,7 +143,7 @@ const ModalCreateAppointment = ({ ...props }: ModalCreateAppointmentProps) => {
         } catch (err) {
             showError(err, { title: 'Erro ao criar Aula' });
         } finally {
-            props.onClose();
+            onModalAppointmentClose();
             setLoading(false);
         }
     };
