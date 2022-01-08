@@ -77,7 +77,7 @@ class StudentService extends AppService {
             await schedulesCollection.doc(id).set(scheduleWithoutId);
             schedules.push({ id, ...scheduleWithoutId });
         }
-        return { ...student, costs, schedules };
+        return { ...student, id: studentId, costs, schedules };
     }
 
     public async updateStudent(
@@ -130,7 +130,7 @@ class StudentService extends AppService {
                 .set(scheduleWithoutId, { merge: true });
             schedules.push({ id, ...scheduleWithoutId });
         }
-        return { ...student, costs, schedules };
+        return { ...student, id: body.id, costs, schedules };
     }
 
     public async deleteStudent(studentId: string): Promise<void> {
