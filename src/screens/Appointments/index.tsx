@@ -18,13 +18,9 @@ const AppointmentsComponents = ({}: AppointmentsProps) => {
     const { listAppointments } = useAppointmentStore('all');
     const { onStaggerClose } = useAppointments();
 
-    const fetchData = async () => {
-        await listStudents();
-        await listAppointments();
-    };
-
     React.useEffect(() => {
-        fetchData();
+        listAppointments();
+        listStudents();
     }, []);
 
     return (

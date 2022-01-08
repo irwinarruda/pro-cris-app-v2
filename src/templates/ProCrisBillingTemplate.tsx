@@ -107,7 +107,7 @@ const ProCrisBillingTemplate = React.forwardRef<
                                 borderRadius="10000px"
                             ></Flex>
                             <Text
-                                lineHeight="2xs"
+                                lineHeight="xs"
                                 fontSize="2xs"
                                 fontWeight="500"
                                 color="black"
@@ -130,7 +130,7 @@ const ProCrisBillingTemplate = React.forwardRef<
                                 borderRadius="10000px"
                             ></Flex>
                             <Text
-                                lineHeight="2xs"
+                                lineHeight="xs"
                                 fontSize="2xs"
                                 fontWeight="500"
                                 color="black"

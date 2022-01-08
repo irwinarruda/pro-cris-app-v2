@@ -3,6 +3,7 @@ import * as yup from 'yup';
 type FormValues = {
     id: string;
     id_student: string;
+    id_cost: string;
     cost: {
         id: string;
         time: string;
@@ -16,6 +17,7 @@ type FormValues = {
 const initialValues = {
     id: '',
     id_student: '',
+    id_cost: '',
     cost: {
         id: '',
         time: '',
@@ -28,6 +30,7 @@ const initialValues = {
 
 const validationSchema = yup.object().shape({
     id_student: yup.string().required('Esse campo é obrigatório'),
+    id_cost: yup.string().required('Esse campo é obrigatório'),
     cost: yup.object().shape({
         id: yup.string().required('Esse campo é obrigatório'),
         time: yup.string(),

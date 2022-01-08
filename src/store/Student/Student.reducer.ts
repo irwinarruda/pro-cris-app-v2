@@ -19,20 +19,16 @@ export const studentReducer = (state = INITIAL_STATE, action: Actions) => {
                 students: [...state.students, action.payload?.student],
             };
         case ActionTypes.STUDENT_UPDATE_ONE:
-            console.log('Começou');
-            const newStudents = [
-                ...state.students.map((student) => {
-                    if (student.id === action.payload?.student.id) {
-                        console.log('DEUUUUUUDEUUUUUUDEUUUUUUDEUUUUUUDEUUUUUU');
-                        return action.payload?.student;
-                    }
-                    console.log('Não deu');
-                    return student;
-                }),
-            ];
+            let newStudent = [...state.students];
+            for (let i in newStudent) {
+                if (newStudent[i].id === action.payload?.student.id) {
+                    newStudent[i] = { ...action.payload?.student };
+                    break;
+                }
+            }
             return {
                 ...state,
-                students: [...newStudents],
+                students: [...newStudent],
             };
         case ActionTypes.STUDENT_DELETE:
             return {

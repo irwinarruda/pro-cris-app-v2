@@ -3,7 +3,8 @@ import { Linking } from 'react-native';
 import { HStack, VStack, Icon } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import { Formik, FormikHelpers, useFormikContext } from 'formik';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, useFormContext, FormProvider } from 'react-hook-form';
 
 import {
     initialValues,
@@ -16,8 +17,8 @@ import { StudentCover } from 'app/entities/Student';
 import { Button } from 'app/components/atoms/Button';
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
 import { ProCrisStudentsOverview } from 'app/components/molecules/ProCrisStudentsOverview';
-import { FKFormText } from 'app/components/molecules/FKFormText';
-import { FKCheckbox } from 'app/components/molecules/FKCheckbox';
+import { RHFormText } from 'app/components/molecules/RHFormText';
+import { RHCheckbox } from 'app/components/molecules/RHCheckbox';
 
 import { useError } from 'app/hooks/Error';
 import { useSuccess } from 'app/hooks/Success';
@@ -42,11 +43,35 @@ const ManageAppointmentComponent = ({
     },
 }: ManageAppointmentProps) => {
     const navigation = useNavigation();
+    const { showSuccess } = useSuccess();
     const { showError } = useError();
     const { setLoading } = useLoadingStore();
     const { listStudent } = useStudentStore();
-    const { handleSubmit, setValues } = useFormikContext();
+    const { updateAppointmentOptions } = useAppointmentStore();
+    const { summaryStudentId } = useSummary('mAppointments');
+    const { selectedStudent, updateSelectedUserAppointmentOptions } =
+        useStudentStore('manage');
+
+    const { handleSubmit, setValue } = useFormContext();
     const [expanded, setExpanded] = React.useState<boolean>(false);
+
+    const handleFormSubmit = async (values: FormValues) => {
+        try {
+            setLoading(true);
+            let successTitle = '';
+            await updateAppointmentOptions(values);
+            successTitle = 'Aula editada com sucesso!';
+            if (summaryStudentId && !!selectedStudent) {
+                updateSelectedUserAppointmentOptions(selectedStudent, values);
+            }
+            navigation.goBack();
+            showSuccess({ title: successTitle });
+        } catch (err) {
+            showError(err, { title: 'Erro ao editar Aula' });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleEditStudentPress = async (studentId: string) => {
         try {
@@ -90,7 +115,11 @@ const ManageAppointmentComponent = ({
                 is_extra: appointment.is_extra,
                 observation: appointment.observation,
             };
-            setValues(body);
+            setValue('id', body.id);
+            setValue('is_paid', body.is_paid);
+            setValue('is_cancelled', body.is_cancelled);
+            setValue('is_extra', body.is_extra);
+            setValue('observation', body.observation);
         }
     }, []);
 
@@ -152,16 +181,16 @@ const ManageAppointmentComponent = ({
                 </Button>
             </HStack>
             <VStack space="7px" marginTop="20px" paddingX="20px">
-                <FKCheckbox name="is_paid" size="sm" fontWeight="600">
+                <RHCheckbox name="is_paid" size="sm" fontWeight="600">
                     Aula Paga
-                </FKCheckbox>
-                <FKCheckbox name="is_cancelled" size="sm" fontWeight="600">
+                </RHCheckbox>
+                <RHCheckbox name="is_cancelled" size="sm" fontWeight="600">
                     Aula Cancelada
-                </FKCheckbox>
-                <FKCheckbox name="is_extra" size="sm" fontWeight="600">
+                </RHCheckbox>
+                <RHCheckbox name="is_extra" size="sm" fontWeight="600">
                     Aula Extra
-                </FKCheckbox>
-                <FKFormText
+                </RHCheckbox>
+                <RHFormText
                     name="observation"
                     label="Observação"
                     height="80px"
@@ -179,7 +208,10 @@ const ManageAppointmentComponent = ({
                 paddingX="20px"
                 justifyContent="center"
             >
-                <Button size="lg" onPress={handleSubmit as any}>
+                <Button
+                    size="lg"
+                    onPress={handleSubmit(handleFormSubmit) as any}
+                >
                     Salvar Aula
                 </Button>
             </HStack>
@@ -188,47 +220,15 @@ const ManageAppointmentComponent = ({
 };
 
 const ManageAppointment = ({ ...props }: ManageAppointmentProps) => {
-    const navigation = useNavigation();
-    const { showError } = useError();
-    const { showSuccess } = useSuccess();
-    const { summaryStudentId } = useSummary('mAppointments');
-    const { selectedStudent, updateSelectedUserAppointmentOptions } =
-        useStudentStore('manage');
-    const { setLoading } = useLoadingStore();
-    const { updateAppointmentOptions } = useAppointmentStore();
-
-    const handleFormSubmit = async (
-        values: FormValues,
-        formikHelpers: FormikHelpers<FormValues>,
-    ) => {
-        try {
-            setLoading(true);
-            let successTitle = '';
-            await updateAppointmentOptions(values);
-            successTitle = 'Aula editada com sucesso!';
-            if (summaryStudentId && !!selectedStudent) {
-                updateSelectedUserAppointmentOptions(selectedStudent, values);
-            }
-            navigation.goBack();
-            showSuccess({ title: successTitle });
-        } catch (err) {
-            showError(err, { title: 'Erro ao editar Aula' });
-        } finally {
-            setLoading(false);
-        }
-    };
+    const methods = useForm({
+        defaultValues: initialValues,
+        resolver: yupResolver(validationSchema),
+    });
 
     return (
-        <Formik
-            initialValues={initialValues}
-            onSubmit={handleFormSubmit}
-            validationSchema={validationSchema}
-            validateOnChange={false}
-            validateOnBlur={false}
-            validateOnMount={false}
-        >
+        <FormProvider {...methods}>
             <ManageAppointmentComponent {...props} />
-        </Formik>
+        </FormProvider>
     );
 };
 

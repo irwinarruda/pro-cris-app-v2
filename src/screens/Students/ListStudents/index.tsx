@@ -30,11 +30,12 @@ const ListStudents = React.memo(({}: ListStudentsProps) => {
     const handleEditStudentPress = async (studentId: string) => {
         try {
             setLoading(true);
-            await listStudent(studentId);
+            listStudent();
             navigation.navigate('ManageStudent', {
                 title: 'Editar Aluno',
                 type: 'edit',
             });
+            await listStudent(studentId);
         } catch (err) {
             showError(err, { title: 'Erro ao deletar Aluno' });
         } finally {

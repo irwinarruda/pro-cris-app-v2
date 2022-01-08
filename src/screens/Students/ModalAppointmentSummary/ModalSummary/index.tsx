@@ -196,7 +196,7 @@ const ModalSummary = React.memo(({}: ModalSummaryProps) => {
                             <Text width="34%" textAlign="center">
                                 Data
                             </Text>
-                            <Text width="21%" textAlign="center">
+                            <Text width="27%" textAlign="center">
                                 Valor
                             </Text>
                             <Text width="12%" textAlign="center">

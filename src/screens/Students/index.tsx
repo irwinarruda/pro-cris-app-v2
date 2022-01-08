@@ -33,16 +33,12 @@ const Students = ({}: StudentsProps) => {
         });
     };
 
-    const fetchData = async () => {
-        await listStudents();
-    };
-
     React.useEffect(() => {
         handleHydrateModalState();
     }, [screenFocus]);
 
     React.useEffect(() => {
-        fetchData();
+        listStudents();
         const unsubscribe = navigation.addListener('focus', () => {
             setScreenFocus((prev) => !prev);
         });

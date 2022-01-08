@@ -81,8 +81,8 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
 
     const listStudent = React.useCallback(
         async (studentId?: string): Promise<void> => {
-            const studentService = new StudentService();
             if (studentId) {
+                const studentService = new StudentService();
                 const student = await studentService.listStudent(studentId);
                 dispatch(actionStudentSelect(student));
             } else {
