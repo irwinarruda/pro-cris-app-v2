@@ -13,7 +13,7 @@ type ProCrisStatusProps = {
     children?: React.ReactNode;
 };
 
-const ProCrisStatus = ({}: ProCrisStatusProps) => {
+const ProCrisStatus = React.memo(({}: ProCrisStatusProps) => {
     const { appointments } = useAppointmentStore('status');
     const [classesVisible, setClassesVisible] = React.useState(false);
     const [priceVisible, setPriceVisible] = React.useState(false);
@@ -121,7 +121,7 @@ const ProCrisStatus = ({}: ProCrisStatusProps) => {
             </Pressable>
         </Flex>
     );
-};
+});
 
 export type { ProCrisStatusProps };
 export { ProCrisStatus };

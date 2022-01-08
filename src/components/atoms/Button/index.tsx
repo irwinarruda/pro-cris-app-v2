@@ -1,6 +1,11 @@
 import React from 'react';
 import { Flex, Text, IFlexProps } from 'native-base';
-import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
+import {
+    RectButton,
+    RectButtonProps,
+    BaseButton,
+    BaseButtonProps,
+} from 'react-native-gesture-handler';
 
 const buttonSizesStyles = {
     sm: {
@@ -33,7 +38,7 @@ const buttonSizesStyles = {
 };
 
 type ButtonProps = IFlexProps &
-    RectButtonProps & {
+    BaseButtonProps & {
         children?: React.ReactNode;
         size?: keyof typeof buttonSizesStyles;
         colorScheme?: string;
@@ -45,8 +50,6 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
         size = 'md',
         leftIcon,
         colorScheme,
-        underlayColor,
-        activeOpacity,
         onPress,
         onActiveStateChange,
         style,
@@ -84,10 +87,8 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
             {...buttonSizesStyles[size as keyof typeof buttonSizesStyles].rect}
             {...props}
         >
-            <RectButton
+            <BaseButton
                 ref={ref}
-                underlayColor={underlayColor}
-                activeOpacity={activeOpacity}
                 onPress={onPress}
                 onActiveStateChange={onActiveStateChange}
                 testID={testID}
@@ -137,7 +138,7 @@ const Button = React.forwardRef<any, ButtonProps>(function ButtonComponent(
                         {children}
                     </Text>
                 </Flex>
-            </RectButton>
+            </BaseButton>
         </Flex>
     );
 });

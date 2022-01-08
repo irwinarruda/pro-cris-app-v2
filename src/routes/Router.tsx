@@ -15,7 +15,7 @@ type RouterProps = {
 
 const Router = ({}: RouterProps) => {
     const [firebaseHasInitiated, setFirebaseHasInitiated] =
-        React.useState<boolean>(false);
+        React.useState<boolean>(true);
     const { user, hydrate } = useUserStore('user');
 
     React.useEffect(() => {

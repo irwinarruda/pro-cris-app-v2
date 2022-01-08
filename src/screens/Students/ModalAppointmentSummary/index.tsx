@@ -12,89 +12,83 @@ import { ModalSummary } from './ModalSummary';
 
 type ModalAppointmentSummaryProps = {
     children?: React.ReactNode;
-    isOpen: boolean;
-    onClose: () => void;
 };
 
-const ModalAppointmentSummary = ({
-    isOpen,
-    onClose,
-}: ModalAppointmentSummaryProps) => {
-    const { selectedStudent } = useStudentStore('manage');
-    const {
-        isOpenModalSummary,
-        onCloseModalSummary,
-        onOpenModalSummary,
-        setSummaryType,
-    } = useSummary();
+const ModalAppointmentSummary = React.memo(
+    ({}: ModalAppointmentSummaryProps) => {
+        const { selectedStudent } = useStudentStore('manage');
+        const {
+            isOpenModalOptionsSummary,
+            onCloseModalOptionsSummary,
+            onOpenModalSummary,
+            setSummaryType,
+        } = useSummary('modOpt');
 
-    const handleOpenSummary = (type: SummaryType) => {
-        setSummaryType(type);
-        onOpenModalSummary();
-    };
+        const handleOpenSummary = (type: SummaryType) => {
+            setSummaryType(type);
+            onOpenModalSummary();
+        };
 
-    return (
-        <>
-            <ProCrisModal
-                title={`Relatórios: ${selectedStudent?.name}`}
-                isOpen={isOpen}
-                onClose={onClose}
-            >
-                <Modal.Body bgColor="white">
-                    <VStack flex="1" space="10px" paddingY="10px">
-                        <Pressable
-                            bgColor="white"
-                            borderWidth="1px"
-                            borderColor="gray.200"
-                            borderRadius="5px"
-                            onPress={() => handleOpenSummary('notpaid')}
-                        >
-                            <Text
-                                paddingX="12px"
-                                paddingY="5px"
-                                fontWeight="600"
-                                color="gray.500"
+        return (
+            <>
+                <ProCrisModal
+                    title={`Relatórios: ${selectedStudent?.name}`}
+                    isOpen={isOpenModalOptionsSummary}
+                    onClose={onCloseModalOptionsSummary}
+                >
+                    <Modal.Body bgColor="white">
+                        <VStack flex="1" space="10px" paddingY="10px">
+                            <Pressable
+                                bgColor="white"
+                                borderWidth="1px"
+                                borderColor="gray.200"
+                                borderRadius="5px"
+                                onPress={() => handleOpenSummary('notpaid')}
                             >
-                                Aulas Não Pagas
-                            </Text>
-                        </Pressable>
-                        <Pressable
-                            bgColor="white"
-                            borderWidth="1px"
-                            borderColor="gray.200"
-                            borderRadius="5px"
-                            onPress={() => handleOpenSummary('all')}
-                        >
-                            <Text
-                                paddingX="12px"
-                                paddingY="5px"
-                                fontWeight="600"
-                                color="gray.500"
+                                <Text
+                                    paddingX="12px"
+                                    paddingY="5px"
+                                    fontWeight="600"
+                                    color="gray.500"
+                                >
+                                    Aulas Não Pagas
+                                </Text>
+                            </Pressable>
+                            <Pressable
+                                bgColor="white"
+                                borderWidth="1px"
+                                borderColor="gray.200"
+                                borderRadius="5px"
+                                onPress={() => handleOpenSummary('all')}
                             >
-                                Todas as Aulas
-                            </Text>
-                        </Pressable>
-                    </VStack>
-                </Modal.Body>
-                <Modal.Footer paddingTop="8px" paddingBottom="8px">
-                    <HStack space={2}>
-                        <Button
-                            colorScheme="gray.500"
-                            size="sm"
-                            onPress={onClose}
-                        >
-                            Fechar
-                        </Button>
-                    </HStack>
-                </Modal.Footer>
-            </ProCrisModal>
-            <ModalSummary
-                isOpen={isOpenModalSummary}
-                onClose={onCloseModalSummary}
-            />
-        </>
-    );
-};
+                                <Text
+                                    paddingX="12px"
+                                    paddingY="5px"
+                                    fontWeight="600"
+                                    color="gray.500"
+                                >
+                                    Todas as Aulas
+                                </Text>
+                            </Pressable>
+                        </VStack>
+                    </Modal.Body>
+                    <Modal.Footer paddingTop="8px" paddingBottom="8px">
+                        <HStack space={2}>
+                            <Button
+                                colorScheme="gray.500"
+                                size="sm"
+                                onPress={onCloseModalOptionsSummary}
+                            >
+                                Fechar
+                            </Button>
+                        </HStack>
+                    </Modal.Footer>
+                </ProCrisModal>
+                <ModalSummary />
+            </>
+        );
+    },
+);
 
 export type { ModalAppointmentSummaryProps };
 export { ModalAppointmentSummary };

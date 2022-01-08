@@ -31,7 +31,9 @@ type ListStudentByRoutineDateResponse = (Omit<
 })[];
 
 class StudentService extends AppService {
-    public async createStudent(body: CreateStudentRequestBody): Promise<void> {
+    public async createStudent(
+        body: CreateStudentRequestBody,
+    ): Promise<Student> {
         if (!auth.currentUser) {
             throw { message: 'Usuário não autenticado' };
         }
@@ -62,18 +64,25 @@ class StudentService extends AppService {
             student.avatar = await this.uploadImage(body.avatar.uri);
         }
 
+        const costs = [] as Cost[];
+        const schedules = [] as Schedule[];
         await studentCollection.set(student);
         for (let cost of body.costs) {
             const { id, ...costWithoutId } = cost;
             await costsCollection.doc(id).set(costWithoutId);
+            costs.push({ id, ...costWithoutId });
         }
         for (let schedule of body.schedules) {
             const { id, ...scheduleWithoutId } = schedule;
             await schedulesCollection.doc(id).set(scheduleWithoutId);
+            schedules.push({ id, ...scheduleWithoutId });
         }
+        return { ...student, id: studentId, costs, schedules };
     }
 
-    public async updateStudent(body: UpdateStudentRequestBody): Promise<void> {
+    public async updateStudent(
+        body: UpdateStudentRequestBody,
+    ): Promise<Student> {
         if (!auth.currentUser) {
             throw { message: 'Usuário não autenticado' };
         }
@@ -106,17 +115,22 @@ class StudentService extends AppService {
             }
         }
 
+        const costs = [] as Cost[];
+        const schedules = [] as Schedule[];
         await studentCollection.update(student);
         for (let cost of body.costs) {
             const { id, ...costWithoutId } = cost;
             await costsCollection.doc(id).set(costWithoutId, { merge: true });
+            costs.push({ id, ...costWithoutId });
         }
         for (let schedule of body.schedules) {
             const { id, ...scheduleWithoutId } = schedule;
             await schedulesCollection
                 .doc(id)
                 .set(scheduleWithoutId, { merge: true });
+            schedules.push({ id, ...scheduleWithoutId });
         }
+        return { ...student, id: body.id, costs, schedules };
     }
 
     public async deleteStudent(studentId: string): Promise<void> {

@@ -2,7 +2,7 @@
     "expo": {
         "name": "Prô Cris V2",
         "slug": "pro-cris-v2",
-        "version": "1.0.1",
+        "version": "1.1.0",
         "orientation": "portrait",
         "icon": "./src/assets/app/icon.png",
         "splash": {

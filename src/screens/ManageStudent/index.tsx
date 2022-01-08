@@ -1,7 +1,7 @@
 import React from 'react';
-import { Image as RNImage } from 'react-native';
 import { Flex, HStack, VStack } from 'native-base';
-import { Formik, FormikHelpers, useFormikContext } from 'formik';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
 
 import {
@@ -12,11 +12,14 @@ import {
 
 import { Button } from 'app/components/atoms/Button';
 import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidingScrollView';
-import { FKColorPicker } from 'app/components/molecules/FKColorPicker';
-import { FKFormFile } from 'app/components/molecules/FKFormFile';
-import { FKFormText } from 'app/components/molecules/FKFormText';
-import { FKFormFormat } from 'app/components/molecules/FKFormFormat';
+import { RHColorPicker } from 'app/components/molecules/RHColorPicker';
+import { RHFormText } from 'app/components/molecules/RHFormText';
+import { RHFormFormat } from 'app/components/molecules/RHFormFormat';
 
+import {
+    ManageStudentProvider,
+    useManageStudent,
+} from 'app/hooks/ManageStudent';
 import { useError } from 'app/hooks/Error';
 import { useSuccess } from 'app/hooks/Success';
 import { useAlert } from 'app/store/Alert/Alert.hook';
@@ -25,6 +28,7 @@ import { useStudentStore } from 'app/store/Student/Student.hook';
 
 import { ManageCosts } from './ManageCosts';
 import { ManageSchedules } from './ManageSchedules';
+import { ImageField } from './ImageField';
 
 type ManageStudentProps = {
     route: { params: { title: string; type: 'create' | 'edit' | 'view' } };
@@ -32,15 +36,36 @@ type ManageStudentProps = {
 
 const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
     const navigation = useNavigation();
-    const { showAlertAsync } = useAlert();
+    const { onManageCostsOpen, onManageSchedulesOpen } =
+        useManageStudent('none');
+    const { showSuccess } = useSuccess();
     const { showError } = useError();
+    const { showAlertAsync } = useAlert();
     const { setLoading } = useLoadingStore();
+    const { createStudent, editStudent } = useStudentStore();
     const { selectedStudent, deleteStudent } = useStudentStore('manage');
 
-    const [pricesIsOpen, setPricesIsOpen] = React.useState<boolean>(false);
-    const [schedulesIsOpen, setSchedulesIsOpen] =
-        React.useState<boolean>(false);
-    const { values, handleSubmit, setValues } = useFormikContext<FormValues>();
+    const { handleSubmit, setValue } = useFormContext<FormValues>();
+
+    const handleFormSubmit = async (values: FormValues) => {
+        try {
+            setLoading(true);
+            let successTitle = '';
+            if (params.type === 'create') {
+                await createStudent(values);
+                successTitle = 'Aluno criado com sucesso';
+            } else {
+                await editStudent(values);
+                successTitle = 'Aluno editado com sucesso';
+            }
+            navigation.goBack();
+            showSuccess({ title: successTitle });
+        } catch (err) {
+            showError(err, { title: 'Erro ao criar Aluno' });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleDeleteStudentPress = async (studentId: string) => {
         try {
@@ -74,7 +99,19 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     cancelled: false,
                 },
             } as unknown as FormValues;
-            setValues(body, true);
+            setValue('id', body.id);
+            setValue('name', body.name);
+            setValue('name_caregiver', body.name_caregiver);
+            setValue('phone', body.phone);
+            setValue('avatar', body.avatar);
+            setValue('date_of_birth', body.date_of_birth);
+            setValue('address', body.address);
+            setValue('map_location', body.map_location);
+            setValue('observation', body.observation);
+            setValue('color', body.color);
+            setValue('is_deleted', body.is_deleted);
+            setValue('schedules', [...body.schedules]);
+            setValue('costs', [...body.costs]);
         }
     }, [selectedStudent]);
 
@@ -95,48 +132,16 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     marginTop="20px"
                     paddingX="20px"
                 >
-                    <FKFormFile
-                        name="avatar"
-                        label="Avatar"
-                        bgColor="white"
-                        borderWidth="1px"
-                        borderColor="gray.100"
-                        borderRadius="1000px"
-                        formFieldProps={{
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                        }}
-                        fileLabel={
-                            !values.avatar.cancelled
-                                ? 'Imagem Adicionada'
-                                : 'Adicionar Imagem'
-                        }
-                        formControlProps={{ flex: '1', marginTop: '6px' }}
-                    >
-                        <Flex
-                            alignItems="center"
-                            justifyContent="center"
-                            width="100px"
-                            height="100px"
-                        >
-                            {!values.avatar.cancelled && (
-                                <RNImage
-                                    source={{ uri: values.avatar.uri }}
-                                    style={{ width: '100%', height: '100%' }}
-                                    accessibilityLabel="Imagem do aluno"
-                                />
-                            )}
-                        </Flex>
-                    </FKFormFile>
+                    <ImageField />
                     <Flex flex="1.3" flexDirection="column" marginLeft="5px">
-                        <FKFormText
+                        <RHFormText
                             label="Nome Completo"
                             placeholder="Nome do Aluno"
                             autoCapitalize="words"
                             name="name"
                             size="sm"
                         />
-                        <FKFormFormat
+                        <RHFormFormat
                             label="Data de Nascimento"
                             placeholder="Nascimento do Aluno"
                             name="date_of_birth"
@@ -149,7 +154,7 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     </Flex>
                 </HStack>
                 <HStack space="16px" width="100%" paddingX="20px">
-                    <FKFormText
+                    <RHFormText
                         label="Nome do Responsável"
                         placeholder="Responsável"
                         name="name_caregiver"
@@ -157,7 +162,7 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                         size="sm"
                         formControlProps={{ flex: '1' }}
                     />
-                    <FKFormFormat
+                    <RHFormFormat
                         label="Telefone"
                         placeholder="Telefone"
                         name="phone"
@@ -167,21 +172,21 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     />
                 </HStack>
                 <VStack width="100%" paddingX="20px">
-                    <FKFormText
+                    <RHFormText
                         label="Endereço"
                         placeholder="Endereço da casa"
                         name="address"
                         autoCapitalize="sentences"
                         size="sm"
                     />
-                    <FKFormText
+                    <RHFormText
                         label="Google Maps Link"
                         placeholder="Link da Localização"
                         name="map_location"
                         autoCapitalize="sentences"
                         size="sm"
                     />
-                    <FKFormText
+                    <RHFormText
                         label="Observação Adicional"
                         placeholder="Apartamento, Número, etc"
                         name="observation"
@@ -194,14 +199,14 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     width="100%"
                     paddingX="20px"
                 >
-                    <FKColorPicker name="color" />
+                    <RHColorPicker name="color" />
                 </VStack>
                 <HStack space="12px" marginTop="12px" paddingX="20px">
                     <Button
                         size="sm"
                         colorScheme="gray.400"
                         flex="1"
-                        onPress={() => setPricesIsOpen(true)}
+                        onPress={onManageCostsOpen}
                     >
                         Gerenciar Preços
                     </Button>
@@ -209,7 +214,7 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                         size="sm"
                         colorScheme="gray.400"
                         flex="1"
-                        onPress={() => setSchedulesIsOpen(true)}
+                        onPress={onManageSchedulesOpen}
                     >
                         Gerenciar Horários
                     </Button>
@@ -219,12 +224,10 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                     marginTop="20px"
                     paddingX="20px"
                     justifyContent={
-                        (params as any).type === 'edit'
-                            ? 'space-between'
-                            : 'center'
+                        params.type === 'edit' ? 'space-between' : 'center'
                     }
                 >
-                    {(params as any).type === 'edit' && (
+                    {params.type === 'edit' && (
                         <Button
                             size="lg"
                             colorScheme="red.500"
@@ -237,61 +240,32 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                             Remover Aluno
                         </Button>
                     )}
-                    <Button size="lg" onPress={handleSubmit as any}>
+                    <Button
+                        size="lg"
+                        onPress={handleSubmit(handleFormSubmit) as any}
+                    >
                         Salvar Aluno
                     </Button>
                 </HStack>
             </KeyboardAvoidingScrollView>
-            <ManageCosts isOpen={pricesIsOpen} setIsOpen={setPricesIsOpen} />
-            <ManageSchedules
-                isOpen={schedulesIsOpen}
-                setIsOpen={setSchedulesIsOpen}
-            />
+            <ManageCosts />
+            <ManageSchedules />
         </>
     );
 };
 
 const ManageStudent = ({ ...props }: ManageStudentProps) => {
-    const navigation = useNavigation();
-    const { showError } = useError();
-    const { showSuccess } = useSuccess();
-    const { setLoading } = useLoadingStore();
-    const { createStudent, editStudent, listStudent } = useStudentStore();
-
-    const handleFormSubmit = async (
-        values: FormValues,
-        formikHelpers: FormikHelpers<FormValues>,
-    ) => {
-        try {
-            setLoading(true);
-            let successTitle = '';
-            if (props.route.params.type === 'create') {
-                await createStudent(values);
-                successTitle = 'Aluno criado com sucesso';
-            } else {
-                await editStudent(values);
-                successTitle = 'Aluno editado com sucesso';
-            }
-            navigation.goBack();
-            showSuccess({ title: successTitle });
-        } catch (err) {
-            showError(err, { title: 'Erro ao criar Aluno' });
-        } finally {
-            setLoading(false);
-        }
-    };
+    const methods = useForm({
+        defaultValues: initialValues,
+        resolver: yupResolver(validationSchema),
+    });
 
     return (
-        <Formik
-            initialValues={initialValues}
-            onSubmit={handleFormSubmit}
-            validationSchema={validationSchema}
-            validateOnChange={false}
-            validateOnBlur={false}
-            validateOnMount={false}
-        >
-            <ManageStudentComponent {...props} />
-        </Formik>
+        <ManageStudentProvider>
+            <FormProvider {...methods}>
+                <ManageStudentComponent {...props} />
+            </FormProvider>
+        </ManageStudentProvider>
     );
 };
 

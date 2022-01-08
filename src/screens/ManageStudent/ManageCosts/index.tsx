@@ -1,5 +1,6 @@
 import React from 'react';
-import { FormikHelpers, useFormik, useFormikContext } from 'formik';
+import { useWatch, useForm, useFormContext } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Divider, HStack, Text, VStack } from 'native-base';
 import { v4 as uuid } from 'uuid';
 
@@ -14,30 +15,33 @@ import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidin
 import { Button } from 'app/components/atoms/Button';
 import { BasicViewCard } from 'app/components/molecules/BasicViewCard';
 import { ProCrisActionsheet } from 'app/components/molecules/ProCrisActionsheet';
-import { FKFormFormatM } from 'app/components/molecules/FKFormFormat';
-import { FKCheckboxM } from 'app/components/molecules/FKCheckbox';
+import { RHFormFormatM } from 'app/components/molecules/RHFormFormat';
+import { RHCheckboxM } from 'app/components/molecules/RHCheckbox';
 
+import { useManageStudent } from 'app/hooks/ManageStudent';
 import { useAlert } from 'app/store/Alert/Alert.hook';
 
-type ManageCostsProps = {
-    isOpen?: boolean;
-    setIsOpen?(value: boolean): void;
-};
+type ManageCostsProps = {};
 
-const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
+const ManageCosts = React.memo(({}: ManageCostsProps) => {
     const { showAlertAsync } = useAlert();
-    const { values, setFieldValue } = useFormikContext<MainFormValues>();
+    const { isManageCostsOpen, onManageCostsClose } = useManageStudent('costs');
 
-    const handleCostsSubmit = (
-        data: FormValues,
-        formikHelpers: FormikHelpers<FormValues>,
-    ) => {
+    const costs = useWatch<MainFormValues, 'costs'>({ name: 'costs' });
+    const { setValue, getValues } = useFormContext<MainFormValues>();
+    const { handleSubmit, reset, control } = useForm<FormValues>({
+        defaultValues: initialValues,
+        resolver: yupResolver(validationSchema),
+    });
+
+    const handleCostsSubmit = React.useCallback((data: FormValues) => {
+        const formCosts = getValues('costs');
         const body = { ...data, id: uuid() };
-        setFieldValue('costs', [...values.costs, body]);
-        formikHelpers.resetForm();
-    };
+        setValue('costs', [...formCosts, body]);
+        reset();
+    }, []);
 
-    const handleDeleteCost = async (cost: any) => {
+    const handleDeleteCost = React.useCallback(async (cost: any) => {
         const { isConfirmed } = await showAlertAsync({
             title: 'Deseja remover esse Valor?',
             description: 'Essa ação removerá o custo e é irreversível',
@@ -48,9 +52,10 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
         if (!isConfirmed) {
             return;
         }
-        setFieldValue(
+        const formCosts = getValues('costs');
+        setValue(
             'costs',
-            values.costs.map((formCost) => {
+            formCosts.map((formCost: any) => {
                 if (formCost.id === cost.id) {
                     return {
                         ...formCost,
@@ -60,22 +65,13 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                 return formCost;
             }),
         );
-    };
-
-    const instance = useFormik<FormValues>({
-        initialValues: initialValues,
-        onSubmit: handleCostsSubmit,
-        validationSchema: validationSchema,
-        validateOnChange: false,
-        validateOnBlur: false,
-        validateOnMount: false,
-    });
+    }, []);
 
     return (
         <ProCrisActionsheet
-            visible={isOpen}
-            onRequestClose={() => setIsOpen?.(false)}
-            onClose={() => setIsOpen?.(false)}
+            visible={isManageCostsOpen}
+            onRequestClose={onManageCostsClose}
+            onClose={onManageCostsClose}
         >
             <KeyboardAvoidingScrollView
                 flex="1"
@@ -100,7 +96,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                     paddingX="20px"
                     marginTop="16px"
                 >
-                    <FKFormFormatM
+                    <RHFormFormatM
                         type="datetime"
                         options={{
                             format: 'HH:mm',
@@ -111,9 +107,9 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                         autoCapitalize="words"
                         size="sm"
                         formControlProps={{ flex: '1' }}
-                        formInstance={instance}
+                        control={control}
                     />
-                    <FKFormFormatM
+                    <RHFormFormatM
                         type="money"
                         options={{
                             separator: '.',
@@ -124,7 +120,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                         name="price"
                         size="sm"
                         formControlProps={{ flex: '1' }}
-                        formInstance={instance}
+                        control={control}
                     />
                 </HStack>
                 <HStack
@@ -134,16 +130,15 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                     paddingX="20px"
                     marginTop="5px"
                 >
-                    <FKCheckboxM
-                        name="is_default"
-                        size="sm"
-                        formInstance={instance}
-                    >
+                    <RHCheckboxM name="is_default" size="sm" control={control}>
                         <Text marginLeft="5px" fontWeight="600">
                             É padrão?
                         </Text>
-                    </FKCheckboxM>
-                    <Button size="sm" onPress={instance.handleSubmit as any}>
+                    </RHCheckboxM>
+                    <Button
+                        size="sm"
+                        onPress={handleSubmit(handleCostsSubmit) as any}
+                    >
                         Adicionar
                     </Button>
                 </HStack>
@@ -154,7 +149,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
                     paddingX="20px"
                     marginTop="25px"
                 >
-                    {values.costs
+                    {costs
                         .filter((cost) => !cost.is_deleted)
                         .map((cost) => (
                             <BasicViewCard
@@ -170,7 +165,7 @@ const ManageCosts = ({ isOpen, setIsOpen }: ManageCostsProps) => {
             </KeyboardAvoidingScrollView>
         </ProCrisActionsheet>
     );
-};
+});
 
 export type { ManageCostsProps };
 export { ManageCosts };

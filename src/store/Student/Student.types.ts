@@ -13,6 +13,7 @@ export type StudentStore = {
 
 export enum ActionTypes {
     STUDENT_UPDATE_ALL = 'STUDENT_UPDATE_ALL',
+    STUDENT_UPDATE_ONE = 'STUDENT_UPDATE_ONE',
     STUDENT_ADD = 'STUDENT_ADD',
     STUDENT_DELETE = 'STUDENT_DELETE',
     STUDENT_LOADING = 'STUDENT_LOADING',
@@ -26,6 +27,11 @@ export type ActionStudentUpdate = Action<
 
 export type ActionStudentAdd = Action<
     ActionTypes.STUDENT_ADD,
+    { student: Student }
+>;
+
+export type ActionStudentUpdateOne = Action<
+    ActionTypes.STUDENT_UPDATE_ONE,
     { student: Student }
 >;
 
@@ -49,4 +55,5 @@ export type Actions =
     | ActionStudentAdd
     | ActionStudentDelete
     | ActionStudentUpdateLoading
-    | ActionStudentSelect;
+    | ActionStudentSelect
+    | ActionStudentUpdateOne;

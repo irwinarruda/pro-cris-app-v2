@@ -1,6 +1,7 @@
 import 'react-native-get-random-values';
+import 'app/services/firebaseClient';
 import React from 'react';
-import { LogBox } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { Provider } from 'react-redux';
 import { NativeBaseProvider } from 'native-base';
 import {
@@ -25,13 +26,13 @@ import { Loading } from 'app/components/molecules/Loading';
 import { ProCrisAlert } from 'app/components/organisms/ProCrisAlert';
 import { SummaryProvider } from 'app/hooks/Summary';
 
-import 'app/services/firebaseClient';
-
-LogBox.ignoreLogs([
-    'Setting a timer for a long period of time',
-    'NativeBase: The contrast',
-    'Require cycle',
-]);
+if (Platform.OS !== 'web') {
+    LogBox.ignoreLogs([
+        'Setting a timer for a long period of time',
+        'NativeBase: The contrast',
+        'Require cycle',
+    ]);
+}
 
 export default function App() {
     let [fontsLoaded] = useFonts({

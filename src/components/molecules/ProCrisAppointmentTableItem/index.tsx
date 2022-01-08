@@ -45,12 +45,14 @@ const ProCrisAppointmentTableItem = ({
         >
             <Flex flexDirection="row" justifyContent="space-between">
                 <Flex width="34%" paddingY="8px" paddingLeft="8px">
-                    <Text fontWeight="600">
+                    <Text fontWeight="600" isTruncated>
                         {format(appointment.date, 'dd/MM/yyyy')}
                     </Text>
                 </Flex>
-                <Flex width="21%" paddingY="8px">
-                    <Text fontWeight="600">{appointment.cost.price}</Text>
+                <Flex width="27%" paddingY="8px">
+                    <Text fontWeight="600" isTruncated>
+                        {appointment.cost.price}
+                    </Text>
                 </Flex>
                 <Flex
                     width="12%"

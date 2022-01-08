@@ -17,6 +17,8 @@ import { Appointment } from 'app/entities/Appointment';
 const neededStates = {
     all: ['appointments', 'selectedDate', 'loading'],
     status: ['appointments'],
+    loading: ['loading'],
+    date: ['selectedDate'],
     none: [],
 } as const;
 

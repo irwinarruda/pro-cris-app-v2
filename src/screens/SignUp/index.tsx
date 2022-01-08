@@ -1,6 +1,7 @@
 import React from 'react';
-import { Formik, FormikHelpers } from 'formik';
 import { Flex, HStack, VStack, Text } from 'native-base';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
 
 import { initialValues, validationSchema, FormValues } from 'app/forms/signUp';
@@ -9,7 +10,7 @@ import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidin
 import { Button } from 'app/components/atoms/Button';
 import { Link } from 'app/components/atoms/Link';
 import { ProCrisBanner } from 'app/components/molecules/ProCrisBanner';
-import { FKFormText } from 'app/components/molecules/FKFormText';
+import { RHFormTextM } from 'app/components/molecules/RHFormText';
 
 import { useError } from 'app/hooks/Error';
 import { useUserStore } from 'app/store/User/User.hook';
@@ -20,15 +21,17 @@ type SignUpProps = {
 };
 
 const SignUp = ({}: SignUpProps) => {
+    const navigation = useNavigation();
     const { showError } = useError();
     const { setLoading } = useLoadingStore();
     const { signUp } = useUserStore();
-    const navigation = useNavigation();
 
-    const handleFormSubmit = async (
-        values: FormValues,
-        formikHelpers: FormikHelpers<FormValues>,
-    ) => {
+    const { handleSubmit, control } = useForm<FormValues>({
+        defaultValues: initialValues,
+        resolver: yupResolver(validationSchema),
+    });
+
+    const handleFormSubmit = async (values: FormValues) => {
         try {
             setLoading(true);
             await signUp(values);
@@ -40,69 +43,64 @@ const SignUp = ({}: SignUpProps) => {
     };
 
     return (
-        <Formik
-            initialValues={initialValues}
-            onSubmit={handleFormSubmit}
-            validationSchema={validationSchema}
-            validateOnChange={false}
-            validateOnBlur={false}
-            validateOnMount={false}
+        <KeyboardAvoidingScrollView
+            flex="1"
+            bgColor="#ffffff"
+            contentContainerStyle={{
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                paddingBottom: 20,
+            }}
         >
-            {({ handleSubmit }) => (
-                <KeyboardAvoidingScrollView
-                    flex="1"
-                    bgColor="#ffffff"
-                    contentContainerStyle={{
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
-                        paddingBottom: 20,
-                    }}
+            <ProCrisBanner />
+            <Flex width="100%" paddingX="20px" marginTop="15px">
+                <Text fontSize="2xl" fontWeight="700" textAlign="left">
+                    Criar Conta
+                </Text>
+            </Flex>
+            <VStack width="100%" space="0" paddingX="20px" marginTop="18px">
+                <RHFormTextM
+                    name="name"
+                    label="Nome Completo"
+                    size="lg"
+                    autoCapitalize="words"
+                    control={control}
+                />
+                <RHFormTextM
+                    name="email"
+                    label="Email"
+                    size="lg"
+                    control={control}
+                />
+                <RHFormTextM
+                    name="password"
+                    label="Senha"
+                    size="lg"
+                    control={control}
+                    secureTextEntry
+                />
+                <RHFormTextM
+                    name="passwordConfirm"
+                    label="Confirmar Senha"
+                    size="lg"
+                    control={control}
+                    secureTextEntry
+                />
+            </VStack>
+            <HStack justifyContent="center" marginTop="20px">
+                <Button
+                    size="lg"
+                    onPress={handleSubmit(handleFormSubmit) as any}
                 >
-                    <ProCrisBanner />
-                    <Flex width="100%" paddingX="20px" marginTop="15px">
-                        <Text fontSize="2xl" fontWeight="700" textAlign="left">
-                            Criar Conta
-                        </Text>
-                    </Flex>
-                    <VStack
-                        width="100%"
-                        space="0"
-                        paddingX="20px"
-                        marginTop="18px"
-                    >
-                        <FKFormText
-                            name="name"
-                            label="Nome Completo"
-                            size="lg"
-                            autoCapitalize="words"
-                        />
-                        <FKFormText name="email" label="Email" size="lg" />
-                        <FKFormText
-                            name="password"
-                            label="Senha"
-                            size="lg"
-                            secureTextEntry
-                        />
-                        <FKFormText
-                            name="passwordConfirm"
-                            label="Confirmar Senha"
-                            size="lg"
-                            secureTextEntry
-                        />
-                    </VStack>
-                    <HStack justifyContent="center" marginTop="20px">
-                        <Button size="lg" onPress={handleSubmit as any}>
-                            Criar Conta
-                        </Button>
-                    </HStack>
-                    <HStack justifyContent="center" marginTop="6px">
-                        <Link onPress={() => navigation.navigate('SignIn')}>
-                            Fazer login
-                        </Link>
-                    </HStack>
-                </KeyboardAvoidingScrollView>
-            )}
-        </Formik>
+                    Criar Conta
+                </Button>
+            </HStack>
+            <HStack justifyContent="center" marginTop="6px">
+                <Link onPress={() => navigation.navigate('SignIn')}>
+                    Fazer login
+                </Link>
+            </HStack>
+        </KeyboardAvoidingScrollView>
     );
 };
 

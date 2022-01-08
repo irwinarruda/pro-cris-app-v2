@@ -18,6 +18,18 @@ export const studentReducer = (state = INITIAL_STATE, action: Actions) => {
                 ...state,
                 students: [...state.students, action.payload?.student],
             };
+        case ActionTypes.STUDENT_UPDATE_ONE:
+            let newStudent = [...state.students];
+            for (let i in newStudent) {
+                if (newStudent[i].id === action.payload?.student.id) {
+                    newStudent[i] = { ...action.payload?.student };
+                    break;
+                }
+            }
+            return {
+                ...state,
+                students: [...newStudent],
+            };
         case ActionTypes.STUDENT_DELETE:
             return {
                 ...state,

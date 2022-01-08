@@ -1,5 +1,6 @@
 import React from 'react';
-import { FormikHelpers, useFormik, useFormikContext } from 'formik';
+import { useWatch, useFormContext, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Divider, HStack, Text, VStack } from 'native-base';
 import { v4 as uuid } from 'uuid';
 
@@ -15,33 +16,44 @@ import { KeyboardAvoidingScrollView } from 'app/components/atoms/KeyboardAvoidin
 import { Button } from 'app/components/atoms/Button';
 import { BasicViewCard } from 'app/components/molecules/BasicViewCard';
 import { ProCrisActionsheet } from 'app/components/molecules/ProCrisActionsheet';
-import { FKFormFormatM } from 'app/components/molecules/FKFormFormat';
-import { FKCheckboxM } from 'app/components/molecules/FKCheckbox';
-import { FKFormSelectM } from 'app/components/molecules/FKFormSelect';
+import { RHFormFormatM } from 'app/components/molecules/RHFormFormat';
+import { RHCheckboxM } from 'app/components/molecules/RHCheckbox';
+import { RHFormSelectM } from 'app/components/molecules/RHFormSelect';
 
+import { useManageStudent } from 'app/hooks/ManageStudent';
 import { useAlert } from 'app/store/Alert/Alert.hook';
 
-type ManageSchedulesProps = {
-    isOpen?: boolean;
-    setIsOpen?(value: boolean): void;
-};
+type ManageSchedulesProps = {};
 
-const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
+const ManageSchedules = ({}: ManageSchedulesProps) => {
     const { showAlertAsync } = useAlert();
-    const { values, setFieldValue } = useFormikContext<MainFormValues>();
+    const { isManageSchedulesOpen, onManageSchedulesClose } =
+        useManageStudent('schedules');
 
-    const handleScheduleSubmit = (
-        data: FormValues,
-        formikHelpers: FormikHelpers<FormValues>,
-    ) => {
+    const schedules = useWatch<MainFormValues, 'schedules'>({
+        name: 'schedules',
+    });
+    const { setValue, getValues } = useFormContext<MainFormValues>();
+    const {
+        handleSubmit,
+        setValue: setScheduleValue,
+        control,
+    } = useForm<FormValues>({
+        defaultValues: initialValues,
+        resolver: yupResolver(validationSchema),
+    });
+
+    const handleScheduleSubmit = React.useCallback((data: FormValues) => {
         const body = { ...data, id: uuid() };
-        setFieldValue('schedules', [...values.schedules, body]);
-        formikHelpers.resetForm({
-            values: { ...initialValues, day_time: data.day_time },
-        } as any);
-    };
+        const formCosts = getValues('schedules');
+        setValue('schedules', [...formCosts, body]);
+        setScheduleValue('id', initialValues.id);
+        setScheduleValue('week_day', initialValues.week_day);
+        setScheduleValue('is_default', initialValues.is_default);
+        setScheduleValue('is_deleted', initialValues.is_deleted);
+    }, []);
 
-    const handleDeleteSchedule = async (schedule: any) => {
+    const handleDeleteSchedule = React.useCallback(async (schedule: any) => {
         const { isConfirmed } = await showAlertAsync({
             title: 'Deseja remover esse Horário?',
             description: 'Essa ação removerá o horário e é irreversível',
@@ -52,9 +64,10 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
         if (!isConfirmed) {
             return;
         }
-        setFieldValue(
+        const formCosts = getValues('schedules');
+        setValue(
             'schedules',
-            values.schedules.map((formSchedule) => {
+            formCosts.map((formSchedule) => {
                 if (formSchedule.id === schedule.id) {
                     return {
                         ...formSchedule,
@@ -64,22 +77,13 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                 return formSchedule;
             }),
         );
-    };
-
-    const instance = useFormik<FormValues>({
-        initialValues: initialValues,
-        onSubmit: handleScheduleSubmit,
-        validationSchema: validationSchema,
-        validateOnChange: false,
-        validateOnBlur: false,
-        validateOnMount: false,
-    });
+    }, []);
 
     return (
         <ProCrisActionsheet
-            visible={isOpen}
-            onRequestClose={() => setIsOpen?.(false)}
-            onClose={() => setIsOpen?.(false)}
+            visible={isManageSchedulesOpen}
+            onRequestClose={onManageSchedulesClose}
+            onClose={onManageSchedulesClose}
         >
             <KeyboardAvoidingScrollView
                 bgColor="white"
@@ -104,7 +108,7 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                     paddingX="20px"
                     marginTop="16px"
                 >
-                    <FKFormSelectM
+                    <RHFormSelectM
                         label="Dia da semana"
                         placeholder="Segunda"
                         name="week_day"
@@ -114,9 +118,9 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                             label: WeekDaysLabels[value],
                         }))}
                         formControlProps={{ flex: '1' }}
-                        formInstance={instance}
+                        control={control}
                     />
-                    <FKFormFormatM
+                    <RHFormFormatM
                         type="datetime"
                         options={{
                             format: 'HH:mm',
@@ -127,7 +131,7 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                         autoCapitalize="words"
                         size="sm"
                         formControlProps={{ flex: '1' }}
-                        formInstance={instance}
+                        control={control}
                     />
                 </HStack>
                 <HStack
@@ -137,16 +141,15 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                     paddingX="20px"
                     marginTop="5px"
                 >
-                    <FKCheckboxM
-                        name="is_default"
-                        size="sm"
-                        formInstance={instance}
-                    >
+                    <RHCheckboxM name="is_default" size="sm" control={control}>
                         <Text marginLeft="5px" fontWeight="600">
                             É padrão?
                         </Text>
-                    </FKCheckboxM>
-                    <Button size="sm" onPress={instance.handleSubmit as any}>
+                    </RHCheckboxM>
+                    <Button
+                        size="sm"
+                        onPress={handleSubmit(handleScheduleSubmit) as any}
+                    >
                         Adicionar
                     </Button>
                 </HStack>
@@ -157,7 +160,7 @@ const ManageSchedules = ({ isOpen, setIsOpen }: ManageSchedulesProps) => {
                     paddingX="20px"
                     marginTop="25px"
                 >
-                    {values.schedules
+                    {schedules
                         .filter((schedule) => !schedule.is_deleted)
                         .map((schedule) => (
                             <BasicViewCard

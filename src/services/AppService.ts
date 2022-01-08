@@ -37,7 +37,7 @@ class AppService {
         });
         const fileRef = storage.ref(uuid());
         await fileRef.put(blob as any);
-        blob.close();
+        blob?.close();
 
         return (await fileRef.getDownloadURL()) || '';
     }
