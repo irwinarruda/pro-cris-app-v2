@@ -1,66 +1,56 @@
 import React from 'react';
 import { Flex, Modal, HStack } from 'native-base';
-import { Formik, FormikHelpers, useFormikContext } from 'formik';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, useFormContext, FormProvider } from 'react-hook-form';
 
 import {
     FormValues,
     initialValues,
     validationSchema,
 } from 'app/forms/createAppointment';
-import { Cost } from 'app/entities/Cost';
 
 import { Button } from 'app/components/atoms/Button';
-import { FKFormSelect } from 'app/components/molecules/FKFormSelect';
 import { ProCrisModal } from 'app/components/organisms/ProCrisModal';
-import { FKFormFormat } from 'app/components/molecules/FKFormFormat';
-import { FKCheckbox } from 'app/components/molecules/FKCheckbox';
+import { RHFormFormat } from 'app/components/molecules/RHFormFormat';
+import { RHCheckbox } from 'app/components/molecules/RHCheckbox';
 
 import { useError } from 'app/hooks/Error';
 import { useSuccess } from 'app/hooks/Success';
 import { useAppointments } from 'app/hooks/Appointments';
-import { useStudentStore } from 'app/store/Student/Student.hook';
 import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
+
+import { SelectSudentValueFields } from './SelectSudentValueFields';
 
 type ModalCreateAppointmentProps = {
     children?: React.ReactNode;
 };
 
 const ModalCreateAppointmentComponent = ({}: ModalCreateAppointmentProps) => {
+    const { showError } = useError();
+    const { showSuccess } = useSuccess();
+    const { setLoading } = useLoadingStore();
+    const { createAppointment } = useAppointmentStore();
     const { isModalAppointmentOpen, onModalAppointmentClose } =
         useAppointments('modal');
-    const { students, listStudentCosts } = useStudentStore('list');
-    const { values, handleSubmit, setFieldValue, resetForm } =
-        useFormikContext<FormValues>();
-    const [costs, setCosts] = React.useState<Cost[]>([]);
+    const { handleSubmit } = useFormContext<FormValues>();
+
+    const handleFormSubmit = async (values: FormValues) => {
+        try {
+            setLoading(true);
+            await createAppointment(values);
+            showSuccess({ title: 'Aula criada com sucesso' });
+        } catch (err) {
+            showError(err, { title: 'Erro ao criar Aula' });
+        } finally {
+            onModalAppointmentClose();
+            setLoading(false);
+        }
+    };
 
     const handleModalClose = () => {
         onModalAppointmentClose();
     };
-
-    const fetchCostData = async (studentId: string) => {
-        const studentCosts = await listStudentCosts(studentId);
-        setCosts(studentCosts);
-    };
-
-    React.useEffect(() => {
-        if (values.id_student) {
-            fetchCostData(values.id_student);
-            setFieldValue('cost.id', '');
-        }
-    }, [values.id_student]);
-
-    React.useEffect(() => {
-        if (values.cost.id) {
-            const selectedCost = costs.find(
-                (item) => item.id === values.cost.id,
-            );
-            if (selectedCost) {
-                setFieldValue('cost.price', selectedCost.price);
-                setFieldValue('cost.time', selectedCost.time);
-            }
-        }
-    }, [values.cost]);
 
     return (
         <ProCrisModal
@@ -70,25 +60,8 @@ const ModalCreateAppointmentComponent = ({}: ModalCreateAppointmentProps) => {
         >
             <Modal.Body bgColor="white">
                 <Flex flex="1">
-                    <FKFormSelect
-                        size="sm"
-                        label="Escolha um Aluno"
-                        name="id_student"
-                        options={students.map((student) => ({
-                            label: student.name,
-                            value: student.id,
-                        }))}
-                    />
-                    <FKFormSelect
-                        size="sm"
-                        label="Escolha uma Valor/Hora"
-                        name="cost.id"
-                        options={costs.map((cost) => ({
-                            label: `Valor: ${cost.price}/Hora: ${cost.time}`,
-                            value: cost.id,
-                        }))}
-                    />
-                    <FKFormFormat
+                    <SelectSudentValueFields />
+                    <RHFormFormat
                         type="datetime"
                         options={{
                             format: 'DD/MM/YYYY HH:mm:ss',
@@ -97,10 +70,10 @@ const ModalCreateAppointmentComponent = ({}: ModalCreateAppointmentProps) => {
                         name="date"
                         label="Escolha uma data"
                     />
-                    <FKCheckbox name="is_extra">É aula extra?</FKCheckbox>
-                    <FKCheckbox name="is_paid" marginTop="10px">
+                    <RHCheckbox name="is_extra">É aula extra?</RHCheckbox>
+                    <RHCheckbox name="is_paid" marginTop="10px">
                         Aula paga antecipadamente?
-                    </FKCheckbox>
+                    </RHCheckbox>
                 </Flex>
             </Modal.Body>
             <Modal.Footer paddingTop="8px" paddingBottom="8px">
@@ -114,7 +87,7 @@ const ModalCreateAppointmentComponent = ({}: ModalCreateAppointmentProps) => {
                     </Button>
                     <Button
                         colorScheme="purple.500"
-                        onPress={handleSubmit as any}
+                        onPress={handleSubmit(handleFormSubmit) as any}
                         size="sm"
                     >
                         Salvar
@@ -126,39 +99,15 @@ const ModalCreateAppointmentComponent = ({}: ModalCreateAppointmentProps) => {
 };
 
 const ModalCreateAppointment = ({ ...props }: ModalCreateAppointmentProps) => {
-    const { showError } = useError();
-    const { showSuccess } = useSuccess();
-    const { setLoading } = useLoadingStore();
-    const { createAppointment } = useAppointmentStore();
-    const { onModalAppointmentClose } = useAppointments();
-
-    const handleSubmit = async (
-        values: FormValues,
-        formHelpers: FormikHelpers<FormValues>,
-    ) => {
-        try {
-            setLoading(true);
-            await createAppointment(values);
-            showSuccess({ title: 'Aula criada com sucesso' });
-        } catch (err) {
-            showError(err, { title: 'Erro ao criar Aula' });
-        } finally {
-            onModalAppointmentClose();
-            setLoading(false);
-        }
-    };
+    const methods = useForm({
+        defaultValues: initialValues,
+        resolver: yupResolver(validationSchema),
+    });
 
     return (
-        <Formik
-            initialValues={initialValues}
-            onSubmit={handleSubmit}
-            validationSchema={validationSchema}
-            validateOnChange={false}
-            validateOnBlur={false}
-            validateOnMount={false}
-        >
+        <FormProvider {...methods}>
             <ModalCreateAppointmentComponent {...props} />
-        </Formik>
+        </FormProvider>
     );
 };
 

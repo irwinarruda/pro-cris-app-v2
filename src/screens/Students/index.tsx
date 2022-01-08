@@ -1,17 +1,13 @@
 import React from 'react';
-import { RefreshControl } from 'react-native';
-import { FlatList, Flex, Icon } from 'native-base';
+import { Flex, Icon } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { AntDesign } from '@expo/vector-icons';
 
 import { FAB } from 'app/components/atoms/FAB';
-import { ProCrisStudentCard } from 'app/components/molecules/ProCrisStudentCard';
 import { ProCrisStatus } from 'app/components/organisms/ProCrisStatus';
 
 import { useSummary } from 'app/hooks/Summary';
-import { useError } from 'app/hooks/Error';
-import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useStudentStore } from 'app/store/Student/Student.hook';
 
 import { ModalAppointmentSummary } from './ModalAppointmentSummary';
