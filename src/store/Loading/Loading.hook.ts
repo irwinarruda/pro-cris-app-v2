@@ -1,38 +1,38 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
-import { ApplicationStores } from 'app/store/Store';
-import { LoadingStore } from 'app/store/Loading/Loading.types';
-import { actionLoading } from 'app/store/Loading/Loading.actions';
+import {
+    setLoading as actionSetLoading,
+    LoadingSlice,
+} from 'app/store/Loading/Loading.slice';
+import { useAppDispatch, useReduxSelector } from 'app/store/Store';
 
-const neededStates = {
+import { genericSelector } from 'app/utils/genericSelector';
+import { shallowEqual } from 'app/utils/shallowEqual';
+
+const selectors = {
     all: ['loading'],
     none: [],
 } as const;
 
-type NeededStatesKeys = keyof typeof neededStates;
+type SelectorsKeys = keyof typeof selectors;
 
-type LoadingStoreFunctions = {
+type LoadingSliceFunctions = {
     setLoading(loading: boolean): void;
 };
 
-export const useLoadingStore = <T extends NeededStatesKeys = 'none'>(
+export const useLoadingStore = <T extends SelectorsKeys = 'none'>(
     key = 'none' as T,
-): Pick<LoadingStore, typeof neededStates[T][number]> &
-    LoadingStoreFunctions => {
-    let hooks = {} as Pick<LoadingStore, typeof neededStates[T][number]>;
-    hooks = useSelector((state: ApplicationStores) => {
-        const obj = {} as any;
-        neededStates[key as T].forEach((stateString) => {
-            obj[stateString] = state.loadingStore[stateString];
-        });
-        return obj;
-    });
+): Pick<LoadingSlice, typeof selectors[T][number]> & LoadingSliceFunctions => {
+    const hooks = useReduxSelector(
+        'loadingReducer',
+        genericSelector(selectors[key] as any),
+        shallowEqual,
+    ) as Pick<LoadingSlice, typeof selectors[T][number]>;
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const setLoading = React.useCallback((loading: boolean) => {
-        dispatch(actionLoading(loading));
+        dispatch(actionSetLoading({ loading }));
     }, []);
 
     return { ...hooks, setLoading };

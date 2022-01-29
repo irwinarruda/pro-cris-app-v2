@@ -1,20 +1,22 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppDispatch, useReduxSelector } from 'app/store/Store';
+import {
+    setAppointments,
+    setLoading,
+    setSelectedDate,
+    AppointmentSlice,
+} from 'app/store/Appointment/Appointment.slice';
 
 import { AppointmentService } from 'app/services/AppointmentService';
 import { FormValues as CreateFormValues } from 'app/forms/createAppointment';
 import { FormValues as UpdateFormValues } from 'app/forms/manageAppointment';
-
-import { ApplicationStores } from 'app/store/Store';
-import { AppointmentStore } from 'app/store/Appointment/Appointment.types';
-import {
-    actionAppointmentUpdateAll,
-    actionAppointmentUpdateDate,
-    actionAppointmentUpdateLoading,
-} from 'app/store/Appointment/Appointment.actions';
 import { Appointment } from 'app/entities/Appointment';
 
-const neededStates = {
+import { genericSelector } from 'app/utils/genericSelector';
+import { shallowEqual } from 'app/utils/shallowEqual';
+
+const selectors = {
     all: ['appointments', 'selectedDate', 'loading'],
     status: ['appointments'],
     loading: ['loading'],
@@ -22,9 +24,9 @@ const neededStates = {
     none: [],
 } as const;
 
-type NeededStatesKeys = keyof typeof neededStates;
+type SelectorsKeys = keyof typeof selectors;
 
-type AppointmentStoreFunctions = {
+type AppointmentSliceFunctions = {
     listAppointments(): Promise<void>;
     createTodaysRoutineAppointments(): Promise<void>;
     createAppointment(appointment: CreateFormValues): Promise<void>;
@@ -34,38 +36,35 @@ type AppointmentStoreFunctions = {
     simpleUpdateAppointment(appointment: UpdateFormValues): Promise<void>;
 };
 
-export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
+export const useAppointmentStore = <T extends SelectorsKeys>(
     key = 'none' as T,
-): Pick<AppointmentStore, typeof neededStates[T][number]> &
-    AppointmentStoreFunctions => {
-    let hooks = {} as Pick<AppointmentStore, typeof neededStates[T][number]>;
-    hooks = useSelector((state: ApplicationStores) => {
-        const obj = {} as any;
-        neededStates[key as T].forEach((stateString) => {
-            obj[stateString] = state.appointmentStore[stateString];
-        });
-        return obj;
-    });
+): Pick<AppointmentSlice, typeof selectors[T][number]> &
+    AppointmentSliceFunctions => {
+    const hooks = useReduxSelector(
+        'appointmentReducer',
+        genericSelector(selectors[key] as any),
+        shallowEqual,
+    ) as Pick<AppointmentSlice, typeof selectors[T][number]>;
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const updateSelectedDate = React.useCallback((date: Date) => {
-        dispatch(actionAppointmentUpdateDate(date));
+        dispatch(setSelectedDate({ date }));
     }, []);
 
     const listAppointments = React.useCallback(async () => {
-        dispatch(actionAppointmentUpdateLoading(true));
+        dispatch(setLoading({ loading: true }));
         const appointmentService = new AppointmentService();
         const appointments = await appointmentService.listAppointments();
-        dispatch(actionAppointmentUpdateAll(appointments));
-        dispatch(actionAppointmentUpdateLoading(false));
+        dispatch(setAppointments({ appointments }));
+        dispatch(setLoading({ loading: false }));
     }, []);
 
     const createAppointment = React.useCallback(
         async (appointment: CreateFormValues) => {
             const appointmentService = new AppointmentService();
             await appointmentService.createAppointment(appointment);
-            await listAppointments();
+            listAppointments();
         },
         [listAppointments],
     );
@@ -74,7 +73,7 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
         async (appointment: UpdateFormValues) => {
             const appointmentService = new AppointmentService();
             await appointmentService.updateAppointment(appointment);
-            await listAppointments();
+            listAppointments();
         },
         [listAppointments],
     );
@@ -91,17 +90,17 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
         const dateToday = new Date();
         const appointmentService = new AppointmentService();
         await appointmentService.createRoutineByDate(dateToday);
-        await listAppointments();
+        listAppointments();
     }, [listAppointments]);
 
     const getAppointmentsByRoutineDate = React.useCallback(
         async (date: Date): Promise<Appointment[]> => {
             const appointmentService = new AppointmentService();
-            dispatch(actionAppointmentUpdateLoading(true));
+            dispatch(setLoading({ loading: true }));
             const appointments = await appointmentService.listRoutineByDate(
                 date,
             );
-            dispatch(actionAppointmentUpdateLoading(false));
+            dispatch(setLoading({ loading: false }));
             return appointments;
         },
         [],

@@ -1,88 +1,58 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
-import { ApplicationStores } from 'app/store/Store';
+import { useAppDispatch, useReduxSelector } from 'app/store/Store';
 import {
-    AlertStore,
+    setTaskStatus,
+    closeAlert,
+    showAlertWithTexts,
     AlertAsyncResponses,
     TextsType,
-} from 'app/store/Alert/Alert.types';
-import {
-    actionAlertUpdateIsOpen,
-    actionAlertUpdateTexts,
-    actionAlertUpdateTaskStatus,
-} from 'app/store/Alert/Alert.actions';
-import { Completer } from 'app/utils/Completer';
+    AlertSlice,
+} from 'app/store/Alert/Alert.slice';
 
-const neededStates = {
+import { Completer } from 'app/utils/Completer';
+import { genericSelector } from 'app/utils/genericSelector';
+import { shallowEqual } from 'app/utils/shallowEqual';
+
+const selectors = {
     all: ['isOpen', 'texts', 'taskStatus'],
-    none: ['taskStatus'],
+    none: [],
 } as const;
 
-type NeededStatesKeys = keyof typeof neededStates;
+type SelectorsKeys = keyof typeof selectors;
 
-type AlertStoreFunctions = {
+type AlertSliceFunctions = {
     showAlert(data?: TextsType): void;
     showAlertAsync(data?: TextsType): Promise<AlertAsyncResponses>;
     closeModal(data?: AlertAsyncResponses): void;
 };
 
-export const useAlert = <T extends NeededStatesKeys>(
+export const useAlert = <T extends SelectorsKeys>(
     key = 'none' as T,
-): Pick<AlertStore, typeof neededStates[T][number]> & AlertStoreFunctions => {
-    let hooks = {} as Pick<AlertStore, typeof neededStates[T][number]>;
-    hooks = useSelector((state: ApplicationStores) => {
-        const obj = {} as any;
-        neededStates[key as T].forEach((stateString) => {
-            obj[stateString] = state.alertStore[stateString];
-        });
-        return obj;
-    });
+): Pick<AlertSlice, typeof selectors[T][number]> & AlertSliceFunctions => {
+    const hooks = useReduxSelector(
+        'alertReducer',
+        genericSelector(selectors[key] as any),
+        shallowEqual,
+    ) as Pick<AlertSlice, typeof selectors[T][number]>;
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
-    const taskStatus = React.useMemo(
-        () => (hooks as any).taskStatus,
-        [(hooks as any).taskStatus],
-    );
-
-    const showAlert = React.useCallback((data?: TextsType) => {
-        if (data) {
-            dispatch(actionAlertUpdateTexts(data));
-        }
-        dispatch(actionAlertUpdateIsOpen(true));
+    const showAlert = React.useCallback((data: TextsType) => {
+        dispatch(showAlertWithTexts({ texts: data }));
     }, []);
 
-    const showAlertAsync = React.useCallback(
-        async (data?: TextsType) => {
-            if (data) {
-                dispatch(actionAlertUpdateTexts(data));
-            }
-            dispatch(actionAlertUpdateIsOpen(true));
-            if (taskStatus) {
-                taskStatus.complete({
-                    isConfirmed: false,
-                    isDenied: false,
-                    isDismissed: false,
-                });
-            }
-            const task = new Completer<AlertAsyncResponses>();
-            dispatch(actionAlertUpdateTaskStatus(task));
-            return task.promise;
-        },
-        [taskStatus],
-    );
+    const showAlertAsync = React.useCallback(async (data?: TextsType) => {
+        dispatch(showAlertWithTexts({ texts: data }));
+        const task = new Completer<AlertAsyncResponses>();
+        dispatch(setTaskStatus({ task }));
+        return task.promise;
+    }, []);
 
-    const closeModal = React.useCallback(
-        (data?: AlertAsyncResponses) => {
-            dispatch(actionAlertUpdateIsOpen(false));
-            if (taskStatus && data) {
-                taskStatus.complete(data);
-                dispatch(actionAlertUpdateTaskStatus(null));
-            }
-        },
-        [taskStatus],
-    );
+    const closeModal = React.useCallback((status?: AlertAsyncResponses) => {
+        dispatch(setTaskStatus({ status }));
+        dispatch(closeAlert());
+    }, []);
 
     return { ...hooks, showAlert, showAlertAsync, closeModal };
 };

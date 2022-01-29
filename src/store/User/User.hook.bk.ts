@@ -1,13 +1,12 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { AuthService } from 'app/services/AuthService';
-import { useAppDispatch, useReduxSelector } from 'app/store/Store';
-
-import { UserSlice, setUser } from 'app/store/User/User.slice';
 import { User } from 'app/entities/User';
+import { AuthService } from 'app/services/AuthService';
 
-import { genericSelector } from 'app/utils/genericSelector';
-import { shallowEqual } from 'app/utils/shallowEqual';
+import { ApplicationStores } from 'app/store/Store';
+import { UserStore } from 'app/store/User/User.types';
+import { actionUserReset, actionUserUpdate } from 'app/store/User/User.actions';
 
 type SignInDTO = {
     email: string;
@@ -20,12 +19,14 @@ type SignUpDTO = {
     password: string;
 };
 
-const selectors = {
+const neededStates = {
     none: [],
     user: ['user'],
+    loading: ['loading'],
+    all: ['user', 'loading'],
 } as const;
 
-type SelectorsKeys = keyof typeof selectors;
+type NeededStatesKeys = keyof typeof neededStates;
 
 type UseStoreFunctions = {
     signIn(credentials: SignInDTO): Promise<void>;
@@ -34,37 +35,40 @@ type UseStoreFunctions = {
     hydrate(data: { user: User }): void;
 };
 
-export const useUserStore = <T extends SelectorsKeys>(
+export const useUserStore = <T extends NeededStatesKeys>(
     key = 'none' as T,
-): Pick<UserSlice, typeof selectors[T][number]> & UseStoreFunctions => {
-    const hooks = useReduxSelector(
-        'userReducer',
-        genericSelector(selectors[key] as any),
-        shallowEqual,
-    ) as Pick<UserSlice, typeof selectors[T][number]>;
+): Pick<UserStore, typeof neededStates[T][number]> & UseStoreFunctions => {
+    let hooks = {} as Pick<UserStore, typeof neededStates[T][number]>;
+    hooks = useSelector((state: ApplicationStores) => {
+        const obj = {} as any;
+        neededStates[key as T].forEach((stateString) => {
+            obj[stateString] = state.userStore[stateString];
+        });
+        return obj;
+    });
 
-    const dispatch = useAppDispatch();
+    const dispatch = useDispatch();
 
     const signIn = React.useCallback(async (credentials: SignInDTO) => {
         const authService = new AuthService();
         const user = await authService.signIn(credentials);
-        dispatch(setUser({ user }));
+        dispatch(actionUserUpdate(user));
     }, []);
 
     const signOut = React.useCallback(async () => {
         const authService = new AuthService();
-        dispatch(setUser({}));
+        dispatch(actionUserReset());
         await authService.signOut();
     }, []);
 
     const signUp = React.useCallback(async (credentials: SignUpDTO) => {
         const authService = new AuthService();
         const user = await authService.signUp(credentials);
-        dispatch(setUser({ user }));
+        dispatch(actionUserUpdate(user));
     }, []);
 
     const hydrate = React.useCallback(({ user }: { user: User }) => {
-        dispatch(setUser({ user }));
+        dispatch(actionUserUpdate(user));
     }, []);
 
     return { ...hooks, signIn, signOut, signUp, hydrate };
