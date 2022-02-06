@@ -10,16 +10,22 @@ type LoadingProps = {
 const Loading = ({}: LoadingProps) => {
     const { loading } = useLoadingStore('all');
     return (
-        <Modal isOpen={loading}>
-            {loading && <StatusBar backgroundColor="rgba(0, 0, 0, 0.3)" />}
-            <Flex alignItems="center" justifyContent="center">
-                <Spinner
-                    accessibilityLabel="Carregando Aplicação"
-                    size={90 as any}
-                    color="gold.600"
-                />
-            </Flex>
-        </Modal>
+        <>
+            {loading && (
+                <Modal isOpen={loading}>
+                    {loading && (
+                        <StatusBar backgroundColor="rgba(0, 0, 0, 0.3)" />
+                    )}
+                    <Flex alignItems="center" justifyContent="center">
+                        <Spinner
+                            accessibilityLabel="Carregando Aplicação"
+                            size={90 as any}
+                            color="gold.600"
+                        />
+                    </Flex>
+                </Modal>
+            )}
+        </>
     );
 };
 

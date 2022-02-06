@@ -1,5 +1,6 @@
 import React from 'react';
-import { Flex, Image, Text } from 'native-base';
+import { Image as RNImage } from 'react-native';
+import { Flex, Text } from 'native-base';
 
 import { Pressable, PressableProps } from 'app/components/atoms/Pressable';
 import { PressableIcon } from 'app/components/atoms/PressableIcon';
@@ -45,15 +46,16 @@ const ProCrisStudentCard = ({
                     alignItems="center"
                     justifyContent="flex-start"
                 >
-                    <Image
-                        marginTop="5px"
-                        width="35px"
-                        height="35px"
-                        borderRadius="1000px"
+                    <RNImage
                         source={
                             avatar ? { uri: avatar } : (EmojiPlaceholder as any)
                         }
-                        alt={`Aluno ${name}`}
+                        style={{
+                            marginTop: 5,
+                            width: 35,
+                            height: 35,
+                            borderRadius: 1000,
+                        }}
                     />
                     <Flex marginLeft="8px">
                         <Text fontSize="md" isTruncated>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { format, isAfter } from 'date-fns';
-import { Flex, IFlexProps, Image, Icon, Text } from 'native-base';
+import { Image as RNImage } from 'react-native';
+import { Flex, IFlexProps, Icon, Text } from 'native-base';
 
 import { DateHelpers } from 'app/utils/DateHelpers';
 
@@ -112,17 +113,18 @@ const ProCrisAppointmentCard = ({
                         alignItems="center"
                         justifyContent="flex-start"
                     >
-                        <Image
-                            marginTop="5px"
-                            width="35px"
-                            height="35px"
-                            borderRadius="1000px"
+                        <RNImage
                             source={
                                 avatar
                                     ? { uri: avatar }
                                     : (EmojiPlaceholder as any)
                             }
-                            alt={`Aluno ${name}`}
+                            style={{
+                                marginTop: 5,
+                                width: 35,
+                                height: 35,
+                                borderRadius: 1000,
+                            }}
                         />
                         <Flex marginLeft="6px">
                             <Text

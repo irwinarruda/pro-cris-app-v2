@@ -67,7 +67,7 @@ const Pressable = React.forwardRef<any, PressableProps>(
                     onEnded={onEnded}
                     onGestureEvent={onGestureEvent}
                     onHandlerStateChange={onHandlerStateChange}
-                    style={style}
+                    style={{ width: '100%', height: 'auto', ...(style as any) }}
                 >
                     {children}
                 </RectButton>

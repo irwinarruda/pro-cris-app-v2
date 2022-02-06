@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { FormValues } from 'app/forms/manageStudent';
 import { StudentService } from 'app/services/StudentService';
@@ -8,7 +8,7 @@ import { Cost } from 'app/entities/Cost';
 import { Student } from 'app/entities/Student';
 import { FormValues as AppointmentOptionsFormValues } from 'app/forms/manageAppointment';
 
-import { ApplicationStores } from 'app/store/Store';
+import { useReduxSelector } from 'app/store/Store';
 import { StudentStore } from 'app/store/Student/Student.types';
 import {
     actionStudentUpdate,
@@ -17,6 +17,9 @@ import {
     actionStudentAdd,
     actionSudentUpdateOne,
 } from 'app/store/Student/Student.actions';
+
+import { genericSelector } from 'app/utils/genericSelector';
+import { shallowEqual } from 'app/utils/shallowEqual';
 
 const neededStates = {
     all: ['students', 'loading', 'selectedStudent'],
@@ -54,27 +57,31 @@ type StudentStoreFunctions = {
 };
 
 export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
-    key?: T,
+    key = 'none' as T,
 ): Pick<StudentStore, typeof neededStates[T][number]> &
     StudentStoreFunctions => {
-    let hooks = {} as Pick<StudentStore, typeof neededStates[T][number]>;
-    neededStates[key || 'none'].forEach((keyValue) => {
-        (hooks as any)[keyValue] = useSelector(
-            (state: ApplicationStores) => state.studentStore[keyValue],
-        );
-    });
+    let hooks = useReduxSelector(
+        'studentStore',
+        genericSelector(neededStates[key] as any),
+        shallowEqual,
+    ) as Pick<StudentStore, typeof neededStates[T][number]>;
 
     const dispatch = useDispatch();
 
     const listStudents = React.useCallback(
         async (params?: ListStudentParams): Promise<void> => {
-            dispatch(actionStudentUpdateLoading(true));
-            const studentService = new StudentService();
-            const students = await studentService.listStudents(params);
-            if (students) {
-                dispatch(actionStudentUpdate(students));
+            try {
+                dispatch(actionStudentUpdateLoading(true));
+                const studentService = new StudentService();
+                const students = await studentService.listStudents(params);
+                if (students) {
+                    dispatch(actionStudentUpdate(students));
+                }
+            } catch (err) {
+                throw err;
+            } finally {
+                dispatch(actionStudentUpdateLoading(false));
             }
-            dispatch(actionStudentUpdateLoading(false));
         },
         [],
     );
@@ -110,7 +117,7 @@ export const useStudentStore = <T extends NeededStatesKeys = 'none'>(
             const studentService = new StudentService();
             await studentService.deleteStudent(studentId);
             dispatch(actionStudentSelect());
-            await listStudents();
+            listStudents();
         },
         [listStudents],
     );

@@ -11,13 +11,18 @@ import { useSummary } from 'app/hooks/Summary';
 import { useStudentStore } from 'app/store/Student/Student.hook';
 
 import { ModalAppointmentSummary } from './ModalAppointmentSummary';
+import { ModalSummary } from './ModalAppointmentSummary/ModalSummary';
 import { ListStudents } from './ListStudents';
 
 type StudentsProps = NativeStackHeaderProps;
 
 const Students = ({}: StudentsProps) => {
     const navigation = useNavigation();
-    const { handleHydrateModalState } = useSummary();
+    const {
+        isOpenModalOptionsSummary,
+        isOpenModalSummary,
+        handleHydrateModalState,
+    } = useSummary('begin');
     const { listStudents } = useStudentStore();
 
     const [screenFocus, setScreenFocus] = React.useState<boolean>(false);
@@ -51,7 +56,8 @@ const Students = ({}: StudentsProps) => {
                 <ProCrisStatus />
                 <ListStudents />
             </Flex>
-            <ModalAppointmentSummary />
+            {isOpenModalOptionsSummary && <ModalAppointmentSummary />}
+            {isOpenModalSummary && <ModalSummary />}
         </>
     );
 };

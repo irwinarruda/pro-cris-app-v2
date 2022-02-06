@@ -101,6 +101,7 @@ const neededFunctions = [
 const neededStates = {
     mAppointments: ['summaryStudentId'],
     modOpt: ['isOpenModalOptionsSummary'],
+    begin: ['isOpenModalOptionsSummary', 'isOpenModalSummary'],
     modSum: ['isOpenModalSummary', 'summaryType'],
     none: [],
 } as const;

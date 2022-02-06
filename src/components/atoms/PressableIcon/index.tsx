@@ -78,7 +78,7 @@ const PressableIcon = React.forwardRef<any, PressableIconProps>(
                     onEnded={onEnded}
                     onGestureEvent={onGestureEvent}
                     onHandlerStateChange={onHandlerStateChange}
-                    style={style}
+                    style={{ width: '100%', height: 'auto', ...(style as any) }}
                 >
                     <Flex
                         accessible

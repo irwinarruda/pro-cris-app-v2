@@ -1,5 +1,6 @@
-import { Store } from 'redux';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import React from 'react';
+import { Store, createStore, combineReducers, applyMiddleware } from 'redux';
+import { useSelector } from 'react-redux';
 import thunkMiddleware from 'redux-thunk';
 
 import { loadingReducer } from './Loading/Loading.reducer';
@@ -33,5 +34,25 @@ const store: Store<ApplicationStores> = createStore(
     rootReducer,
     applyMiddleware(thunkMiddleware),
 );
+
+export const useReduxSelector = <T extends Record<string, any>, R>(
+    reducer: keyof T,
+    selector: (val: T) => R,
+    isEql?: (a: R | null, b: R) => boolean,
+) => {
+    const patchedSelector = React.useMemo(() => {
+        let prevValue: R | null = null;
+        return (state: T) => {
+            const nextValue: R = selector(state[reducer]);
+            if (prevValue !== null && isEql?.(prevValue, nextValue)) {
+                return prevValue;
+            }
+            prevValue = nextValue;
+            return nextValue;
+        };
+    }, [isEql]);
+
+    return useSelector(patchedSelector as any);
+};
 
 export { store };

@@ -14,20 +14,20 @@ type AppointmentsProps = {
     children?: React.ReactNode;
 };
 const AppointmentsComponents = ({}: AppointmentsProps) => {
-    const { listStudents } = useStudentStore('list');
+    const { listStudents, students } = useStudentStore('list');
     const { listAppointments } = useAppointmentStore('all');
     const { onStaggerClose } = useAppointments();
 
     React.useEffect(() => {
-        listAppointments();
         listStudents();
+        listAppointments();
     }, []);
 
     return (
         <Flex flex="1" bgColor="#ffffff">
             <Flex flex="1" onTouchStart={onStaggerClose}>
                 <FilterAppointments />
-                <ListAppointments />
+                {students.length > 0 && <ListAppointments />}
             </Flex>
             <StaggerAppointments />
             <ModalCreateAppointment />

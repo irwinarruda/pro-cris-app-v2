@@ -25,7 +25,13 @@ type ProCrisModalProps = IModalProps;
 
 const ProCrisModal = ({ title, children, ...props }: ProCrisModalProps) => {
     return (
-        <Modal size="xl" avoidKeyboard {...props}>
+        <Modal
+            size="xl"
+            avoidKeyboard
+            {...props}
+            closeOnOverlayClick
+            collapsable
+        >
             {props.isOpen && <StatusBar backgroundColor="rgba(0, 0, 0, 0.3)" />}
             <Modal.Content borderColor="gold.500" borderWidth="2px">
                 <GestureHandlerRootView style={{ position: 'relative' }}>

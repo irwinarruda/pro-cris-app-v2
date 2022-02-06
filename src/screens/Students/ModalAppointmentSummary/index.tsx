@@ -8,8 +8,6 @@ import { ProCrisModal } from 'app/components/organisms/ProCrisModal';
 import { SummaryType, useSummary } from 'app/hooks/Summary';
 import { useStudentStore } from 'app/store/Student/Student.hook';
 
-import { ModalSummary } from './ModalSummary';
-
 type ModalAppointmentSummaryProps = {
     children?: React.ReactNode;
 };
@@ -84,7 +82,6 @@ const ModalAppointmentSummary = React.memo(
                         </HStack>
                     </Modal.Footer>
                 </ProCrisModal>
-                <ModalSummary />
             </>
         );
     },

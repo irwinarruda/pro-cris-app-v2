@@ -4,9 +4,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { User } from 'app/entities/User';
 import { AuthService } from 'app/services/AuthService';
 
-import { ApplicationStores } from 'app/store/Store';
+import { ApplicationStores, useReduxSelector } from 'app/store/Store';
 import { UserStore } from 'app/store/User/User.types';
 import { actionUserReset, actionUserUpdate } from 'app/store/User/User.actions';
+
+import { genericSelector } from 'app/utils/genericSelector';
+import { shallowEqual } from 'app/utils/shallowEqual';
 
 type SignInDTO = {
     email: string;
@@ -38,14 +41,11 @@ type UseStoreFunctions = {
 export const useUserStore = <T extends NeededStatesKeys>(
     key = 'none' as T,
 ): Pick<UserStore, typeof neededStates[T][number]> & UseStoreFunctions => {
-    let hooks = {} as Pick<UserStore, typeof neededStates[T][number]>;
-    hooks = useSelector((state: ApplicationStores) => {
-        const obj = {} as any;
-        neededStates[key as T].forEach((stateString) => {
-            obj[stateString] = state.userStore[stateString];
-        });
-        return obj;
-    });
+    let hooks = useReduxSelector(
+        'userStore',
+        genericSelector(neededStates[key] as any),
+        shallowEqual,
+    ) as Pick<UserStore, typeof neededStates[T][number]>;
 
     const dispatch = useDispatch();
 

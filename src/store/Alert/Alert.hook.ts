@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { ApplicationStores } from 'app/store/Store';
+import { useReduxSelector } from 'app/store/Store';
 import {
     AlertStore,
     AlertAsyncResponses,
@@ -13,6 +13,9 @@ import {
     actionAlertUpdateTaskStatus,
 } from 'app/store/Alert/Alert.actions';
 import { Completer } from 'app/utils/Completer';
+
+import { genericSelector } from 'app/utils/genericSelector';
+import { shallowEqual } from 'app/utils/shallowEqual';
 
 const neededStates = {
     all: ['isOpen', 'texts', 'taskStatus'],
@@ -30,14 +33,11 @@ type AlertStoreFunctions = {
 export const useAlert = <T extends NeededStatesKeys>(
     key = 'none' as T,
 ): Pick<AlertStore, typeof neededStates[T][number]> & AlertStoreFunctions => {
-    let hooks = {} as Pick<AlertStore, typeof neededStates[T][number]>;
-    hooks = useSelector((state: ApplicationStores) => {
-        const obj = {} as any;
-        neededStates[key as T].forEach((stateString) => {
-            obj[stateString] = state.alertStore[stateString];
-        });
-        return obj;
-    });
+    let hooks = useReduxSelector(
+        'alertStore',
+        genericSelector(neededStates[key] as any),
+        shallowEqual,
+    ) as Pick<AlertStore, typeof neededStates[T][number]>;
 
     const dispatch = useDispatch();
 

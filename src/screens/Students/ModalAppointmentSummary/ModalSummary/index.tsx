@@ -183,9 +183,18 @@ const ModalSummary = React.memo(({}: ModalSummaryProps) => {
                     summaryType === 'notpaid'
                         ? 'Aulas não pagas'
                         : 'Todas as Aulas'
-                }:\n${selectedStudent?.name}`}
+                }:\n${selectedStudent?.name} (${
+                    summaryType === 'notpaid'
+                        ? selectedStudent?.appointments.filter(
+                              (appointment) => !appointment.is_paid,
+                          ).length
+                        : selectedStudent?.appointments.length
+                } aulas)`}
                 isOpen={isOpenModalSummary}
-                onClose={onCloseModalSummary}
+                onClose={() => {
+                    setBillingModal(false);
+                    onCloseModalSummary();
+                }}
             >
                 <Modal.Body bgColor="white">
                     <Flex flex="1">

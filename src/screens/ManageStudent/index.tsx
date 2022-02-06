@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, HStack, VStack } from 'native-base';
+import { Flex, Box, HStack, VStack } from 'native-base';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
@@ -128,12 +128,16 @@ const ManageStudentComponent = ({ route: { params } }: ManageStudentProps) => {
                 }}
             >
                 <HStack
+                    width="100%"
+                    justifyContent="space-between"
                     alignItems="flex-start"
                     marginTop="20px"
                     paddingX="20px"
                 >
-                    <ImageField />
-                    <Flex flex="1.3" flexDirection="column" marginLeft="5px">
+                    <Box width="150px">
+                        <ImageField />
+                    </Box>
+                    <Flex width="auto" flexDirection="column">
                         <RHFormText
                             label="Nome Completo"
                             placeholder="Nome do Aluno"
