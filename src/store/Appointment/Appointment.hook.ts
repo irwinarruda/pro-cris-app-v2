@@ -93,10 +93,15 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
     );
 
     const createTodaysRoutineAppointments = React.useCallback(async () => {
-        const dateToday = new Date();
-        const appointmentService = new AppointmentService();
-        await appointmentService.createRoutineByDate(dateToday);
-        listAppointments();
+        try {
+            const dateToday = new Date();
+            const appointmentService = new AppointmentService();
+            await appointmentService.createRoutineByDate(dateToday);
+        } catch (err) {
+            throw err;
+        } finally {
+            listAppointments();
+        }
     }, [listAppointments]);
 
     const getAppointmentsByRoutineDate = React.useCallback(

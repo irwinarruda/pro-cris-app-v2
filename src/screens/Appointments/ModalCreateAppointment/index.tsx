@@ -33,24 +33,17 @@ const ModalCreateAppointmentComponent = ({}: ModalCreateAppointmentProps) => {
     const { createAppointment } = useAppointmentStore();
     const { isModalAppointmentOpen, onModalAppointmentClose } =
         useAppointments('modal');
-    const {
-        handleSubmit,
-        formState: { errors },
-    } = useFormContext<FormValues>();
-    React.useEffect(() => {
-        console.log('errors', errors);
-    }, [errors]);
+    const { handleSubmit } = useFormContext<FormValues>();
 
     const handleFormSubmit = async (values: FormValues) => {
         try {
             setLoading(true);
-            console.log(values);
             await createAppointment(values);
             showSuccess({ title: 'Aula criada com sucesso' });
+            onModalAppointmentClose();
         } catch (err) {
             showError(err, { title: 'Erro ao criar Aula' });
         } finally {
-            onModalAppointmentClose();
             setLoading(false);
         }
     };

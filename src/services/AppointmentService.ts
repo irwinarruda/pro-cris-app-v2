@@ -159,6 +159,7 @@ class AppointmentService extends AppService {
                 try {
                     await this.createAppointment({
                         id: '',
+                        id_cost: student.cost!.id,
                         id_student: student.id,
                         cost: {
                             id: student.cost!.id,

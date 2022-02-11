@@ -11,7 +11,8 @@ import { useSummary } from 'app/hooks/Summary';
 import { useStudentStore } from 'app/store/Student/Student.hook';
 
 import { ModalAppointmentSummary } from './ModalAppointmentSummary';
-import { ModalSummary } from './ModalAppointmentSummary/ModalSummary';
+import { ModalBilling } from './ModalBilling';
+import { ModalSummary } from './ModalSummary';
 import { ListStudents } from './ListStudents';
 
 type StudentsProps = NativeStackHeaderProps;
@@ -21,6 +22,7 @@ const Students = ({}: StudentsProps) => {
     const {
         isOpenModalOptionsSummary,
         isOpenModalSummary,
+        isOpenModalBilling,
         handleHydrateModalState,
     } = useSummary('begin');
     const { listStudents } = useStudentStore();
@@ -58,6 +60,7 @@ const Students = ({}: StudentsProps) => {
             </Flex>
             {isOpenModalOptionsSummary && <ModalAppointmentSummary />}
             {isOpenModalSummary && <ModalSummary />}
+            {isOpenModalBilling && <ModalBilling />}
         </>
     );
 };

@@ -30,8 +30,6 @@ import { useStudentStore } from 'app/store/Student/Student.hook';
 import { useLoadingStore } from 'app/store/Loading/Loading.hook';
 import { useAppointmentStore } from 'app/store/Appointment/Appointment.hook';
 
-import { ModalBilling } from './ModalBilling';
-
 type AppointmentWithStudent = Appointment & {
     student: Omit<Student, 'appointments' | 'costs' | 'schedules'>;
 };
@@ -57,10 +55,10 @@ const ModalSummary = React.memo(({}: ModalSummaryProps) => {
         summaryType,
         isOpenModalSummary,
         onCloseModalSummary,
+        onOpenModalBilling,
+        onCloseModalBilling,
         handleEditAppointmentPress,
     } = useSummary('modSum');
-
-    const [billingModal, setBillingModal] = React.useState<boolean>(false);
 
     const filteredAppointments = React.useMemo(() => {
         if (summaryType === 'notpaid') {
@@ -184,15 +182,11 @@ const ModalSummary = React.memo(({}: ModalSummaryProps) => {
                         ? 'Aulas não pagas'
                         : 'Todas as Aulas'
                 }:\n${selectedStudent?.name} (${
-                    summaryType === 'notpaid'
-                        ? selectedStudent?.appointments.filter(
-                              (appointment) => !appointment.is_paid,
-                          ).length
-                        : selectedStudent?.appointments.length
+                    filteredAppointments.length
                 } aulas)`}
                 isOpen={isOpenModalSummary}
                 onClose={() => {
-                    setBillingModal(false);
+                    onCloseModalBilling();
                     onCloseModalSummary();
                 }}
             >
@@ -245,10 +239,7 @@ const ModalSummary = React.memo(({}: ModalSummaryProps) => {
                 <Modal.Footer paddingTop="8px" paddingBottom="8px">
                     <HStack space={2} alignItems="center">
                         {summaryType === 'notpaid' && (
-                            <Link
-                                size="sm"
-                                onPress={() => setBillingModal(true)}
-                            >
+                            <Link size="sm" onPress={onOpenModalBilling}>
                                 Ver recibo
                             </Link>
                         )}
@@ -271,14 +262,6 @@ const ModalSummary = React.memo(({}: ModalSummaryProps) => {
                     </HStack>
                 </Modal.Footer>
             </ProCrisModal>
-            {selectedStudent && (
-                <ModalBilling
-                    isOpen={billingModal}
-                    student={selectedStudent}
-                    appointments={filteredAppointments}
-                    setIsOpen={setBillingModal}
-                />
-            )}
         </>
     );
 });

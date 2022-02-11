@@ -4,27 +4,20 @@ import { Flex, HStack, Text } from 'native-base';
 import { captureRef } from 'react-native-view-shot';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { Student } from 'app/entities/Student';
-import { Appointment } from 'app/entities/Appointment';
+import { useSummary } from 'app/hooks/Summary';
+import { useStudentStore } from 'app/store/Student/Student.hook';
 
 import { Button } from 'app/components/atoms/Button';
 import { ProCrisActionsheet } from 'app/components/molecules/ProCrisActionsheet';
 import { ProCrisBillingTemplate } from 'app/templates/ProCrisBillingTemplate';
+import { FormatHelpers } from 'app/utils/FormatHelpers';
 
-type ModalBillingProps = {
-    isOpen?: boolean;
-    setIsOpen?(value: boolean): void;
-    student: Student;
-    appointments: Appointment[];
-};
+type ModalBillingProps = {};
 
-const ModalBilling = ({
-    isOpen,
-    appointments,
-    student,
-    setIsOpen,
-}: ModalBillingProps) => {
+const ModalBilling = ({}: ModalBillingProps) => {
     const pictureRef = React.useRef<any>(null);
+    const { isOpenModalBilling, onCloseModalBilling } = useSummary('modBill');
+    const { selectedStudent } = useStudentStore('manage');
 
     const onSharePress = async () => {
         const result = await captureRef(pictureRef, {
@@ -37,9 +30,9 @@ const ModalBilling = ({
 
     return (
         <ProCrisActionsheet
-            visible={isOpen}
-            onRequestClose={() => setIsOpen?.(false)}
-            onClose={() => setIsOpen?.(false)}
+            visible={isOpenModalBilling}
+            onRequestClose={onCloseModalBilling}
+            onClose={onCloseModalBilling}
             distanceFromTop={150}
         >
             <GestureHandlerRootView style={{ flex: 1 }}>
@@ -57,8 +50,10 @@ const ModalBilling = ({
                     <Flex marginTop="10px">
                         <ProCrisBillingTemplate
                             ref={pictureRef}
-                            student={student}
-                            appointments={appointments}
+                            student={selectedStudent!}
+                            appointments={FormatHelpers.getValidNotPaiedAppointments(
+                                selectedStudent?.appointments || [],
+                            )}
                         />
                     </Flex>
                     <Text fontSize="sm" fontWeight="500">

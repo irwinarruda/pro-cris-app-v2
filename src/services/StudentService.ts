@@ -201,8 +201,8 @@ class StudentService extends AppService {
     ): Promise<StudentCover[]> {
         const {
             appointments = false,
-            costs = true,
-            schedules = true,
+            costs = false,
+            schedules = false,
         } = params || {};
 
         if (!auth.currentUser) {

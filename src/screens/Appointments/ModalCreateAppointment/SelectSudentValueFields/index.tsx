@@ -5,7 +5,6 @@ import { RHFormSelect } from 'app/components/molecules/RHFormSelect';
 
 import { useStudentStore } from 'app/store/Student/Student.hook';
 import { Cost } from 'app/entities/Cost';
-import { ProCrisHeader } from 'app/components/organisms/ProCrisHeader';
 
 type SelectSudentValueFieldsProps = {
     children?: React.ReactNode;

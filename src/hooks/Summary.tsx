@@ -11,6 +11,9 @@ type SummaryContextProps = {
     isOpenModalOptionsSummary: boolean;
     onCloseModalOptionsSummary: () => void;
     onOpenModalOptionsSummary: () => void;
+    isOpenModalBilling: boolean;
+    onCloseModalBilling: () => void;
+    onOpenModalBilling: () => void;
     summaryStudentId: string;
     setSummaryStudentId: React.Dispatch<React.SetStateAction<string>>;
     summaryType: SummaryType;
@@ -44,6 +47,15 @@ const SummaryProvider = ({ children }: SummaryProviderProps) => {
         setIsOpenModalOptionsSummary(false);
     }, []);
 
+    const [isOpenModalBilling, setIsOpenModalBilling] =
+        React.useState<boolean>(false);
+    const onCloseModalBilling = React.useCallback(() => {
+        setIsOpenModalBilling(false);
+    }, []);
+    const onOpenModalBilling = React.useCallback(() => {
+        setIsOpenModalBilling(true);
+    }, []);
+
     const [summaryStudentId, setSummaryStudentId] = React.useState<string>('');
     const [summaryType, setSummaryType] =
         React.useState<SummaryType>('notpaid');
@@ -74,6 +86,9 @@ const SummaryProvider = ({ children }: SummaryProviderProps) => {
                 isOpenModalOptionsSummary,
                 onCloseModalOptionsSummary,
                 onOpenModalOptionsSummary,
+                isOpenModalBilling,
+                onCloseModalBilling,
+                onOpenModalBilling,
                 summaryStudentId,
                 setSummaryStudentId,
                 summaryType,
@@ -92,6 +107,8 @@ const neededFunctions = [
     'onOpenModalSummary',
     'onCloseModalOptionsSummary',
     'onOpenModalOptionsSummary',
+    'onOpenModalBilling',
+    'onCloseModalBilling',
     'setSummaryStudentId',
     'setSummaryType',
     'handleHydrateModalState',
@@ -101,8 +118,13 @@ const neededFunctions = [
 const neededStates = {
     mAppointments: ['summaryStudentId'],
     modOpt: ['isOpenModalOptionsSummary'],
-    begin: ['isOpenModalOptionsSummary', 'isOpenModalSummary'],
-    modSum: ['isOpenModalSummary', 'summaryType'],
+    begin: [
+        'isOpenModalOptionsSummary',
+        'isOpenModalSummary',
+        'isOpenModalBilling',
+    ],
+    modSum: ['isOpenModalSummary', 'onOpenModalBilling', 'summaryType'],
+    modBill: ['isOpenModalBilling', 'onCloseModalBilling'],
     none: [],
 } as const;
 
