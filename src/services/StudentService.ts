@@ -271,10 +271,13 @@ class StudentService extends AppService {
         const treatedStudents = students
             .map((student) => {
                 const { costs, schedules, ...rest } = student;
-                const cost = costs?.find((co) => co.is_default);
+                const cost = costs?.find(
+                    (co) => co.is_default && !co.is_deleted,
+                );
                 const acceptedSchedules =
                     schedules?.filter(
                         (sc) =>
+                            !sc.is_deleted &&
                             sc.is_default &&
                             Number(sc.week_day) === date.getDay(),
                     ) || [];
@@ -284,9 +287,7 @@ class StudentService extends AppService {
                     schedules: acceptedSchedules,
                 };
             })
-            .filter(
-                (student) => student.schedules?.length > 0 && !!student.cost,
-            );
+            .filter((student) => student.schedules?.length > 0 && student.cost);
         return treatedStudents;
     }
 }

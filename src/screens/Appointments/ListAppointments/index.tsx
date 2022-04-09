@@ -34,17 +34,19 @@ const ListAppointments = ({}: ListAppointmentsProps) => {
     const filteredAppointments = React.useMemo(
         () =>
             appointments
-                .filter((appointment) =>
-                    isSameDay(appointment.date, selectedDate),
-                )
                 .concat(ghostAppointments)
-                .sort((a, b) => a.date.getTime() - b.date.getTime())
                 .map((appointment) => ({
                     ...appointment,
                     student: students.find(
                         (student) => student.id === appointment.id_student,
                     ),
-                })),
+                }))
+                .filter(
+                    (appointment) =>
+                        isSameDay(appointment.date, selectedDate) &&
+                        appointment.student,
+                )
+                .sort((a, b) => a.date.getTime() - b.date.getTime()),
         [appointments, selectedDate, ghostAppointments, students],
     );
 
