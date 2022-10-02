@@ -19,7 +19,8 @@ const StaggerAppointments = ({}: StaggerAppointmentsProps) => {
     const { showError } = useError();
     const { showAlertAsync } = useAlert();
     const { setLoading } = useLoadingStore();
-    const { createTodaysRoutineAppointments } = useAppointmentStore();
+    const { selectedDate, createTodaysRoutineAppointments } =
+        useAppointmentStore('date');
     const {
         isStaggerOpen,
         onModalAppointmentOpen,
@@ -47,7 +48,7 @@ const StaggerAppointments = ({}: StaggerAppointmentsProps) => {
             if (!isConfirmed) {
                 return;
             }
-            await createTodaysRoutineAppointments();
+            await createTodaysRoutineAppointments(selectedDate);
         } catch (err) {
             showError(err, { title: 'Atenção!', duration: 100000 });
         } finally {

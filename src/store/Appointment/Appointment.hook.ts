@@ -29,7 +29,7 @@ type NeededStatesKeys = keyof typeof neededStates;
 
 type AppointmentStoreFunctions = {
     listAppointments(): Promise<void>;
-    createTodaysRoutineAppointments(): Promise<void>;
+    createTodaysRoutineAppointments(date?: Date): Promise<void>;
     createAppointment(appointment: CreateFormValues): Promise<void>;
     updateAppointmentOptions(appointment: UpdateFormValues): Promise<void>;
     updateSelectedDate(date: Date): void;
@@ -92,17 +92,20 @@ export const useAppointmentStore = <T extends NeededStatesKeys = 'none'>(
         [],
     );
 
-    const createTodaysRoutineAppointments = React.useCallback(async () => {
-        try {
-            const dateToday = new Date();
-            const appointmentService = new AppointmentService();
-            await appointmentService.createRoutineByDate(dateToday);
-        } catch (err) {
-            throw err;
-        } finally {
-            listAppointments();
-        }
-    }, [listAppointments]);
+    const createTodaysRoutineAppointments = React.useCallback(
+        async (date?: Date) => {
+            try {
+                const dateToday = date || new Date();
+                const appointmentService = new AppointmentService();
+                await appointmentService.createRoutineByDate(dateToday);
+            } catch (err) {
+                throw err;
+            } finally {
+                listAppointments();
+            }
+        },
+        [listAppointments],
+    );
 
     const getAppointmentsByRoutineDate = React.useCallback(
         async (date: Date): Promise<Appointment[]> => {
