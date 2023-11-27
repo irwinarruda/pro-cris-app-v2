@@ -30,3 +30,12 @@ I gave myself 2 weeks to finish this project and I used it to learn a lot of new
 -   [Redux](https://redux.js.org/). I decided to learn Redux without using [Redux Toolkit](https://redux-toolkit.js.org/) because I wanted to understand the most of how this state management system works.
 -   [Google Firebase](https://firebase.google.com/) without any React Native abstraction like [React Native Firebase](https://rnfirebase.io/), because I never had the opportunity to work with cloud before.
 -   [Native Base](https://nativebase.io/) which is an accessible component library. I liked it because of the declarative UI. I think declarative UI is good on React.js but it's even better on React Native since you have to style your components in the same language as the structure and logic.
+
+### Issues
+
+Even years after completing the project, I've observed certain issues with the technologies used or the implementation of certain components. Here's a list of those issues:
+
+-   **Click Event Problems**: Sometimes, after opening and closing a `native-base` Modal component, all clickable items using `react-native-gesture-handler` stop working.
+-   **Performance Challenges on Low-End Phones**: My suspicion is that the way `native-base` parses styles contributes to performance issues on less powerful devices.
+-   **Data List Scalability**: Initially, scalability was not a primary consideration, so there is a query that stores all appointments in a single variable... In the next iteration, I plan to focus on caching and pagination for better performance.
+-   **Redux Usage**: While I initially tried raw Redux for learning purposes, looking back, I realize that using Redux Toolkit would've enhanced both readability and performance.
