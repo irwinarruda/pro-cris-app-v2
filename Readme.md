@@ -6,7 +6,7 @@ A native mobile app that aims to help teachers manage their work schedule and pr
 
 <p align="center">Before/After</p>
 <p align="center">
-    <img width="600px" src="https://user-images.githubusercontent.com/68255804/153520673-bf021dbb-bbca-4aa7-b42d-b8dcbaf5f015.gif" />
+    <img width="600px" src="./assets/app_pages.gif" />
 </p>
 
 With the app, you can:
