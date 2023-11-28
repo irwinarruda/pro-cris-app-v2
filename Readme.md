@@ -1,4 +1,4 @@
-# Pro Cris App V2
+# <img src="./assets/logo.svg" height="45pd" align="center" /> Pro Cris App V2
 
 A native mobile app that aims to help teachers manage their work schedule and price.
 
